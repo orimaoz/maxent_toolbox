@@ -37,7 +37,7 @@
 %   model_out = trainModel(model,raster,'threshold',0.005,'savefile','training_reentry.mat');
 %
 % Last update: Ori Maoz 30/06/2016
-function model_out = trainModel(input_model,raster,varargin)
+function model_out = trainModel(input_model,samples,varargin)
 
 MAXIMUM_NCELLS_FOR_EXHAUSTIVE = 25;
 
@@ -46,12 +46,12 @@ if (nargin<2)
 end
 
 % before checking the population size, check if we got as input an empirical set or a model
-if (isstruct(raster))
+if (isstruct(samples))
     % we got a model (that we can sample from)
-    ncells = raster.ncells;
+    ncells = samples.ncells;
 else
     % our input is a raster
-    ncells = size(raster,1);
+    ncells = size(samples,1);
 end
 
 if (input_model.ncells ~= ncells)
@@ -60,27 +60,27 @@ end
 
 % check if the user wants to force any type of solver
 p = inputParser;
-addOptional(p,'force_exhaustive',false,@islogical);
-addOptional(p,'force_mcmc',false,@islogical);
+addOptional(p,'force_exhaustive',false,@islogical);   % force exhaustive solver
+addOptional(p,'force_mcmc',false,@islogical);         % force MCMC solver
 p.KeepUnmatched = true;
 p.parse(varargin{:});
 
 
 if (p.Results.force_exhaustive)
     % if the user demands an exhaustive solution, give it to him
-    model_out = trainModelExhaustive(input_model,raster,varargin{:});
+    model_out = trainModelExhaustive(input_model,samples,varargin{:});
 elseif (p.Results.force_mcmc)
     % if the user demands an MCMC solution, give it to him
-    model_out = trainModelMCMC(input_model,raster,varargin{:});
+    model_out = trainModelMCMC(input_model,samples,varargin{:});
 elseif (strcmp(input_model.type,'indep'))
     % if this is an independent model, send it to a separate trainer because there is an analytic solution
-    model_out = trainIndepModel(input_model,raster);    
+    model_out = trainModelIndependent(input_model,samples);    
 else
     % check if there are few cells in the input raster so we can do an exhaustive training
     if (ncells <= MAXIMUM_NCELLS_FOR_EXHAUSTIVE)
-        model_out = trainModelExhaustive(input_model,raster,varargin{:});
+        model_out = trainModelExhaustive(input_model,samples,varargin{:});
     else
-        model_out = trainModelMCMC(input_model,raster,varargin{:});
+        model_out = trainModelMCMC(input_model,samples,varargin{:});
     end
 end
 
