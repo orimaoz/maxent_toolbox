@@ -39,7 +39,7 @@ DEFAULT_TIME_BETWEEN_SAVES = 60;
 % actually reached our target.
 
 DEFAULT_NUM_STEPS = inf;
-DEFAULT_MAX_ERROR_THRESHOLD = 1.5;
+DEFAULT_MAX_ERROR_THRESHOLD = 1;
 
 
 % check dimensionality
@@ -64,21 +64,25 @@ addOptional(p,'silent',false,@islogical);    % silent mode - don't print anythin
 
 
 p.parse(varargin{:});
-threshold = p.Results.threshold;
 reentry_filename = p.Results.savefile;
 num_steps = p.Results.max_steps;
 use_acceleration = p.Results.use_acceleration;
 time_between_saves = p.Results.save_delay;
 max_nsamples = p.Results.max_nsamples;
-max_error_threshold = p.Results.threshold;
+requested_threshold = p.Results.threshold;
 nsamples_increase = p.Results.nsamples_increase;
 silent = p.Results.silent;
 
 
 
+max_nsamples = ceil(data_nsamples /((requested_threshold)^2));
+max_error_threshold = requested_threshold * sqrt(2);
+
+internal_print('Maximum samples: %d   maximum MSE: %.03f\n',max_nsamples,max_error_threshold^2);
+
 % make sure that the reentry filename is well-structured
 if ~isempty(reentry_filename)
-    [pathstr,name,ext] = fileparts(reentry_filename);
+    [pathstr,name,~] = fileparts(reentry_filename);
     reentry_filename  = fullfile(pathstr,[name '.mat']);
     
     internal_print('Using save file %s for re-entry\n',reentry_filename);
@@ -135,7 +139,7 @@ else
 
     prev_nsamples = DEFAULT_MIN_NSAMPLES_BASE;
 
-    internal_print(sprintf('training threshold: %.05f standard deviations',threshold));
+    internal_print(sprintf('training threshold: %.03f standard deviations',requested_threshold));
 
     if (use_acceleration)
         nesterov_acceleration = Nesterov;  % initialize Nesterov accelerated gradient descent
@@ -188,7 +192,8 @@ while i < num_steps
     % Show difference of firing rates and DKL to target (only print once every maximum 1 second)        
     t=toc(last_print_time);
     if t > 1
-        internal_print('%02d/%02d samples=%d std mean:%.04f max: %.04f [%d]',i,num_steps,nsamples,mean_error,max_error,max_idx);
+        %internal_print('%02d/%02d samples=%d MSE mean:%.04f max: %.04f [%d]',i,num_steps,nsamples,mean_error^2,max_error^2,max_idx);
+        internal_print('%02d/%02d samples=%d  MSE=%.03f (mean), %.03f (max) [%d]',i,num_steps,nsamples,mean_error^2,max_error^2,max_idx);
         last_print_time = tic;
     end
 

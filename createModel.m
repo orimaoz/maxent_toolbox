@@ -50,7 +50,7 @@ switch(lower(model_string))
         % parse our optional arguments
         p = inputParser;
         addOptional(p,'nprojections',(ncells*(ncells+1)/2));  % default number of projections
-        addOptional(p,'sparsity',3/ncells);                   % default sparsity 
+        addOptional(p,'sparsity',5/ncells);                   % default sparsity 
         addOptional(p,'threshold',0.1);                       % default threshold 
         addOptional(p,'distribution','normal');               % default distribution of random projection values
         p.parse(varargin{:});
