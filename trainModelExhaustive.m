@@ -58,8 +58,7 @@ if (ncells > MAXIMUM_EXHAUSTIVE_NCELLS)
     
 end
 
-% if we received no threshold we will default to a very strict one - the quantization error of the sample set.
-DEFAULT_L1_THRESHOLD = 0;
+DEFAULT_L1_THRESHOLD = 1;
 
 
 % parse our optional arguments

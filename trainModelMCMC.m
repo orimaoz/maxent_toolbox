@@ -48,8 +48,6 @@ if (data_nsamples < ncells)
     warning('Input raster must be of the form (nsamples x ncells), are you sure you did not transpose it?');
 end
 
-DEFAULT_MAX_NSAMPLES = data_nsamples*2;
-
 
 % parse our optional arguments
 p = inputParser;
@@ -58,7 +56,7 @@ addOptional(p,'savefile','');                 % save file for re-entrant code
 addOptional(p,'max_steps',DEFAULT_NUM_STEPS); % maximum number of steps that we run
 addOptional(p,'use_acceleration',true,@islogical);    % true if we want to use accelerated gradient descent (nesterov)
 addOptional(p,'save_delay',DEFAULT_TIME_BETWEEN_SAVES);    % time between re-entry file saves
-addOptional(p,'max_nsamples',DEFAULT_MAX_NSAMPLES,@isnumeric);    % maximum number of samples used to estimate marginals
+addOptional(p,'max_nsamples',nan,@isnumeric);    % maximum number of samples used to estimate marginals
 addOptional(p,'nsamples_increase',DEFAULT_NSAMPLES_INCREASE,@isnumeric);    %  how quicly we raise the number of samples
 addOptional(p,'silent',false,@islogical);    % silent mode - don't print anything
 
@@ -74,9 +72,18 @@ nsamples_increase = p.Results.nsamples_increase;
 silent = p.Results.silent;
 
 
+if isnan(max_nsamples)
+    % if the user did not specify how many samples to use in the MCMC simulation, choose a number which is large
+    % enough to obtain a reliable measurement for the requested confidence interval
+    max_nsamples = ceil(2*data_nsamples /((requested_threshold)^2));
+end
 
-max_nsamples = ceil(data_nsamples /((requested_threshold)^2));
-max_error_threshold = requested_threshold * sqrt(2);
+% The internal threshold is a function of both the variance of the MCMC (reflected in max_nsamples) and the requeted
+% threshold. Choose an internal threshold that would force the distance to the target to be within the specified range.
+max_error_threshold = sqrt(requested_threshold^2 + data_nsamples/max_nsamples);
+
+internal_print(sprintf('Training to threshold: %.03f standard deviations',requested_threshold));
+
 
 internal_print('Maximum samples: %d   maximum MSE: %.03f\n',max_nsamples,max_error_threshold^2);
 
@@ -138,8 +145,6 @@ else
     gradient_memory_idx = 1;
 
     prev_nsamples = DEFAULT_MIN_NSAMPLES_BASE;
-
-    internal_print(sprintf('training threshold: %.03f standard deviations',requested_threshold));
 
     if (use_acceleration)
         nesterov_acceleration = Nesterov;  % initialize Nesterov accelerated gradient descent

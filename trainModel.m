@@ -19,7 +19,12 @@
 %             marginals will be computed in an exact manner from the distribution.   
 %
 % Optional arguments (in the form of Name,Value pairs):
-%   threshold        - convergence threshold
+%   threshold        - convergence threshold in units of standard deviations in the marginals. This standard deviation
+%                      is estimated using the number of samples the marginal was computed from, which means that larger 
+%                      datasets will be assigned tighter (actual) thresholds. 
+%                      For small groups of inputs (where the model can be built in an exhaustive manner) specifying a
+%                      threshold of zero will set the threshold to the quantization error of the marginals, which is
+%                      equal to (1/(nsamples*2)).
 %   silent           - don't print anything
 %   max_steps        - limit to a maximum number of steps 
 %   use_acceleration - true/false to use accelerated gradient descent (enabled by default)
