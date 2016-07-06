@@ -58,17 +58,17 @@ if (ncells > MAXIMUM_EXHAUSTIVE_NCELLS)
     
 end
 
-DEFAULT_L1_THRESHOLD = 1;
+DEFAULT_L1_THRESHOLD = 1.3;
 
 
 % parse our optional arguments
 p = inputParser;
 addOptional(p,'threshold',DEFAULT_L1_THRESHOLD);
 addOptional(p,'savefile','');
-addOptional(p,'force_complete',true);
+addOptional(p,'force_exhaustive',true);
 addOptional(p,'max_steps',DEFAULT_NUM_STEPS);  % maximum number of steps that we run
 addOptional(p,'observable_accuracy',1000000);  % how strict we are when matching observables
-addOptional(p,'use_acceleration',true,@islogical);    % acceleration
+addOptional(p,'use_acceleration',true,@islogical);    % if to GD acceleration (nesterov)
 addOptional(p,'save_delay',DEFAULT_TIME_BETWEEN_SAVES); % time between re-entry file saves. Currently not active here.
 addOptional(p,'silent',false,@islogical);    % silent mode - don't print anything
 
@@ -76,7 +76,6 @@ addOptional(p,'silent',false,@islogical);    % silent mode - don't print anythin
 p.parse(varargin{:});
 threshold = p.Results.threshold;
 reentry_filename = p.Results.savefile;
-num_steps = p.Results.max_steps;
 use_acceleration = p.Results.use_acceleration;
 silent = p.Results.silent;
 num_steps = p.Results.max_steps;
@@ -93,6 +92,9 @@ else
 
 end
 
+
+internal_print(sprintf('Training to threshold: %.03f standard deviations',threshold));
+internal_print('Maximum MSE: %.03f',threshold^2);
 
 
 nfactors = numel(model.factors);
@@ -275,7 +277,7 @@ while i < num_steps
         meanerror = mean(normalized_empirical_errors);
         t=toc(last_print_time);
         if t > 1
-            internal_print(sprintf('%02d/%02d   std mean:%.04f max: %.04f [%d]   DKL: %.03f',i,num_steps,meanerror,maxerror,maxidx,current_dkl));
+            internal_print('%02d/%02d  MSE=%.03f (mean), %.03f (max) [%d]  DKL: %.03f',i,num_steps,meanerror^2,maxerror^2,maxidx,current_dkl);
             last_print_time = tic;
         end
     end

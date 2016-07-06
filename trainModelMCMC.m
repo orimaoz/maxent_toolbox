@@ -34,12 +34,9 @@ GRADIENT_NORM_COUNT = 10;
 % number of seconds after we save our current status to a file
 DEFAULT_TIME_BETWEEN_SAVES = 60;
 
-% We will choose an amount of samples such that with this confidence interval we will sample each marginal
-% within the threshold we were supplied. This, along with the averaging across time, will help us figure out when we
-% actually reached our target.
 
 DEFAULT_NUM_STEPS = inf;
-DEFAULT_MAX_ERROR_THRESHOLD = 1;
+DEFAULT_MAX_ERROR_THRESHOLD = 1.3;
 
 
 % check dimensionality
@@ -83,9 +80,7 @@ end
 max_error_threshold = sqrt(requested_threshold^2 + data_nsamples/max_nsamples);
 
 internal_print(sprintf('Training to threshold: %.03f standard deviations',requested_threshold));
-
-
-internal_print('Maximum samples: %d   maximum MSE: %.03f\n',max_nsamples,max_error_threshold^2);
+internal_print('Maximum samples: %d   maximum MSE: %.03f',max_nsamples,max_error_threshold^2);
 
 % make sure that the reentry filename is well-structured
 if ~isempty(reentry_filename)
