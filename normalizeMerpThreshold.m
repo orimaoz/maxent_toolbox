@@ -69,7 +69,7 @@ model.threshold = (upper_values + lower_values)/2;
 for i = 1:NUMBER_OF_STEPS
        
     % find the current rates
-    rates = mexGetMarginals(samples,model);
+    rates = mexEmpiricalMarginals(samples,model);
     
        
     if (tune_individual)

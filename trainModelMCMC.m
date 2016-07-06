@@ -121,7 +121,7 @@ else
 
 
     % get the empirical values of the marginals - our goal is to fit the model marginals to these.
-    empirical_marginals = mexGetMarginals(raster,model);
+    empirical_marginals = mexEmpiricalMarginals(raster,model);
 
 
     % estimate the standard deviation of each of the marginals to see how close we should get to it.
@@ -168,7 +168,7 @@ while i < num_steps
     params.separation = 1;
     params.burnin = 0;
     x = (gibbsSampler(x0,nsamples,model,params));
-    model_marginals = mexGetMarginals(x,model);         
+    model_marginals = mexEmpiricalMarginals(x,model);         
     
     prev_nsamples = nsamples;
     

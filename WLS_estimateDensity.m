@@ -58,7 +58,7 @@ for layer = 1:niterations
 
         
         
-        wangLandauSampler(x,500000,energies,model,separation);
+        mexWangLandauSampler(x,500000,energies,model,separation);
         
         % normalize the histgram by the smallest nonzero entry to retain numeric precision
         nonzero_entries = (energies.densities>0);

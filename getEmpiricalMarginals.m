@@ -19,6 +19,6 @@
 function marginals = getEmpiricalMarginals(model, samples)
 
 % delegate to the MEX implementation
-marginals = mexGetMarginals(samples,model);
+marginals = mexEmpiricalMarginals(samples,model);
 
 end

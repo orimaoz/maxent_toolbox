@@ -119,7 +119,7 @@ if (use_exact_marginals)
     empirical_probs = exp(lp);
     
     % get the observables - our goal is to fit the model marginals to these.
-    empirical_marginals = mexGetMarginals(unique_words,model,empirical_probs);
+    empirical_marginals = mexEmpiricalMarginals(unique_words,model,empirical_probs);
     
     % compute confidence intervals for the observables. These actually are all zero (we compute them exactly) 
     % but we will still need to make some arbitrary choice when to stop. This computation makes sure that whatever
@@ -142,7 +142,7 @@ else
     empirical_probs = counts / sum(counts);
     
     % get the empirical values of the marginals - our goal is to fit the model marginals to these.
-    empirical_marginals = mexGetMarginals(raster,model);
+    empirical_marginals = mexEmpiricalMarginals(raster,model);
 
     % estimate the standard deviation of each of the marginals to see how close we should get to it.
     [phat, marginals_pci] = binofit(round(empirical_marginals * nsamples),nsamples,0.32);

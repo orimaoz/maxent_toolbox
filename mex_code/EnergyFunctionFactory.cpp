@@ -5,6 +5,7 @@
 #include "MerpSparseEnergy.h"
 #include "IsingEnergy.h"
 #include "IndependentEnergy.h"
+#include <math.h>
 
 
 #define MAX_STRLEN_MODELTYPE 100

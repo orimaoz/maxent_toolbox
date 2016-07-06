@@ -26,6 +26,6 @@ if (numel(probabilities) ~= nsamples)
 end
 
 % delegate to the MEX implementation
-marginals = mexGetMarginals(samples,model,probabilities);
+marginals = mexEmpiricalMarginals(samples,model,probabilities);
 
 end
