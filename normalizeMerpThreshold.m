@@ -97,6 +97,7 @@ for i = 1:NUMBER_OF_STEPS
          
 end
 
+fprintf('\n');
 model_out = model;
 
 

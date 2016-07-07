@@ -10,8 +10,7 @@
 % Arguments (mandatory):
 %   model    - maximum entropy model as returned by trainModel()
 %   nsamples - how many samples to generate
-%   separation - how many samples to jump each time (default = take every sample, 2 = ignore every other sample,
-%                3 = take one sample, drop the two next samples etc etc)
+%   separation - how many bit flips to perform before taking each sample (default: same as the dimension of the input)
 %
 % Optional arguments (in the form of Name,Value pairs):
 %   x0   - starting state for MCMC walk
@@ -26,7 +25,7 @@ function samples = generateSamples(model, nsamples,varargin)
 p = inputParser;
 addOptional(p,'x0',0);          % starting state
 addOptional(p,'burnin',10000);  % number of burn-in samples
-addOptional(p,'separation',1);  % number of burn-in samples
+addOptional(p,'separation',model.ncells);  % number of burn-in samples
 p.parse(varargin{:});
 x0 = p.Results.x0;
 burnin = p.Results.burnin;

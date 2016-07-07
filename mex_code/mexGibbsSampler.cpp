@@ -146,6 +146,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 				double * npSeparation= mxGetPr(mxSeparation);
 				nSeparation = (uint32_t) * npSeparation;
 			}
+            else
+            {
+                nSeparation = pModel->getDim();
+            }
 
 			// Get optional RNG seed
 			mxArray * mxRandSeed = mxGetField(params_struct, 0, "randseed");
@@ -282,7 +286,7 @@ void runGibbsSampler(uint32_t nsteps, std::vector<uint32_t> & x, unsigned char *
 	double proposed_energy=0; // energy of the proposed state
 	double transition_probability;
 	double rand_double;
-	uint32_t bit_to_flip;
+	uint32_t bit_to_flip=0;
 	MTRand engine_double; // Random number generator. Class is a singleton so it's
 					// ok that it's just sitting on the stack like this
 	MTRand_int32 engine_integer; // Same but for integers. It shares the internal state
@@ -290,6 +294,14 @@ void runGibbsSampler(uint32_t nsteps, std::vector<uint32_t> & x, unsigned char *
 
 	uint32_t n = x.size(); // dimension of the data
 
+    if (!bSequentialBits)
+    {
+        // Bits to flip are chosen randomly - randomly choose the last bit (because usually we do this
+        // only at the end of the loop, and we don't want the first bit to be fixed at zero)
+        bit_to_flip = engine_integer() % x.size();
+    }
+
+    
 	// Initial energy for x
 	current_energy = model.getEnergy(x);
 
@@ -298,31 +310,31 @@ void runGibbsSampler(uint32_t nsteps, std::vector<uint32_t> & x, unsigned char *
 		// For each sample make as many steps as needed		
 		for (uint32_t iteration = 0; iteration < nSeparation; iteration++)
 		{
-			for (uint32_t current_bit = 0; current_bit < n; current_bit++)
-			{
-				if (bSequentialBits)
-				{
-					// Bits are flipped one by one in a sequential order
-					bit_to_flip = current_bit;
-				}
-				else
-				{
-					// Bits to flip are chosen randomly
-					bit_to_flip = engine_integer() % x.size();
-				}
 
-				// Find the energy and bin of the proposed state
-				proposed_energy = model.propose(bit_to_flip);
-
-				// Transition probability is exponential in the difference in densities
-				transition_probability = exp(current_energy - proposed_energy);
-
-				// Randomly choose if to accept or reject the proposal
-				rand_double = engine_double();
-
-				uint32_t bAccepted = rand_double < transition_probability;
-				current_energy = model.accept(bAccepted);
-			}
+            // Find the energy and bin of the proposed state
+            proposed_energy = model.propose(bit_to_flip);
+            
+            // Transition probability is exponential in the difference in densities
+            transition_probability = exp(current_energy - proposed_energy);
+            
+            // Randomly choose if to accept or reject the proposal
+            rand_double = engine_double();
+            
+            uint32_t bAccepted = rand_double < transition_probability;
+            current_energy = model.accept(bAccepted);
+            
+            if (bSequentialBits)
+            {
+                // Bits are flipped one by one in a sequential order
+                bit_to_flip = (bit_to_flip + 1) % x.size();
+            }
+            else
+            {
+                // Bits to flip are chosen randomly
+                bit_to_flip = engine_integer() % x.size();
+            }
+            
+            
 		}
 
 		if (bReturnResults)

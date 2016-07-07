@@ -14,7 +14,7 @@
 %               on small (up to ~25 dimension) distributions.
 %
 % Output:
-%   adds to the model the fields 'z' which is the log partition function and 'H' which is the entropy (in bits).
+%   adds to the model the fields 'z' which is the log partition function and 'entropy' which is the entropy (in bits).
 function model_out = wanglandau(model,varargin);
 
 DEFAULT_BIN_SIZE = 0.01;
@@ -75,7 +75,7 @@ H = sum(e/log(2) .* g .* exp(-e))/sum(g.*exp(-e)) + log2(sum(g.*exp(-e)));
 % return the partition function and the entropy in the model
 model_out = model;
 model_out.z = -logZ;
-model_out.H = H;
+model_out.entropy = H;
 
 
 end
