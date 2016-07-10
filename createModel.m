@@ -1,23 +1,24 @@
 % Initialize an empty maximum entropy model
 %
 % Usage:
-%   model = createModel(ncells,'model_string','param1',value1,'param2',value2);
+%   model = createModel(ncells,model_string)
+%   model = createModel(ncells,model_string,Name,Value,...)
 %
-% Supported model strings:
-%   indep  - independent model
-%   ising  - pairwise ising
-%   ksync  - k-synchrony
-%   kising - pairwise ising with k-synchrony
-%   merp   - MERP (maximum entropy based on random projections)
+% Arguments (mandatory):
+%   ncells       - number of cells (dimensions) in the distribution
+%   model_string - string denoting the type of models. Currently supported model types:
+%                  indep  - independent model
+%                  ising  - pairwise ising
+%                  ksync  - k-synchrony
+%                  kising - pairwise ising with k-synchrony
+%                  merp   - MERP (maximum entropy based on random projections)
 %
-% The optional value pairs can be either given as arguments or mashed together in a structure.
-% they contain model-specific information
-%   
-%   merp:
-%   nprojections - number of random projections
-%   distribution - distribution the random projection values are drawn from
-%   sparsity - sparsity between 0 (completely sparse) and 1 (not sparse at all)
-%   threshold - threshold for firing
+% Optional arguments (in the form of Name,Value pairs):
+%   nprojections - number of random projections (for MERP model)
+%   distribution - distribution the random projection values are drawn from (for MERP model)
+%   distribution - distribution the random projection values are drawn from (for MERP model)
+%   sparsity     - sparsity between 0 (completely sparse) and 1 (not sparse at all) - (for MERP model)
+%   threshold    - relative threshold for random projection (for MERP model)
 function model = createModel(ncells, model_string, varargin)
 
 if nargin<2
