@@ -167,7 +167,7 @@ while i < num_steps
     % generate samples and compute marginals from them
     params.separation = ncells;
     params.burnin = 0;
-    x = (mexGibbsSampler(x0,nsamples,model,params));
+    x = mexGibbsSampler(model,nsamples,x0,params);
     model_marginals = mexEmpiricalMarginals(x,model);         
     
     prev_nsamples = nsamples;

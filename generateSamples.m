@@ -45,7 +45,7 @@ end
 % delegate to the MEX implementation
 params.burnin = burnin;
 params.separation = separation;
-samples = mexGibbsSampler(x0,nsamples,model,params);
+samples = mexGibbsSampler(model,nsamples,x0,params);
 
 
 end

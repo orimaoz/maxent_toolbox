@@ -2,6 +2,9 @@
 // Generic monte-carlo sampler based on the Metropolis-Hasting algorithm (unlike the misleading name, it does not actually do Gibbs sampling).
 
 // This can work with any generic Boltzmann distribution which implements the EnergyFunction interface.
+// 
+// Last update: 
+// Ori Maoz, July 2016
 //
 
 #pragma warning(disable:4996)
@@ -42,9 +45,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	uint32_t randSeed = 0;
 
 	if(nrhs<3) {
-	    mexErrMsgIdAndTxt("GibbsSampler:init",
-                      "Usage: gibbsSampler(x0,nsteps,model[,params])\n"
-					  "possible fields for params:\n"
+	    mexErrMsgIdAndTxt("mexGibbsSampler:init",
+					  "Usage: mexGibbsSampler(model,nsamples,x0,[,params])\n"
+					  "possible fields for params structure:\n"
 					  "burnin - length of initial burn-in (default: 10000)\n"
 					  "separation - sample separation (default: 1)\n"
 					  "randseed - seed for random number generator (default: from clock)\n"					  
@@ -53,9 +56,22 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	}
 
 
+
+	// Process structure containing information about the model
+	const mxArray * model_struct = prhs[0];
+
+	// Initialize the model according to the string that we got
+	EnergyFunctionFactory factory;
+	pModel = factory.createEnergyFunction(model_struct);
+
+	// get number of samples that we need to generate
+	double * npSamples = mxGetPr(prhs[1]);
+	uint32_t nSamples = (uint32_t)*npSamples;
+
+
 	// get initial state x0
-	size_t nDims = mxGetN(prhs[0]);
-	mxClassID x0_id = mxGetClassID(prhs[0]);
+	size_t nDims = mxGetN(prhs[2]);
+	mxClassID x0_id = mxGetClassID(prhs[2]);
 	if (nDims>1)
 	{
 		// we were given a starting point for the random walk, extract it
@@ -65,7 +81,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 		if (x0_id == mxUINT32_CLASS)
 		{
-			uint32_t * ptr_initial_x  = (uint32_t*)mxGetData(prhs[0]);
+			uint32_t * ptr_initial_x  = (uint32_t*)mxGetData(prhs[2]);
 			//copy(initial_x.begin(),initial_x.end(),ptr_initial_x);
 			std::copy(ptr_initial_x, ptr_initial_x + nDims, initial_x.begin());
 
@@ -73,7 +89,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		else if (x0_id == mxDOUBLE_CLASS)
 		{
 			// Data was supplied as double, copy it to the internal uint32 class
-			double * ptr_initial_x  = (double*)mxGetData(prhs[0]);
+			double * ptr_initial_x  = (double*)mxGetData(prhs[2]);
 			for (unsigned int i=0; i < nDims; i++)
 			{
 				initial_x[i] = (ptr_initial_x[i] > 0);
@@ -81,7 +97,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		}
 		else
 		{
-			mexErrMsgIdAndTxt("GibbsSampler:init",
+			mexErrMsgIdAndTxt("mexGibbsSampler:init",
 							  "x must be of type uint32_t or double");
 		}
 	}
@@ -93,24 +109,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	}
 
 
-	// get number of steps
-	double * npSteps = mxGetPr(prhs[1]);
-	uint32_t nSteps = (uint32_t) *npSteps;
-
-
-	// Process structure containing information about the model
-	const mxArray * model_struct = prhs[2];
-
-	EnergyFunctionFactory factory;
-	pModel = factory.createEnergyFunction(model_struct);
-
-
 	if (b_supplied_x0)
 	{
 		// Check that the starting point has the same dimension as supported by the model
 		if (nDims != pModel->getDim())
 		{
-			mexErrMsgIdAndTxt("GibbsSampler:init",
+			mexErrMsgIdAndTxt("mexGibbsSampler:init",
 							  "x0 and model are of different dimensions");
 		}
 	}
@@ -222,7 +226,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	unsigned char * pOutputSamples = NULL;
 	if (bReturnResults)
 	{
-		mxArray * samples = mxCreateNumericMatrix(nDims,nSteps, mxUINT8_CLASS, mxREAL);
+		mxArray * samples = mxCreateNumericMatrix(nDims,nSamples, mxUINT8_CLASS, mxREAL);
 		pOutputSamples = (unsigned char*)mxGetData(samples);
 		plhs[0] = samples;
 	} // bReturnResults 
@@ -234,7 +238,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	}
 
 	// Now work on the samples we do want
-	runGibbsSampler(nSteps, initial_x, pOutputSamples, *pModel, nSeparation,bReturnResults);
+	runGibbsSampler(nSamples, initial_x, pOutputSamples, *pModel, nSeparation,bReturnResults);
 
 
 	if (b_supplied_x0)
@@ -242,14 +246,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		// return the last x in the chain back to matlab as the current state
 		if (x0_id == mxUINT32_CLASS)
 		{
-			uint32_t * ptr_initial_x  = (uint32_t*)mxGetData(prhs[0]);
+			uint32_t * ptr_initial_x  = (uint32_t*)mxGetData(prhs[2]);
 			std::copy(initial_x.begin(),initial_x.end(),ptr_initial_x);
 
 		}
 		else if (x0_id == mxDOUBLE_CLASS)
 		{
 			// Data was supplied as double, copy it to the internal uint32 class
-			double * ptr_initial_x  = (double*)mxGetData(prhs[0]);
+			double * ptr_initial_x  = (double*)mxGetData(prhs[2]);
 			for (unsigned int i=0; i < nDims; i++)
 			{
 				ptr_initial_x[i] = initial_x[i]>0;
