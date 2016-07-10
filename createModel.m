@@ -16,7 +16,6 @@
 % Optional arguments (in the form of Name,Value pairs):
 %   nprojections - number of random projections (for MERP model)
 %   distribution - distribution the random projection values are drawn from (for MERP model)
-%   distribution - distribution the random projection values are drawn from (for MERP model)
 %   sparsity     - sparsity between 0 (completely sparse) and 1 (not sparse at all) - (for MERP model)
 %   threshold    - relative threshold for random projection (for MERP model)
 function model = createModel(ncells, model_string, varargin)
