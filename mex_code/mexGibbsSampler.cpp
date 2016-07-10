@@ -23,7 +23,6 @@ static bool bAlreadySeededRand = false;
 bool bSequentialBits = true;
 
 #define MAX_STRLEN_MODELTYPE 20
-#define DEFAULT_SEPARATION 1
 #define DEFAULT_BURNIN 10000
 //#define DEBUG_PRINTS
 
@@ -36,7 +35,7 @@ void runGibbsSampler(uint32_t nSteps, std::vector<uint32_t> & initial_x, unsigne
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
 	EnergyFunction* pModel;
-	uint32_t nSeparation = DEFAULT_SEPARATION;
+	uint32_t nSeparation;
 	uint32_t nBurnin = DEFAULT_BURNIN;
 	bool b_supplied_x0;
 	std::vector<uint32_t> initial_x;
@@ -125,6 +124,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		std::fill(initial_x.begin(),(initial_x.begin() + nDims),0);
 	}
 
+	// Default separation (if nothing was supplied) is one step per bit
+	nSeparation = pModel->getDim();
+
+
 	// Start parsing the structure containing optional parameters
 	if (nrhs >= 4)
 	{
@@ -146,10 +149,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 				double * npSeparation= mxGetPr(mxSeparation);
 				nSeparation = (uint32_t) * npSeparation;
 			}
-            else
-            {
-                nSeparation = pModel->getDim();
-            }
+
 
 			// Get optional RNG seed
 			mxArray * mxRandSeed = mxGetField(params_struct, 0, "randseed");
