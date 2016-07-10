@@ -1,3 +1,7 @@
+% Implementation of Wang Landau sampling.
+% invoked by wangLandau() and typically should not be invoked directly.
+%
+% 
 % based on:
 % "Efficient, Multiple-Range Random Walk Algorithm to Calculate the Density of States",
 % Wang and Landau (2001), Physical Review Letters.
@@ -11,7 +15,8 @@
 % output:
 % e - histogram centers for energies
 % g - densities of states
-%function [e g] = MC_density(model,nstates)
+%
+% Last update: Ori Maoz, July 2016
 function [e g] = WLS_estimateDensity(model,delta,niterations,separation)
 
 

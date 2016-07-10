@@ -37,13 +37,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	EnergyFunction* pModel;
 	uint32_t nSeparation;
 
-	if(nrhs<5) {
-		nSeparation = DEFAULT_SEPARATION;
-	}
-
 	if(nrhs<4) {
-	    mexErrMsgIdAndTxt("WangLandauSampler:WangLandauSampler",
-                      "Usage: WangLandauSampler(x0,nsteps,energy_params,model [,separation])");
+	    mexErrMsgIdAndTxt("mexWangLandauSampler:mexWangLandauSampler",
+                      "Usage: mexWangLandauSampler(x0,nsteps,energy_params,model [,separation])");
 	}
 
 
@@ -53,7 +49,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	mxClassID id = mxGetClassID(prhs[0]);
 	if (id != mxUINT32_CLASS)	
 	{
-		mexErrMsgIdAndTxt("Ori:wangLandauStep",
+		mexErrMsgIdAndTxt("mexWangLandauSampler:init",
 						  "separation must be of type uint32_t");
 	}
 	std::vector<uint32_t> initial_x(ptr_initial_x,ptr_initial_x+nDims);
@@ -69,32 +65,32 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	// get energy histogram limits
 	mxArray * mxBinLimits = mxGetField(energy_struct,0,"bins");
-	if (!mxBinLimits) mexErrMsgIdAndTxt("Ori:wangLandauGeneric","cannot find energies.bins");
+	if (!mxBinLimits) mexErrMsgIdAndTxt("mexWangLandauSampler:init","cannot find energies.bins");
 	double * bin_limits = (double*)mxGetData(mxBinLimits);
 	size_t nBins = mxGetN(mxBinLimits);
 
 	// get energy densities
 	mxArray * mxG = mxGetField(energy_struct,0,"densities");
-	if (!mxG) mexErrMsgIdAndTxt("Ori:wangLandauGeneric","cannot find energies.densities");
+	if (!mxG) mexErrMsgIdAndTxt("mexWangLandauSampler:init","cannot find energies.densities");
 	double * g = (double*)mxGetData(mxG);
 	size_t nEnergies = mxGetN(mxG);
 
 	// get energy histogram
 	mxArray * mxH = mxGetField(energy_struct,0,"histogram");
-	if (!mxH) mexErrMsgIdAndTxt("Ori:wangLandauGeneric","cannot find energies.histogram");
+	if (!mxH) mexErrMsgIdAndTxt("mexWangLandauSampler:init","cannot find energies.histogram");
 	double * h = (double*)mxGetData(mxH);
 	size_t nHistograms = mxGetN(mxH);
 
 	// Check that all three arrays are of the same length
 	if (!((nBins == nEnergies) && (nBins == nHistograms )))
 	{
-		mexErrMsgIdAndTxt("Ori:wangLandauStep",
+		mexErrMsgIdAndTxt("mexWangLandauSampler:init",
 						  "all histogram arrays must be of the same length");
 	}
 
 	// Get update size (for energy density function)
 	mxArray * mxUpdateSize = mxGetField(energy_struct,0,"update_factor");
-	if (!mxH) mexErrMsgIdAndTxt("Ori:wangLandauGeneric","cannot find energies.update_factor");
+	if (!mxH) mexErrMsgIdAndTxt("mexWangLandauSampler:init","cannot find energies.update_factor");
 	double * pUpdateSize = mxGetPr(mxUpdateSize);
 	double updateSize = (double) *pUpdateSize;
 
@@ -105,7 +101,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	EnergyFunctionFactory factory;
 	pModel = factory.createEnergyFunction(model_struct);
 
-	// The separation argument is optional (if it's not given, we assume it is equal 1)
+	// Default separation (if nothing was supplied) is one step per bit
+	nSeparation = DEFAULT_SEPARATION;
+
+	// The separation argument is optional (if it's not given, we assume it is equal to the number of bits)
 	if (nrhs>=5) {
 		id = mxGetClassID(prhs[4]);
 		if (id != mxDOUBLE_CLASS)

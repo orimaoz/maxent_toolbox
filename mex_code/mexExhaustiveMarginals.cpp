@@ -34,7 +34,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	EnergyFunction* pModel;
 
 	if(nrhs<1) {
-	    mexErrMsgIdAndTxt("mexGetMarginals:init",
+	    mexErrMsgIdAndTxt("mexExhaustiveMarginals:init",
                       "Usage: mexExhaustiveMarginals(model)");
 	}
 

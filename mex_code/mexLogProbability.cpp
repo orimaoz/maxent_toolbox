@@ -38,8 +38,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	EnergyFunction* pModel;
 
 	if(nrhs<2) {
-	    mexErrMsgIdAndTxt("calcLogProbability:calcLogProbability",
-                      "Usage: calcLogProbability(x,model)");
+	    mexErrMsgIdAndTxt("mexLogProbability:init",
+                      "Usage: mexLogProbability(x,model)");
 	}
 
 
@@ -57,7 +57,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 
 	if (pModel->getDim() != ndims) {
-		mexErrMsgIdAndTxt("calcLogProbability:calcLogProbability",
+		mexErrMsgIdAndTxt("mexLogProbability:init",
 			"data differs in dimension from model");
 	}
 
@@ -101,7 +101,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		}
 		else
 		{
-			mexErrMsgIdAndTxt("mexGetMarginals:init",
+			mexErrMsgIdAndTxt("mexLogProbability:init",
 				"x is of an unsupported type");
 		}
 

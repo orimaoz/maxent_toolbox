@@ -30,8 +30,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	EnergyFunction* pModel;
 
 	if(nrhs<2) {
-	    mexErrMsgIdAndTxt("mexGetMarginals:init",
-                      "Usage: mexGetMarginals(x,model,[probabilities])");
+	    mexErrMsgIdAndTxt("mexEmpiricalMarginals:init",
+                      "Usage: mexEmpiricalMarginals(x,model,[probabilities])");
 	}
 
 
@@ -51,7 +51,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	if (pModel->getDim() != ndims)
 	{
-		mexErrMsgIdAndTxt("mexGetMarginals:init",
+		mexErrMsgIdAndTxt("mexEmpiricalMarginals:init",
 			"model dimension does not match sample dimension");	
 	}
 
@@ -70,7 +70,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		mxClassID probsClassid = mxGetClassID(mxProbabilities);
 		if (probsClassid != mxDOUBLE_CLASS)	
 		{
-			mexErrMsgIdAndTxt("mexGetMarginals:init",
+			mexErrMsgIdAndTxt("mexEmpiricalMarginals:init",
 							  "pattern probabilities must be of type double");
 		}
 
@@ -79,7 +79,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		if (!(((mxGetN(mxProbabilities) == nsamples) && (mxGetM(mxProbabilities) == 1)) || 
 			((mxGetM(mxProbabilities) == nsamples) && (mxGetN(mxProbabilities) == 1))))
 		{
-			mexErrMsgIdAndTxt("mexGetMarginals:init",
+			mexErrMsgIdAndTxt("mexEmpiricalMarginals:init",
 							  "number of probabilities not equal to number of samples");
 		}
 
@@ -133,7 +133,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		}
 		else
 		{
-			mexErrMsgIdAndTxt("mexGetMarginals:init",
+			mexErrMsgIdAndTxt("mexEmpiricalMarginals:init",
 							  "x is of an unsupported type");
 		}
 
