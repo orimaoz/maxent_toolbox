@@ -1,4 +1,6 @@
-% Example code 
+% Example code for the maximum entropy toolkit
+% Ori Maoz, July 2016:  orimaoz@gmail.com,
+
 
 %% part 1: working with small distributions of neurons (exhaustively)
 
@@ -30,7 +32,7 @@ model_entropy = getEntropy(model);
 fprintf('Model entropy: %.03f   empirical dataset entropy: %.03f\n', getEntropy(model), empirical_distribution.entropy);
 
 % get the marginals (firing rates and correlations) of the test data and see how they compare to the model predictions
-marginals_data = getEmpiricalMarginals(model,samples_test);
+marginals_data = getEmpiricalMarginals(samples_test,model);
 marginals_model = getMarginals(model);
 
 % plot them on a log scale
@@ -67,7 +69,7 @@ model = trainModel(model,samples_train,'threshold',1.5);
 % get the marginals (firing rates and correlations) of the test data and see how they compare to the model predictions.
 % here the model marginals could not be computed exactly so they will be estimated using monte-carlo. We specify the
 % number of samples we use so that their estimation will have the same amoutn noise as the empirical marginal values
-marginals_data = getEmpiricalMarginals(model,samples_test);
+marginals_data = getEmpiricalMarginals(samples_test,model);
 marginals_model = getMarginals(model,'nsamples',size(samples_test,2));
 
 % plot them on a log scale

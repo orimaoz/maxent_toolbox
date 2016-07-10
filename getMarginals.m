@@ -51,7 +51,7 @@ else
     samples = generateSamples(model,p.Results.nsamples);
     
     % return empirical marginals on the sample set
-    marginals = getEmpiricalMarginals(model,samples);       
+    marginals = getEmpiricalMarginals(samples,model);
 end
 
 
