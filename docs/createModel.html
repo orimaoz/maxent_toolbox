@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>MaxEnt Toolbox documentation</title>
+<meta charset="utf-8">
+
+
+<style>
+body {font-family: Verdana, sans-serif; font-size:0.8em;}
+header, nav, section, article, footer
+{border:1px solid grey; margin:5px; padding:8px;}
+nav ul {margin:0; padding:0;}
+nav ul li {display:inline; margin:5px;}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>createModel</h1>
+</header>
+
+
+<article>
+
+<h2>Description</h2>
+<p>Initializes a new maximum entropy model of a specified type.</p>
+
+</article>
+<article>
+
+<h2>Usage</h2>
+<p>model = createModel(ncells,model_string)</p>
+<p>model = createModel(ncells,model_string,Name,Value,...)</p>   
+</article>
+
+<article>
+
+<h2>Arguments</h2>
+<article>
+<h3>Mandatory arguments</h3>
+<ul>
+<li><b>ncells</b> - number of cells (dimensions) in the distribution</li>
+<li><b>model_string</b> - string denoting the type of models. Currently supported model types:</li>
+	<ul>
+	              <li>indep  - independent model</li>
+                  <li>ising  - pairwise ising</li>
+                  <li>ksync  - k-synchrony</li>
+                  <li>kising - pairwise ising with k-synchrony</li>
+                  <li>merp   - MERP (maximum entropy based on random projections)</li>
+	</ul>
+</ul>
+</article>
+
+<article>
+<h3>Optional arguments (in the form of name,value pairs)</h3>
+<ul>
+<li><b>nprojections</b> - number of random projections (for MERP model)</li>
+<li><b>distribution</b> - distribution the random projection values are drawn from (for MERP model)</li>
+<li><b>sparsity</b>     - sparsity between 0 (completely sparse) and 1 (not sparse at all) - (for MERP model)</li>
+<li><b>threshold</b>    - relative threshold for random projection (for MERP model)</li>
+</ul>
+</article>
+
+</article>
+
+<article>
+
+<h2>Example usage</h2>
+<p>model = createModel(30,'ising')</p>
+</article>
+
+
+
+<footer>
+<p>&copy; 2016 Ori Maoz. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
+
