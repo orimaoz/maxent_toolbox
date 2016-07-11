@@ -10,7 +10,7 @@
 %
 % Arguments (mandatory):
 %   model   - Maximum entropy model as returned by trainModel()
-%   samples - Set of samples to train the model on, in the format (ncells x nsamples). 
+%   samples - Set of samples to return the probabilities of, in the format (ncells x nsamples). 
 %
 % Optional arguments (in the form of Name,Value pairs):
 %   normalize   - force with or without normalization. If this value is true but the model is un-normalized, the

@@ -126,7 +126,7 @@ fprintf('Entropy of simulated data: %.03f bits\n',simulated_empirical_distributi
 
 
 
-%% part 2: working with MERP distributions of neurons
+%% part 3: working with MERP distributions of neurons
 
 % load spiking data of 15 neurons
 load example15

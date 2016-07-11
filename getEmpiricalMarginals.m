@@ -4,7 +4,7 @@
 %   marginals = getEmpiricalMarginals(samples,model)
 %
 %
-% The function accepts a model and an array of samples and returns the empirical average of the model's moment
+% The function accepts an array of samples and a model and returns the empirical average of the model's moment
 % functions over the set of samples.
 %
 % Arguments (mandatory):

@@ -1,18 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>MaxEnt Toolbox documentation</title>
-<meta charset="utf-8">
-
-
-<style>
-body {font-family: Verdana, sans-serif; font-size:0.8em;}
-header, nav, section, article, footer
-{border:1px solid grey; margin:5px; padding:8px;}
-nav ul {margin:0; padding:0;}
-nav ul li {display:inline; margin:5px;}
-</style>
+	<title>MaxEnt Toolbox documentation</title>
+  	<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  	<meta name="author" content="Ori Maoz">
+  	<meta name="description" content="User documentation for maximum entropy MATLAB toolbox">
+<link type="text/css" rel="stylesheet" href="style.css">
 </head>
+
 
 <body>
 
@@ -30,10 +25,9 @@ nav ul li {display:inline; margin:5px;}
 <article>
 
 <h2>Usage</h2>
-<p>model = createModel(ncells,model_string)</p>
-<p>model = createModel(ncells,model_string,Name,Value,...)</p>   
+<pre>model = createModel(ncells,model_string)</pre>
+<pre>model = createModel(ncells,model_string,Name,Value,...)</pre>   
 </article>
-
 <article>
 
 <h2>Arguments</h2>
@@ -61,15 +55,18 @@ nav ul li {display:inline; margin:5px;}
 <li><b>threshold</b>    - relative threshold for random projection (for MERP model)</li>
 </ul>
 </article>
-
 </article>
 
 <article>
-
-<h2>Example usage</h2>
-<p>model = createModel(30,'ising')</p>
+<h2>Output</h2>
+<li><b>model_out</b>- Untrained maximum entropy model.</li>   
 </article>
 
+
+<article>
+<h2>Example usage</h2>
+<pre>model = createModel(30,'ising')</pre>
+</article>
 
 
 <footer>

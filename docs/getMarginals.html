@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>MaxEnt Toolbox documentation</title>
+  	<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  	<meta name="author" content="Ori Maoz">
+  	<meta name="description" content="User documentation for maximum entropy MATLAB toolbox">
+<link type="text/css" rel="stylesheet" href="style.css">
+</head>
+
+
+<body>
+
+<header>
+  <h1>getMarginals</h1>
+</header>
+
+
+<article>
+<h2>Description</h2>
+<p>Returns the marginals of a maximum entropy model, by either exhaustive computation (for small models) or MCMC sampling (for big models).</p>
+</article>
+
+
+<article>
+<h2>Usage</h2>
+<pre>marginals = getMarginals(model)</pre>
+<pre>marginals = getMarginals(model,Name,Value,...)</pre>
+</article>
+
+<article>
+<h2>Arguments</h2>
+<article>
+<h3>Mandatory arguments</h3>
+<ul>
+<li><b>model</b>- Maximum entropy model as returned by the <a href="trainModel.html">trainModel</a> function. </li>   
+</ul>
+</article>
+
+<article>
+<h3>Optional arguments (in the form of name,value pairs)</h3>
+<ul>
+<li><b>force_exhaustive</b>        - force exhaustive computation. This could incur a very long runtime for big models.</li>
+<li><b>force_mcmc</b>        - force MCMC (sampling-based) computation, which returns only an approximate result.</li>
+<li><b>nsamples</b>        - number of empirical sampled used to compute the marginals for the MCMC-based method.</li>
+</ul>
+</article>
+</article>
+
+
+<article>
+<h2>Output</h2>
+<li><b>marginals</b>- an (1xnfactors) vector of marginals.</li>   
+</article>
+
+<footer>
+<p>&copy; 2016 Ori Maoz. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
+

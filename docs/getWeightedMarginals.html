@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>MaxEnt Toolbox documentation</title>
+  	<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+  	<meta name="author" content="Ori Maoz">
+  	<meta name="description" content="User documentation for maximum entropy MATLAB toolbox">
+<link type="text/css" rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+<header>
+  <h1>getWeightedMarginals</h1>
+</header>
+
+
+<article>
+<h2>Description</h2>
+<p>Returns the marginals of a ME model for a set of samples weighted by a set of probabilities.
+This is typically used in order to compute the expected value of the marginals according to a second distribution.
+</p>
+</article>
+
+
+<article>
+<h2>Usage</h2>
+<pre>marginals = getWeightedMarginals(samples,model, probabilities)</pre>
+</article>
+
+<article>
+<h2>Arguments</h2>
+<article>
+<h3>Mandatory arguments</h3>
+<ul>
+<li><b>samples</b>- Set of samples to train the model on, in the format (ncells x nsamples). </li>   
+<li><b>model</b>- Maximum entropy model as returned by the <a href="createModel.html">createModel</a> function.
+It does not matter whether or not this model has been trained because only the its moment-generating functions are 
+used in order to compute the marginals</li>   
+<li><b>probabilities</b>- The values used to reweight each sample, this should be a vector of size (1 xnsamples). </li>   
+</ul>
+</article>
+
+
+<article>
+<h2>Output</h2>
+<li><b>marginals</b>- an (1xnfactors) vector of marginals.</li>   
+</article>
+
+<article>
+<h2>Example usage</h2>
+<pre>
+% create an ME model
+model = createModel(10,'ising');   
+
+% train it on a set of samples
+model = trainModel(model,samples);
+
+% create a set of samples corresponding to all possible states of the system
+npatterns = 2^model.ncells;
+unique_words = logical(de2bi(0:(npatterns-1)))';
+    
+% get the probabilities of all the possible patterns
+logprobs = getLogProbability(model,unique_words);
+probabilities = exp(logprobs);
+
+% taking the values of all the unique words, reweighted by their probabilities,
+% is equivalent to taking the observables of the model E_p[h(x)]:
+marginals = getWeightedMarginals(unique_words,model,probabilities);
+
+% the code above is functionally equivalent to calling: 
+% marginals = getMarginals(model)
+
+</pre>
+
+</article>
+  
+  
+<footer>
+<p>&copy; 2016 Ori Maoz. All rights reserved.</p>
+</footer>
+
+
+</body>
+</html>
+
