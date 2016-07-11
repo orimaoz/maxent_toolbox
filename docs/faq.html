@@ -29,46 +29,21 @@
       </header>
       <section>
         
-<h2>createModel</h2>
+<h2>
+<a id="faq" class="anchor" href="#faq" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Frequently asked questions</h2>
 
 
+<h3>Why would I want to learn the probability distribution of anything?</h3>
+<p>No maxent for you, come back one year.</p>
 
-<h3>Description</h3>
-<p>Initializes a new maximum entropy model of a specified type.</p>
+<h3>What if I want even more entropy? Can I have more entropy?</h3>
+<p>No, you cannot.</p>
 
+<h3>Oh, look at this! A $100 bill just fell into your pocket. Can I have more entropy now?</h3>
+<p>The answer is still no.</p>
 
-<h3>Usage</h3>
-<pre>model = createModel(ncells,model_string)</pre>
-<pre>model = createModel(ncells,model_string,Name,Value,...)</pre>   
-
-<h3>Arguments</h3>
-<h4>Mandatory arguments</h4>
-<ul>
-<li><b>ncells</b> - number of cells (dimensions) in the distribution</li>
-<li><b>model_string</b> - string denoting the type of models. Currently supported model types:</li>
-	<ul>
-	              <li>indep  - independent model</li>
-                  <li>ising  - pairwise ising</li>
-                  <li>ksync  - k-synchrony</li>
-                  <li>kising - pairwise ising with k-synchrony</li>
-                  <li>merp   - MERP (maximum entropy based on random projections)</li>
-	</ul>
-</ul>
-
-<h4>Optional arguments (in the form of name,value pairs)</h4>
-<ul>
-<li><b>nprojections</b> - number of random projections (for MERP model)</li>
-<li><b>distribution</b> - distribution the random projection values are drawn from (for MERP model)</li>
-<li><b>sparsity</b>     - sparsity between 0 (completely sparse) and 1 (not sparse at all) - (for MERP model)</li>
-<li><b>threshold</b>    - relative threshold for random projection (for MERP model)</li>
-</ul>
-
-<h3>Output</h3>
-<li><b>model_out</b>- Untrained maximum entropy model.</li>   
-
-
-<h3>Example usage</h3>
-<pre>model = createModel(30,'ising')</pre>
+<h3>I want my $100 back.</h3>
+<p>I don't know what you're talking about.</p>
 
 
 
