@@ -29,19 +29,22 @@
       </header>
       <section>
         
-<h2>getEmpiricalMarginals</h2>
+<h2>getEntropy</h2>
+
 
 <article>
 <h2>Description</h2>
-<p>Returns the empirical marginals of a maximum entropy model for a set of samples. The function accepts an array of
-samples over which the marginals are to be computed, and a model which defines the observables to be computed.
+<p>Returns the empirical entropy for a dataset or computes the entropy for a model.
+This function only computes the entropy for small models (because it does so exhaustively), in order to obtain
+an approximation of the entropy of large distributions use the wangLandau function.
 </p>
 </article>
 
 
 <article>
 <h2>Usage</h2>
-<pre>marginals = getEmpiricalMarginals(samples,model)</pre>
+<pre>entropy = getEntropy(model)</pre>
+<pre>entropy = getEntropy(samples)</pre>
 </article>
 
 <article>
@@ -49,31 +52,17 @@ samples over which the marginals are to be computed, and a model which defines t
 <article>
 <h3>Mandatory arguments</h3>
 <ul>
-<li><b>samples</b>- Set of samples to train the model on, in the format (ncells x nsamples). </li>   
-<li><b>model</b>- Maximum entropy model as returned by the <a href="createModel.html">createModel</a> function.
-It does not matter whether or not this model has been trained because only the its moment-generating functions are 
-used in order to compute the marginals</li>   
+<li><b>model</b>- Maximum entropy model as returned by the <a href="trainModel.html">trainModel</a> function. </li>   
+<li><b>samples</b>- Set of samples, in the format (ncells x nsamples). </li>   
 </ul>
 </article>
 
 
+
 <article>
 <h2>Output</h2>
-<li><b>marginals</b>- an (1xnfactors) vector of marginals.</li>   
+<li><b>entropy</b> - entropy in bits. </li>   
 </article>
-
-<article>
-<h2>Example usage</h2>
-<pre>
-% create an ME model
-model = createModel(30,'ising');   
-
-% The observables of Ising model are firing rates and correlations, so getting the empirical marginals of this
-% set of samples will actually return the firing rates and correlations of the population activity
-marginals = getEmpiricalMarginals(samples,model);
-</pre>
-</article>
-
 
 
 

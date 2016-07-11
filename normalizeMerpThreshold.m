@@ -1,4 +1,4 @@
-% Tunes the threholds of a MERP projection so that its marginals will be centered around some value.
+% Tunes the thresholds of a MERP projection so that its marginals will be centered around some value.
 %
 % Usage:
 %   model_out = normalizeMerpThreshold(model,samples)
@@ -15,12 +15,12 @@
 % Optional arguments (in the form of Name,Value pairs):
 %   target           - target marginal value (default 0.3)
 %   individual       - set to true if you want to tune each threhold by itself, false to make all the threholds the
-%                      same value and only look at the average marginal (default false)
-%   threshold_range  - vector of [min_thresh, max_thresh], smallest and largest possible thresholds
+%                      same value and only look at the median value (default false)
+%   threshold_range  - range of allowed thresholds in the format [min_threshold, max_threshold]
 %   silent           - don't print anything
 %
 % Output:
-%   model - trained ME model. If the input size was small enough, the model will also be normalized.
+%   model - normalized MERP model
 %
 %
 % Example usage:

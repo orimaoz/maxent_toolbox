@@ -29,19 +29,23 @@
       </header>
       <section>
         
-<h2>getEmpiricalMarginals</h2>
+<h2>normalizeMerpThreshold</h2>
+
 
 <article>
 <h2>Description</h2>
-<p>Returns the empirical marginals of a maximum entropy model for a set of samples. The function accepts an array of
-samples over which the marginals are to be computed, and a model which defines the observables to be computed.
+<p>
+This function will change the thresholds used by a MERP model so that the average activity of the hidden layer
+will be around the requested number. It can either set all the thresholds to the same value (in which case it will
+try to match the mean activity to the requested value) or each of the values individually.
 </p>
 </article>
 
 
 <article>
 <h2>Usage</h2>
-<pre>marginals = getEmpiricalMarginals(samples,model)</pre>
+<pre>model_out = normalizeMerpThreshold(model,samples)</pre>
+<pre>model_out = normalizeMerpThreshold(model,samples,Name,Value,...)</pre>
 </article>
 
 <article>
@@ -49,28 +53,33 @@ samples over which the marginals are to be computed, and a model which defines t
 <article>
 <h3>Mandatory arguments</h3>
 <ul>
-<li><b>samples</b>- Set of samples to train the model on, in the format (ncells x nsamples). </li>   
-<li><b>model</b>- Maximum entropy model as returned by the <a href="createModel.html">createModel</a> function.
-It does not matter whether or not this model has been trained because only the its moment-generating functions are 
-used in order to compute the marginals</li>   
+<li><b>model</b>- Maximum entropy model as returned by the <a href="createModel.html">createModel</a> function. </li>   
+<li><b>samples</b>- Set of samples used to normalize the model, in the format (ncells x nsamples). </li>   
 </ul>
+</article>
+
+<article>
+<h3>Optional arguments (in the form of name,value pairs)</h3>
+<ul>
+<li><b>target</b> - target marginal value (default 0.3).</li>
+<li><b>individual</b> - set to true if you want to tune each threhold by itself, false to make all the threholds the
+same value and only look at the median value (default false).</li>
+<li><b>threshold_range</b> - range of allowed thresholds in the format [min_threshold, max_threshold]</li>
+<li><b>silent</b> - don't print anything.</li>
+</ul>
+</article>
 </article>
 
 
 <article>
 <h2>Output</h2>
-<li><b>marginals</b>- an (1xnfactors) vector of marginals.</li>   
+<li><b>model</b>- normalized MERP model. </li>   
 </article>
 
 <article>
 <h2>Example usage</h2>
 <pre>
-% create an ME model
-model = createModel(30,'ising');   
-
-% The observables of Ising model are firing rates and correlations, so getting the empirical marginals of this
-% set of samples will actually return the firing rates and correlations of the population activity
-marginals = getEmpiricalMarginals(samples,model);
+model_out = normalizeMerpThreshold(model,samples,'target',0.2)
 </pre>
 </article>
 

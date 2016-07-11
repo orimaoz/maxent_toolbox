@@ -29,52 +29,20 @@
       </header>
       <section>
         
-<h2>getEmpiricalMarginals</h2>
+<h2>
+<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Introduction</h2>
 
-<article>
-<h2>Description</h2>
-<p>Returns the empirical marginals of a maximum entropy model for a set of samples. The function accepts an array of
-samples over which the marginals are to be computed, and a model which defines the observables to be computed.
-</p>
-</article>
-
-
-<article>
-<h2>Usage</h2>
-<pre>marginals = getEmpiricalMarginals(samples,model)</pre>
-</article>
-
-<article>
-<h2>Arguments</h2>
-<article>
-<h3>Mandatory arguments</h3>
-<ul>
-<li><b>samples</b>- Set of samples to train the model on, in the format (ncells x nsamples). </li>   
-<li><b>model</b>- Maximum entropy model as returned by the <a href="createModel.html">createModel</a> function.
-It does not matter whether or not this model has been trained because only the its moment-generating functions are 
-used in order to compute the marginals</li>   
-</ul>
-</article>
+<p>Maximum entropy toolbox for MATLAB is a toolbox for fitting maximum entropy models to experimental data. The toolbox 
+was originally built for learning the probability distribution of population spiking activity in neural recordings.</p>
+        
+<h2><a id="documentation" class="anchor" href="#documentation-list" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Documentation</h2>
+<p>If this is the first time you are using the toolbox, start by reading the <a href="quickstart.html">quick start guide</a>.</p>
+<p>Existing users may want to refer to the <a href="function_reference.html">function reference</a> for details about each of the available functions in the toolbox.</p>
 
 
-<article>
-<h2>Output</h2>
-<li><b>marginals</b>- an (1xnfactors) vector of marginals.</li>   
-</article>
-
-<article>
-<h2>Example usage</h2>
-<pre>
-% create an ME model
-model = createModel(30,'ising');   
-
-% The observables of Ising model are firing rates and correlations, so getting the empirical marginals of this
-% set of samples will actually return the firing rates and correlations of the population activity
-marginals = getEmpiricalMarginals(samples,model);
-</pre>
-</article>
-
-
+<h2>
+<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+<p>Ori Maoz, <a href="mailto:orimaoz@gmail.com"> orimaoz@gmail.com</a></p>
 
 
       </section>

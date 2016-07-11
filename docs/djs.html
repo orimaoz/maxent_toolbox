@@ -29,19 +29,20 @@
       </header>
       <section>
         
-<h2>getEmpiricalMarginals</h2>
+<h2>djs</h2>
+
 
 <article>
 <h2>Description</h2>
-<p>Returns the empirical marginals of a maximum entropy model for a set of samples. The function accepts an array of
-samples over which the marginals are to be computed, and a model which defines the observables to be computed.
+<p>Computes the <a href="https://en.wikipedia.org/wiki/Jensen-Shannon_divergence">Jensen-Shannon divergence</a> 
+between two distributions with a finite number of states. The inputs can be vectors of probabilities or log-probabilities (natural logarithm).
 </p>
 </article>
 
 
 <article>
 <h2>Usage</h2>
-<pre>marginals = getEmpiricalMarginals(samples,model)</pre>
+<pre>d = djs(p1,p2)</pre>
 </article>
 
 <article>
@@ -49,31 +50,18 @@ samples over which the marginals are to be computed, and a model which defines t
 <article>
 <h3>Mandatory arguments</h3>
 <ul>
-<li><b>samples</b>- Set of samples to train the model on, in the format (ncells x nsamples). </li>   
-<li><b>model</b>- Maximum entropy model as returned by the <a href="createModel.html">createModel</a> function.
-It does not matter whether or not this model has been trained because only the its moment-generating functions are 
-used in order to compute the marginals</li>   
+<li><b>p1</b>- Vector of probabilities for the first distribution (or log probabilities in natural logarithm).
+The numbers should either be >=0 and sum to one, or their natural exponent should be >= and some to one. </li>   
+<li><b>p2</b>- Vector of probabilities for the second distribution (ame format as p1) </li>   
 </ul>
 </article>
 
 
+
 <article>
 <h2>Output</h2>
-<li><b>marginals</b>- an (1xnfactors) vector of marginals.</li>   
+<li><b>d</b> - Jensen-Shannon divergence between the distributions: DJS(p1||p2) </li>   
 </article>
-
-<article>
-<h2>Example usage</h2>
-<pre>
-% create an ME model
-model = createModel(30,'ising');   
-
-% The observables of Ising model are firing rates and correlations, so getting the empirical marginals of this
-% set of samples will actually return the firing rates and correlations of the population activity
-marginals = getEmpiricalMarginals(samples,model);
-</pre>
-</article>
-
 
 
 
