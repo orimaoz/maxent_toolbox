@@ -1,10 +1,14 @@
 % Estimates the partition function and entropy of Boltzmann distributions on binary inputs using the Wang-Landau method.
-% Parameters: 
-%   model:      Boltzmann distribution to work on. At the time of writing this, the implementation supported only Ising
-%               model and MERP model.
 %
-%   Optional arguments (in string, value pairs).
-%   binsize:    Bin size for the energy histogram. Default if not inputed is 0.01. 
+% Usage:
+%   model_out = wangLandau(model)
+%   model_out = wangLandau(model, Name,Value,...)
+%
+% Arguments (mandatory):
+%   model:      Maximum entropy model as returned by trainModel();
+%
+% Optional arguments (in the form of Name,Value pairs):
+%   binsize:    Bin size for the energy histogram (Default: 0.01).
 %   depth:      Accuracy parameter for the simulation (integer). Higher values mean a higher accuracy and longer runtime.
 %               The final accuracy is in the order of exp(2^-(depth-1))
 %   separation: Number of samples to skip for every sample obtained in the MCMC random walk. A larger value decorrelates
@@ -14,8 +18,13 @@
 %               on small (up to ~25 dimension) distributions.
 %
 % Output:
-%   adds to the model the fields 'z' which is the log partition function and 'entropy' which is the entropy (in bits).
-function model_out = wanglandau(model,varargin);
+% model_out - Model structure with two additional fields appended to it:
+% model_out.z - Log partition function of the model.
+% model_out.entropy -Entropy of the model (in bits).
+%
+% Last update: Ori Maoz, July 2016
+%
+function model_out = wangLandau(model,varargin)
 
 DEFAULT_BIN_SIZE = 0.01;
 DEFAULT_DEPTH = 20;

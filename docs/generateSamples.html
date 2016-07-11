@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Testgithub by orimaoz</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>maxent_toolbox</h1>
+        <p>Maximum Entropy toolbox for MATLAB</p>
+
+        <p class="view"><a href="https://github.com/orimaoz/maxent_toolbox">View the Project on GitHub <small>orimaoz/testgithub</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        
+<h2>generateSamples</h2>
+
+
+<article>
+<h2>Description</h2>
+<p>Samples from a maximum entropy model.
+The function accepts a model and the number of samples to be generated from it.
+The samples are generated via a Metropolis-Hastings sampling scheme. In order to obtain samples which
+represent the target disribution, default settings include dropping the first 10000 generated samples ("burn-in") and skipping 
+most of the samples generated along the way ("separation"). These parameters can be controlled by the user.</p>
+</article>
+
+
+<article>
+<h2>Usage</h2>
+<pre>logprobs = generateSamples(model, nsamples)</pre>
+<pre>logprobs = generateSamples(model, nsamples,Name,Value,...)</pre>
+</article>
+
+<article>
+<h2>Arguments</h2>
+<article>
+<h3>Mandatory arguments</h3>
+<ul>
+<li><b>model</b> - Maximum entropy model as returned by the <a href="trainModel.html">trainModel</a> function. </li>   
+<li><b>nsamples</b> - Number of samples to generate. </li>   
+</ul>
+</article>
+
+<article>
+<h3>Optional arguments (in the form of name,value pairs)</h3>
+<ul>
+<li><b>x0</b>         - starting state for MCMC walk. This can also be "0" signifying the all-zero (0000...) pattern.</li>
+<li><b>burnin</b>     - how many samples to drop before returning results (default: 10000).</li>
+<li><b>separation</b> - how many bit flips to perform before taking each sample (one for every dimension of the input).</li>
+</ul>
+</article>
+</article>
+
+
+<article>
+<h2>Output</h2>
+<li><b>samples</b>- an (ncells x nsamples) matrix of samples from the model.</li>   
+</article>
+
+
+
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/orimaoz">orimaoz</a></p>
+        <p><small>Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
