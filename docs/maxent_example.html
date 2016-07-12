@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>maxent_example</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-07-11"><meta name="DC.source" content="maxent_example.m"><style type="text/css">
+      --><title>maxent_example</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-07-12"><meta name="DC.source" content="maxent_example.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -110,20 +110,10 @@ ylabel(<span class="string">'predicted marginal'</span>);
 title(sprintf(<span class="string">'marginals in %d cells'</span>,ncells));
 </pre><pre class="codeoutput">Training to threshold: 1.000 standard deviations
 Maximum MSE: 1.000
-194/Inf  MSE=4.102 (mean), 222.137 (max) [19]  DKL: 0.113
-391/Inf  MSE=0.997 (mean), 12.345 (max) [75]  DKL: 0.081
-589/Inf  MSE=0.425 (mean), 6.522 (max) [59]  DKL: 0.074
-787/Inf  MSE=0.158 (mean), 3.392 (max) [33]  DKL: 0.071
-982/Inf  MSE=0.084 (mean), 2.317 (max) [9]  DKL: 0.070
-1180/Inf  MSE=0.042 (mean), 2.543 (max) [46]  DKL: 0.069
-1377/Inf  MSE=0.039 (mean), 2.397 (max) [8]  DKL: 0.069
-1573/Inf  MSE=0.029 (mean), 2.212 (max) [8]  DKL: 0.068
-1770/Inf  MSE=0.016 (mean), 1.286 (max) [46]  DKL: 0.068
-1966/Inf  MSE=0.013 (mean), 1.212 (max) [46]  DKL: 0.068
 converged (marginals match)
-Standard deviations from marginals: 0.098 (mean), 0.999 (max) [46]  DKL: 0.067
-Kullback-Leibler divergence from test set: 0.076758
-Model entropy: 5.331   empirical dataset entropy: 5.328
+Standard deviations from marginals: 0.114 (mean), 0.969 (max) [8]  DKL: 0.068
+Kullback-Leibler divergence from test set: 0.076733
+Model entropy: 5.348   empirical dataset entropy: 5.308
 </pre><img vspace="5" hspace="5" src="maxent_example_01.png" style="width:560px;height:420px;" alt=""> <h2>part 2: working with larger distributions of neurons (MCMC)<a name="3"></a></h2><pre class="codeinput">load <span class="string">example50</span>
 
 <span class="comment">% randomly divide into train/test sets</span>
@@ -160,9 +150,9 @@ title(sprintf(<span class="string">'marginals in %d cells'</span>,ncells));
 
 <span class="comment">% the model that the MCMC solver returns is not normalized. If we want to compare the predicted and actual probabilities</span>
 <span class="comment">% of individual firing patterns, we will need to first normalize the model. We will use the wang-landau algorithm for</span>
-<span class="comment">% this</span>
+<span class="comment">% this. We chose parameters which are less strict than the default settings so that we will have a faster runtime.</span>
 disp(<span class="string">'Normalizing model...'</span>);
-model = wangLandau(model);
+model = wangLandau(model,<span class="string">'binsize'</span>,0.1,<span class="string">'depth'</span>,15);
 
 <span class="comment">% the normalization factor was added to the model structure. Now that we have a normalized model, we'll use it to</span>
 <span class="comment">% predict the frequency of activity patterns. We will start by observing all the patterns that repeated at least twice</span>
@@ -201,18 +191,31 @@ simulated_empirical_distribution = getEmpiricalModel(samples_simulated);
 fprintf(<span class="string">'Entropy of simulated data: %.03f bits\n'</span>,simulated_empirical_distribution.entropy);
 </pre><pre class="codeoutput">Training to threshold: 1.500 standard deviations
 Maximum samples: 17778   maximum MSE: 3.375
-334/Inf samples=4167  MSE=6.786 (mean), 28.591 (max) [19]
-402/Inf samples=8245  MSE=3.675 (mean), 20.614 (max) [411]
-443/Inf samples=12419  MSE=2.510 (mean), 9.564 (max) [383]
-472/Inf samples=16589  MSE=1.940 (mean), 7.462 (max) [382]
-496/Inf samples=17778  MSE=1.592 (mean), 7.673 (max) [411]
-520/Inf samples=17778  MSE=1.359 (mean), 3.706 (max) [407]
+331/Inf samples=4043  MSE=7.057 (mean), 35.308 (max) [19]
+400/Inf samples=8082  MSE=3.603 (mean), 23.449 (max) [383]
+441/Inf samples=12174  MSE=2.417 (mean), 14.382 (max) [790]
+471/Inf samples=16424  MSE=1.842 (mean), 5.910 (max) [382]
+495/Inf samples=17778  MSE=1.543 (mean), 6.620 (max) [776]
+518/Inf samples=17778  MSE=1.375 (mean), 6.180 (max) [748]
+542/Inf samples=17778  MSE=1.377 (mean), 6.522 (max) [790]
+565/Inf samples=17778  MSE=1.364 (mean), 5.212 (max) [382]
+589/Inf samples=17778  MSE=1.354 (mean), 5.228 (max) [382]
+613/Inf samples=17778  MSE=1.345 (mean), 3.976 (max) [748]
+637/Inf samples=17778  MSE=1.299 (mean), 3.776 (max) [382]
+661/Inf samples=17778  MSE=1.303 (mean), 4.501 (max) [382]
+684/Inf samples=17778  MSE=1.312 (mean), 4.469 (max) [382]
+707/Inf samples=17778  MSE=1.312 (mean), 4.198 (max) [382]
+730/Inf samples=17778  MSE=1.348 (mean), 4.622 (max) [18]
+754/Inf samples=17778  MSE=1.397 (mean), 5.311 (max) [18]
+778/Inf samples=17778  MSE=1.311 (mean), 3.594 (max) [18]
+802/Inf samples=17778  MSE=1.326 (mean), 4.124 (max) [382]
+826/Inf samples=17778  MSE=1.297 (mean), 3.621 (max) [382]
 converged (marginals match)
 Normalizing model...
-[....................]
-Elapsed time is 103.065094 seconds.
-Model entropy: 31.146 bits, empirical entropy (test set): 14.271 bits
-Entropy of simulated data: 14.272 bits
+[...............]
+Elapsed time is 3.832325 seconds.
+Model entropy: 31.107 bits, empirical entropy (test set): 14.275 bits
+Entropy of simulated data: 14.273 bits
 </pre><img vspace="5" hspace="5" src="maxent_example_02.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="maxent_example_03.png" style="width:560px;height:420px;" alt=""> <h2>part 3: working with MERP distributions of neurons<a name="4"></a></h2><pre class="codeinput"><span class="comment">% load spiking data of 15 neurons</span>
 load <span class="string">example15</span>
 
@@ -263,43 +266,46 @@ test_dkl = dkl(empirical_distribution.logprobs,model_logprobs);
 fprintf(<span class="string">'Kullback-Leibler divergence from test set: %f\n'</span>,test_dkl);
 </pre><pre class="codeoutput">Training to threshold: 1.000 standard deviations
 Maximum MSE: 1.000
-68/Inf  MSE=7.382 (mean), 303.764 (max) [49]  DKL: 0.212
-135/Inf  MSE=0.863 (mean), 35.760 (max) [49]  DKL: 0.147
-203/Inf  MSE=0.228 (mean), 5.578 (max) [49]  DKL: 0.124
-271/Inf  MSE=0.160 (mean), 6.366 (max) [49]  DKL: 0.114
-338/Inf  MSE=0.060 (mean), 2.864 (max) [49]  DKL: 0.107
-405/Inf  MSE=0.045 (mean), 2.917 (max) [49]  DKL: 0.103
+step size: 0.500000
+step size: 0.250000
+step size: 0.125000
+59/Inf  MSE=0.298 (mean), 30.981 (max) [43]  DKL: 0.107
+125/Inf  MSE=0.031 (mean), 3.300 (max) [43]  DKL: 0.088
+191/Inf  MSE=0.007 (mean), 1.667 (max) [84]  DKL: 0.083
+257/Inf  MSE=0.004 (mean), 1.149 (max) [84]  DKL: 0.082
 converged (marginals match)
-Standard deviations from marginals: 0.156 (mean), 0.987 (max) [49]  DKL: 0.101
-Kullback-Leibler divergence from test set: 0.111219
+Standard deviations from marginals: 0.058 (mean), 0.995 (max) [84]  DKL: 0.081
+Kullback-Leibler divergence from test set: 0.089648
 Training to threshold: 1.000 standard deviations
 Maximum MSE: 1.000
-34/Inf  MSE=12.895 (mean), 878.541 (max) [286]  DKL: 0.220
-69/Inf  MSE=1.279 (mean), 96.907 (max) [286]  DKL: 0.133
-103/Inf  MSE=0.268 (mean), 19.201 (max) [286]  DKL: 0.111
-138/Inf  MSE=0.137 (mean), 9.373 (max) [286]  DKL: 0.101
-173/Inf  MSE=0.072 (mean), 13.124 (max) [286]  DKL: 0.094
-209/Inf  MSE=0.050 (mean), 11.557 (max) [286]  DKL: 0.090
-244/Inf  MSE=0.030 (mean), 5.613 (max) [286]  DKL: 0.086
-279/Inf  MSE=0.019 (mean), 1.500 (max) [286]  DKL: 0.084
+step size: 0.500000
+step size: 0.250000
+step size: 0.125000
+step size: 0.062500
+step size: 0.031250
+25/Inf  MSE=3.936 (mean), 727.110 (max) [244]  DKL: 0.181
+61/Inf  MSE=0.268 (mean), 68.845 (max) [244]  DKL: 0.116
+96/Inf  MSE=0.089 (mean), 13.969 (max) [244]  DKL: 0.100
+132/Inf  MSE=0.033 (mean), 7.496 (max) [244]  DKL: 0.091
+168/Inf  MSE=0.016 (mean), 2.509 (max) [244]  DKL: 0.085
+203/Inf  MSE=0.010 (mean), 1.044 (max) [244]  DKL: 0.082
 converged (marginals match)
-Standard deviations from marginals: 0.132 (mean), 0.998 (max) [286]  DKL: 0.083
-Kullback-Leibler divergence from test set: 0.098061
+Standard deviations from marginals: 0.096 (mean), 0.994 (max) [244]  DKL: 0.082
+Kullback-Leibler divergence from test set: 0.095455
 ....................
 Training to threshold: 1.000 standard deviations
 Maximum MSE: 1.000
-33/Inf  MSE=1.055 (mean), 16.898 (max) [286]  DKL: 0.098
-67/Inf  MSE=0.174 (mean), 8.309 (max) [251]  DKL: 0.089
-100/Inf  MSE=0.057 (mean), 4.824 (max) [131]  DKL: 0.085
-133/Inf  MSE=0.033 (mean), 2.317 (max) [131]  DKL: 0.083
-167/Inf  MSE=0.023 (mean), 1.551 (max) [147]  DKL: 0.082
-200/Inf  MSE=0.016 (mean), 1.222 (max) [234]  DKL: 0.080
-233/Inf  MSE=0.012 (mean), 1.454 (max) [234]  DKL: 0.079
-267/Inf  MSE=0.009 (mean), 1.439 (max) [234]  DKL: 0.078
-300/Inf  MSE=0.007 (mean), 1.065 (max) [234]  DKL: 0.077
+step size: 0.500000
+step size: 0.250000
+step size: 0.125000
+step size: 0.062500
+25/Inf  MSE=0.204 (mean), 13.121 (max) [91]  DKL: 0.091
+60/Inf  MSE=0.030 (mean), 4.987 (max) [3]  DKL: 0.081
+95/Inf  MSE=0.010 (mean), 2.673 (max) [3]  DKL: 0.077
+129/Inf  MSE=0.005 (mean), 1.244 (max) [95]  DKL: 0.075
 converged (marginals match)
-Standard deviations from marginals: 0.083 (mean), 0.993 (max) [234]  DKL: 0.077
-Kullback-Leibler divergence from test set: 0.094603
+Standard deviations from marginals: 0.064 (mean), 0.982 (max) [95]  DKL: 0.074
+Kullback-Leibler divergence from test set: 0.088513
 </pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 % Example code for the maximum entropy toolkit
@@ -388,9 +394,9 @@ title(sprintf('marginals in %d cells',ncells));
 
 % the model that the MCMC solver returns is not normalized. If we want to compare the predicted and actual probabilities
 % of individual firing patterns, we will need to first normalize the model. We will use the wang-landau algorithm for
-% this
+% this. We chose parameters which are less strict than the default settings so that we will have a faster runtime.
 disp('Normalizing model...');
-model = wangLandau(model);
+model = wangLandau(model,'binsize',0.1,'depth',15);
 
 % the normalization factor was added to the model structure. Now that we have a normalized model, we'll use it to
 % predict the frequency of activity patterns. We will start by observing all the patterns that repeated at least twice

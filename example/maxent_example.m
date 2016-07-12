@@ -84,9 +84,9 @@ title(sprintf('marginals in %d cells',ncells));
 
 % the model that the MCMC solver returns is not normalized. If we want to compare the predicted and actual probabilities
 % of individual firing patterns, we will need to first normalize the model. We will use the wang-landau algorithm for
-% this
+% this. We chose parameters which are less strict than the default settings so that we will have a faster runtime.
 disp('Normalizing model...');
-model = wangLandau(model);
+model = wangLandau(model,'binsize',0.1,'depth',15);
 
 % the normalization factor was added to the model structure. Now that we have a normalized model, we'll use it to
 % predict the frequency of activity patterns. We will start by observing all the patterns that repeated at least twice
