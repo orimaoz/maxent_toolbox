@@ -31,7 +31,7 @@ CONVERGED_STEP_SIZE = 10^-8;
 
 beta = 0.5;    % parameter for backtracking line search
 alpha = 0.5;   % parameter for backtracking line search
-step_size = 0.01; % initial step size for factor_gradient descent (line search modifies this)
+step_size = 1; % initial step size for factor_gradient descent (line search modifies this)
 
 
 if (isstruct(raster))
