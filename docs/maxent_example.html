@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>maxent_example</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-07-12"><meta name="DC.source" content="maxent_example.m"><style type="text/css">
+      --><title>maxent_example</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-07-14"><meta name="DC.source" content="maxent_example.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -111,9 +111,9 @@ title(sprintf(<span class="string">'marginals in %d cells'</span>,ncells));
 </pre><pre class="codeoutput">Training to threshold: 1.000 standard deviations
 Maximum MSE: 1.000
 converged (marginals match)
-Standard deviations from marginals: 0.114 (mean), 0.969 (max) [8]  DKL: 0.068
-Kullback-Leibler divergence from test set: 0.076733
-Model entropy: 5.348   empirical dataset entropy: 5.308
+Standard deviations from marginals: 0.093 (mean), 1.000 (max) [61]  DKL: 0.076
+Kullback-Leibler divergence from test set: 0.084769
+Model entropy: 5.351   empirical dataset entropy: 5.299
 </pre><img vspace="5" hspace="5" src="maxent_example_01.png" style="width:560px;height:420px;" alt=""> <h2>part 2: working with larger distributions of neurons (MCMC)<a name="3"></a></h2><pre class="codeinput">load <span class="string">example50</span>
 
 <span class="comment">% randomly divide into train/test sets</span>
@@ -191,31 +191,24 @@ simulated_empirical_distribution = getEmpiricalModel(samples_simulated);
 fprintf(<span class="string">'Entropy of simulated data: %.03f bits\n'</span>,simulated_empirical_distribution.entropy);
 </pre><pre class="codeoutput">Training to threshold: 1.500 standard deviations
 Maximum samples: 17778   maximum MSE: 3.375
-331/Inf samples=4043  MSE=7.057 (mean), 35.308 (max) [19]
-400/Inf samples=8082  MSE=3.603 (mean), 23.449 (max) [383]
-441/Inf samples=12174  MSE=2.417 (mean), 14.382 (max) [790]
-471/Inf samples=16424  MSE=1.842 (mean), 5.910 (max) [382]
-495/Inf samples=17778  MSE=1.543 (mean), 6.620 (max) [776]
-518/Inf samples=17778  MSE=1.375 (mean), 6.180 (max) [748]
-542/Inf samples=17778  MSE=1.377 (mean), 6.522 (max) [790]
-565/Inf samples=17778  MSE=1.364 (mean), 5.212 (max) [382]
-589/Inf samples=17778  MSE=1.354 (mean), 5.228 (max) [382]
-613/Inf samples=17778  MSE=1.345 (mean), 3.976 (max) [748]
-637/Inf samples=17778  MSE=1.299 (mean), 3.776 (max) [382]
-661/Inf samples=17778  MSE=1.303 (mean), 4.501 (max) [382]
-684/Inf samples=17778  MSE=1.312 (mean), 4.469 (max) [382]
-707/Inf samples=17778  MSE=1.312 (mean), 4.198 (max) [382]
-730/Inf samples=17778  MSE=1.348 (mean), 4.622 (max) [18]
-754/Inf samples=17778  MSE=1.397 (mean), 5.311 (max) [18]
-778/Inf samples=17778  MSE=1.311 (mean), 3.594 (max) [18]
-802/Inf samples=17778  MSE=1.326 (mean), 4.124 (max) [382]
-826/Inf samples=17778  MSE=1.297 (mean), 3.621 (max) [382]
+331/Inf samples=4043  MSE=6.761 (mean), 31.444 (max) [19]
+401/Inf samples=8163  MSE=3.632 (mean), 19.608 (max) [1078]
+442/Inf samples=12296  MSE=2.485 (mean), 10.398 (max) [790]
+471/Inf samples=16424  MSE=1.841 (mean), 8.629 (max) [407]
+495/Inf samples=17778  MSE=1.524 (mean), 7.372 (max) [407]
+519/Inf samples=17778  MSE=1.412 (mean), 4.254 (max) [772]
+543/Inf samples=17778  MSE=1.393 (mean), 5.807 (max) [407]
+566/Inf samples=17778  MSE=1.336 (mean), 7.308 (max) [407]
+589/Inf samples=17778  MSE=1.353 (mean), 6.110 (max) [407]
+612/Inf samples=17778  MSE=1.338 (mean), 4.101 (max) [382]
+636/Inf samples=17778  MSE=1.288 (mean), 3.599 (max) [383]
+659/Inf samples=17778  MSE=1.247 (mean), 3.896 (max) [19]
 converged (marginals match)
 Normalizing model...
 [...............]
-Elapsed time is 3.832325 seconds.
-Model entropy: 31.107 bits, empirical entropy (test set): 14.275 bits
-Entropy of simulated data: 14.273 bits
+Elapsed time is 4.766022 seconds.
+Model entropy: 31.290 bits, empirical entropy (test set): 14.274 bits
+Entropy of simulated data: 14.276 bits
 </pre><img vspace="5" hspace="5" src="maxent_example_02.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="maxent_example_03.png" style="width:560px;height:420px;" alt=""> <h2>part 3: working with MERP distributions of neurons<a name="4"></a></h2><pre class="codeinput"><span class="comment">% load spiking data of 15 neurons</span>
 load <span class="string">example15</span>
 
@@ -269,13 +262,11 @@ Maximum MSE: 1.000
 step size: 0.500000
 step size: 0.250000
 step size: 0.125000
-59/Inf  MSE=0.298 (mean), 30.981 (max) [43]  DKL: 0.107
-125/Inf  MSE=0.031 (mean), 3.300 (max) [43]  DKL: 0.088
-191/Inf  MSE=0.007 (mean), 1.667 (max) [84]  DKL: 0.083
-257/Inf  MSE=0.004 (mean), 1.149 (max) [84]  DKL: 0.082
+63/Inf  MSE=0.134 (mean), 13.099 (max) [10]  DKL: 0.103
+134/Inf  MSE=0.018 (mean), 3.202 (max) [10]  DKL: 0.091
 converged (marginals match)
-Standard deviations from marginals: 0.058 (mean), 0.995 (max) [84]  DKL: 0.081
-Kullback-Leibler divergence from test set: 0.089648
+Standard deviations from marginals: 0.070 (mean), 0.990 (max) [10]  DKL: 0.089
+Kullback-Leibler divergence from test set: 0.087323
 Training to threshold: 1.000 standard deviations
 Maximum MSE: 1.000
 step size: 0.500000
@@ -283,15 +274,14 @@ step size: 0.250000
 step size: 0.125000
 step size: 0.062500
 step size: 0.031250
-25/Inf  MSE=3.936 (mean), 727.110 (max) [244]  DKL: 0.181
-61/Inf  MSE=0.268 (mean), 68.845 (max) [244]  DKL: 0.116
-96/Inf  MSE=0.089 (mean), 13.969 (max) [244]  DKL: 0.100
-132/Inf  MSE=0.033 (mean), 7.496 (max) [244]  DKL: 0.091
-168/Inf  MSE=0.016 (mean), 2.509 (max) [244]  DKL: 0.085
-203/Inf  MSE=0.010 (mean), 1.044 (max) [244]  DKL: 0.082
+25/Inf  MSE=3.958 (mean), 239.437 (max) [261]  DKL: 0.181
+61/Inf  MSE=0.297 (mean), 55.516 (max) [20]  DKL: 0.123
+96/Inf  MSE=0.090 (mean), 12.031 (max) [20]  DKL: 0.105
+132/Inf  MSE=0.035 (mean), 4.026 (max) [20]  DKL: 0.096
+168/Inf  MSE=0.016 (mean), 1.882 (max) [181]  DKL: 0.091
 converged (marginals match)
-Standard deviations from marginals: 0.096 (mean), 0.994 (max) [244]  DKL: 0.082
-Kullback-Leibler divergence from test set: 0.095455
+Standard deviations from marginals: 0.109 (mean), 0.997 (max) [117]  DKL: 0.089
+Kullback-Leibler divergence from test set: 0.095179
 ....................
 Training to threshold: 1.000 standard deviations
 Maximum MSE: 1.000
@@ -299,13 +289,12 @@ step size: 0.500000
 step size: 0.250000
 step size: 0.125000
 step size: 0.062500
-25/Inf  MSE=0.204 (mean), 13.121 (max) [91]  DKL: 0.091
-60/Inf  MSE=0.030 (mean), 4.987 (max) [3]  DKL: 0.081
-95/Inf  MSE=0.010 (mean), 2.673 (max) [3]  DKL: 0.077
-129/Inf  MSE=0.005 (mean), 1.244 (max) [95]  DKL: 0.075
+25/Inf  MSE=0.143 (mean), 7.023 (max) [219]  DKL: 0.096
+60/Inf  MSE=0.023 (mean), 1.907 (max) [267]  DKL: 0.088
+95/Inf  MSE=0.010 (mean), 0.989 (max) [267]  DKL: 0.085
 converged (marginals match)
-Standard deviations from marginals: 0.064 (mean), 0.982 (max) [95]  DKL: 0.074
-Kullback-Leibler divergence from test set: 0.088513
+Standard deviations from marginals: 0.099 (mean), 0.994 (max) [267]  DKL: 0.085
+Kullback-Leibler divergence from test set: 0.090302
 </pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 % Example code for the maximum entropy toolkit
