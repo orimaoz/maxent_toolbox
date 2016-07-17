@@ -32,11 +32,19 @@
 <h2>
 <a id="faq" class="anchor" href="#faq" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Frequently asked questions</h2>
 
+
+
+<h3>Can I use the maxent toolbox to learn distributions of non-binary inputs (for examplem spike counts)?</h3>
+<p>The current version only supports binary patterns. In theory the same approach will work for other inputs,
+but some of the optimizations we used to make the package run faster made use of the assumption
+that each input dimension is either 0 or 1. We might extend it to support larger ranges of inputs if there
+is sufficient demand so <a href="mailto:orimaoz@gmail.com">let us know</a>.</p>
+
+
 <h3>Does the maxent toolbox support other environments (Python, R...)?</h3>
 <p>No, it does not. We did consider making a version for Python however compiling the C++ code (which uses the 
 Intel MKL/IPP libraries) to work with Python is tricky and we never got around to it. We might still attempt it
-if there is enough demand so <a href="mailto:orimaoz@gmail.com">let us know</a>.</p>
-
+if there is sufficient demand so <a href="mailto:orimaoz@gmail.com">let us know</a>.</p>
 
 <h3>Is the maxent toolbox multi-core?</h3>
 <p>The maxent package currently uses only one CPU core, which was useful for us as we used a computing cluster
@@ -46,7 +54,7 @@ is non-trivial because of the inherently sequential nature of MCMC techniques, b
 
 
 <h3>Why would I want to learn the probability distribution of anything?</h3>
-<p>No maxent for you, come back one year.</p>
+<p>No maxent for you, come back one year!</p>
 
 <h3>What if I want even more entropy? Can I have more entropy?</h3>
 <p>No, you cannot.</p>
