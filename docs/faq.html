@@ -32,6 +32,18 @@
 <h2>
 <a id="faq" class="anchor" href="#faq" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Frequently asked questions</h2>
 
+<h3>Does the maxent toolbox support other environments (Python, R...)?</h3>
+<p>No, it does not. We did consider making a version for Python however compiling the C++ code (which uses the 
+Intel MKL/IPP libraries) to work with Python is tricky and we never got around to it. We might still attempt it
+if there is enough demand so <a href="mailto:orimaoz@gmail.com">let us know</a>.</p>
+
+
+<h3>Is the maxent toolbox multi-core?</h3>
+<p>The maxent package currently uses only one CPU core, which was useful for us as we used a computing cluster
+where each node had access to a single core. Making the package multicore
+is non-trivial because of the inherently sequential nature of MCMC techniques, but as before
+<a href="mailto:orimaoz@gmail.com">let us know</a> if you think this would have a big impact on you.</p>
+
 
 <h3>Why would I want to learn the probability distribution of anything?</h3>
 <p>No maxent for you, come back one year.</p>
