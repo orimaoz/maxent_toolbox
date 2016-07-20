@@ -3,6 +3,7 @@
 #include <ipps.h>
 #include <ippvm.h>
 #include <cmath>
+#include <cstring>
 
 #ifdef _WINDOWS
 #define DECLARE_ALIGNED _declspec(align(64))

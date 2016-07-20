@@ -6,7 +6,9 @@
 #include "IsingEnergy.h"
 #include "IndependentEnergy.h"
 #include <math.h>
+#include <cstring>
 
+using namespace std;
 
 #define MAX_STRLEN_MODELTYPE 100
 
