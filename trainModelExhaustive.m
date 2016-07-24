@@ -251,7 +251,7 @@ while i < num_steps
 
             % decrease step size            
             step_size = step_size * beta;
-            internal_print(sprintf('step size: %f',step_size));
+            %internal_print(sprintf('step size: %f',step_size));
         end                        
     
     

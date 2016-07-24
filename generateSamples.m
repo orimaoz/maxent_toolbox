@@ -27,6 +27,10 @@ function samples = generateSamples(model, nsamples,varargin)
 
 DEFAULT_BURNIN = 10000;
 
+if nargin<2
+    error('Usage: generateSamples(model, nsamples, ...)');
+end
+
 p = inputParser;
 addOptional(p,'x0',0);          % starting state
 addOptional(p,'burnin',DEFAULT_BURNIN);  % number of burn-in samples
