@@ -1,15 +1,7 @@
 #include "MerpFastEnergy.h"
-#include <mkl.h>
-#include <ipps.h>
-#include <ippvm.h>
 #include <cmath>
 #include <cstring>
 
-#ifdef _WINDOWS
-#define DECLARE_ALIGNED _declspec(align(64))
-#else
-#define DECLARE_ALIGNED
-#endif
 
 
 // Constructor - constructs it from a random projection and a single threshold
@@ -27,12 +19,12 @@ MerpFastEnergy::MerpFastEnergy(double* in_W, double * in_lambda, uint32_t ncells
 
 
 	// allocate required arrays
-	m_W = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors * m_ndims);
-	m_lambda = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
-	m_threshold = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
-	m_y = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
-	m_proposed_y = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
-	m_tmp = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
+	m_W = (double*)malloc_aligned(sizeof(double)*m_nfactors * m_ndims);
+	m_lambda = (double*)malloc_aligned(sizeof(double)*m_nfactors);
+	m_threshold = (double*)malloc_aligned(sizeof(double)*m_nfactors);
+	m_y = (double*)malloc_aligned(sizeof(double)*m_nfactors);
+	m_proposed_y = (double*)malloc_aligned(sizeof(double)*m_nfactors);
+	m_tmp = (double*)malloc_aligned(sizeof(double)*m_nfactors);
 
 
 
@@ -63,12 +55,12 @@ MerpFastEnergy::MerpFastEnergy(double* in_W, double * in_lambda, uint32_t ncells
 
 
 	// allocate required arrays
-	m_W = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors * m_ndims);
-	m_lambda = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
-	m_threshold = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
-	m_y = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
-	m_proposed_y = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
-	m_tmp = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
+	m_W = (double*)malloc_aligned(sizeof(double)*m_nfactors * m_ndims);
+	m_lambda = (double*)malloc_aligned(sizeof(double)*m_nfactors);
+	m_threshold = (double*)malloc_aligned(sizeof(double)*m_nfactors);
+	m_y = (double*)malloc_aligned(sizeof(double)*m_nfactors);
+	m_proposed_y = (double*)malloc_aligned(sizeof(double)*m_nfactors);
+	m_tmp = (double*)malloc_aligned(sizeof(double)*m_nfactors);
 
 	// copy data to the arrays
 	std::memcpy(m_lambda, in_lambda, sizeof(double) * m_nfactors);
@@ -87,12 +79,12 @@ MerpFastEnergy::MerpFastEnergy(double* in_W, double * in_lambda, uint32_t ncells
 MerpFastEnergy::~MerpFastEnergy()
 {
 	// free preallocated memory
-	ippsFree(m_W);
-	ippsFree(m_lambda);
-	ippsFree(m_threshold);
-	ippsFree(m_y);
-	ippsFree(m_proposed_y);
-	ippsFree(m_tmp);
+	free_aligned(m_W);
+	free_aligned(m_lambda);
+	free_aligned(m_threshold);
+	free_aligned(m_y);
+	free_aligned(m_proposed_y);
+	free_aligned(m_tmp);
 }
 
 
@@ -119,15 +111,29 @@ double MerpFastEnergy::getEnergy(uint32_t * x)
 		// Check for each column if we are to sum it
 		if (x[i])
 		{
-			//vdAdd(m_nfactors, m_y, m_W + i * m_nfactors, m_proposed_y);
+#if defined(__IPPDEFS_H__)	
 			ippsAdd_64f_I(ptrW, m_y, m_nfactors);
+#else
+			for (uint32_t j = 0; j < m_nfactors; j++)
+			{
+				m_y[j] += ptrW[j];
+			}
+#endif
 		}
 		ptrW += m_nfactors;
 
 	}
 
 	// subtract the tresholds so we can use check if we are above or below 0
+#if defined(__IPPDEFS_H__)	
 	ippsSub_64f_I(m_threshold, m_y, m_nfactors);
+#else
+	for (uint32_t j = 0; j < m_nfactors; j++)
+	{
+		m_y[j] -= m_threshold[j];
+	}
+#endif
+
 
 	m_energy = applyThreshold(m_y);
 
@@ -175,14 +181,28 @@ void MerpFastEnergy::sumSampleFactor(uint32_t * x, double* factor_sum,double p)
 		// Check for each column if we are to sum it
 		if (x[i])
 		{
+#if defined(__IPPDEFS_H__)	
 			ippsAdd_64f_I(ptrW, m_y, m_nfactors);
+#else
+			for (uint32_t j = 0; j < m_nfactors; j++)
+			{
+				m_y[j] += ptrW[j];
+			}
+#endif
 		}
 		ptrW += m_nfactors;
 
 	}
 
 	// subtract the tresholds so we can use check if we are above or below 0
+#if defined(__IPPDEFS_H__)	
 	ippsSub_64f_I(m_threshold, m_y, m_nfactors);
+#else
+	for (uint32_t j = 0; j < m_nfactors; j++)
+	{
+		m_y[j] -= m_threshold[j];
+	}
+#endif
 
 	// set spiking/nonspiking according to the cutoff threshold
 	#pragma vector aligned 
@@ -212,13 +232,28 @@ double MerpFastEnergy::propose(uint32_t nbit)
 	if (m_x[nbit])
 	{
 		// bit changing 1->0
+#if defined(_MKL_H_)	
 		vdSub(m_nfactors, m_y, m_W + nbit * m_nfactors, m_proposed_y);
+#else
+		for (uint32_t j = 0; j < m_nfactors; j++)
+		{
+			m_proposed_y[j] = m_y[j] - m_W[nbit * m_nfactors + j];
+		}
+#endif
 
 	}
 	else
 	{
 		// bit changing 0->1
+#if defined(_MKL_H_)	
 		vdAdd(m_nfactors, m_y, m_W + nbit * m_nfactors, m_proposed_y);
+#else
+		for (uint32_t j = 0; j < m_nfactors; j++)
+		{
+			m_proposed_y[j] = m_y[j] + m_W[nbit * m_nfactors + j];
+		}
+#endif
+
 	}
 
 	// Apply the threshold
@@ -245,10 +280,7 @@ double MerpFastEnergy::accept(uint32_t bAccept)
 		m_x[m_proposed_bit] = !m_x[m_proposed_bit];
 
 		// Update the partially-computed energy
-		//m_y = m_proposed_y;
 		std::memcpy(m_y,m_proposed_y,sizeof(double) * m_nfactors);
-		//ippsCopy_64f(m_y, m_proposed_y, m_nfactors);
-		//cblas_dcopy(m_nfactors,m_y,1, m_proposed_y, 1);
 
 		// Mark that there is no pending proposal on this energy function
 		m_energy = m_proposed_energy;

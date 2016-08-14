@@ -2,15 +2,8 @@
 // Ori Maoz 07/2014
 
 #include "EnergyFunction.h"
-#include <mkl.h>
-#include <ipps.h>
 #include <vector>
-
-#ifdef _WINDOWS
-#define DECLARE_ALIGNED _declspec(align(64))
-#else
-#define DECLARE_ALIGNED
-#endif
+#include "common.h"
 
 class MerpFastEnergy : public EnergyFunction
 {

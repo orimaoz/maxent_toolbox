@@ -18,7 +18,6 @@
 #include <mex.h>
 #include "mtrand.h"
 
-#include <mkl.h>
 #include "EnergyFunction.h"
 #include "EnergyFunctionFactory.h"
 

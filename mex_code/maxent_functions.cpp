@@ -4,10 +4,9 @@
 
 #include "EnergyFunction.h"
 #include <vector>
-#include <mkl.h>
 #include "mtrand.h"
 #include <algorithm>
-
+#include "common.h"
 
 
 
@@ -205,7 +204,7 @@ void getMarginals(EnergyFunction * pModel, double * pMarginals)
 	pModel->getEnergy(x.data());
 
 	// make a memory-aligned version of the marginals (on 64-bit boundry for faster operation)
-	double * pAlignedMarginals = (double*)mkl_malloc(sizeof(double)*nfactors, 64);
+	double * pAlignedMarginals = (double*)malloc_aligned(sizeof(double)*nfactors);
 	memset(pAlignedMarginals, 0, nfactors * sizeof(double));
 
 	// Call the recursive part to walk over all the pattern combinations
@@ -220,7 +219,7 @@ void getMarginals(EnergyFunction * pModel, double * pMarginals)
 		pMarginals[i] = pAlignedMarginals[i] / z;
 	}
 
-	mkl_free(pAlignedMarginals);	// release the aligned buffer
+	free_aligned(pAlignedMarginals);	// release the aligned buffer
 }
 
 

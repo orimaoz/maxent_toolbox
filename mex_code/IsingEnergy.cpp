@@ -8,8 +8,8 @@ IsingEnergy::IsingEnergy(uint32_t ndims, double * lambdas) :
 	m_logz(0)
 {
 	m_ndims = ndims;
-	m_lambdaMatrix = (double*)ippsMalloc_64f(sizeof(double)*ndims*ndims);;
-	m_double_x = (double*)ippsMalloc_64f(sizeof(double)*ndims);
+	m_lambdaMatrix = (double*)malloc_aligned(sizeof(double)*ndims*ndims);;
+	m_double_x = (double*)malloc_aligned(sizeof(double)*ndims);
 	m_lambdaVector = lambdas;
 
 	// fill in the matrix of lambdas - first the single factors (matrix diagonal)...
@@ -38,8 +38,8 @@ IsingEnergy::IsingEnergy(uint32_t ndims, double * lambdas) :
 IsingEnergy::~IsingEnergy()
 {
 	// release allocated memory
-	ippsFree(m_double_x);
-	ippsFree(m_lambdaMatrix);
+	free_aligned(m_double_x);
+	free_aligned(m_lambdaMatrix);
 }
 
 
@@ -70,7 +70,6 @@ double IsingEnergy::getEnergy(uint32_t *  x)
 			logprob += m_lambdaMatrix[i + i*m_ndims];
 		}		
 
-		//m_double_x[i] = (x[i] ? 1.0 : 0.0);
 		m_double_x[i] = x[i];
 	}
 
@@ -162,7 +161,15 @@ double IsingEnergy::propose(uint32_t nbit)
 	// go over only the relevant row that was changed
 	double * factor_row = m_lambdaMatrix + nbit * m_ndims;
 
+#if defined(__IPPDEFS_H__)	
 	ippsDotProd_64f(factor_row, m_double_x, m_ndims,&dEnergy);
+#else
+	for (uint32_t i = 0; i < m_ndims; i++)
+	{
+		dEnergy += factor_row[i] * m_double_x[i];
+	}
+#endif
+
 
 	// The single factors (diagonal element) will always be changed, so add it if it wasn't added during the previous loop
 	dEnergy += factor_row[nbit] * !m_x[nbit];
@@ -208,7 +215,6 @@ void IsingEnergy::accept(double * factor_sum, double prob)
 // Returns the current state of the system
 uint32_t *  IsingEnergy::getX()
 {
-	//return &m_x;
 	return m_x.data();
 }
 
@@ -223,7 +229,6 @@ uint32_t IsingEnergy::getDim()
 // Returns the number of factors (parameters) of the model
 uint32_t IsingEnergy::getNumFactors()
 {
-	//return m_lambdas.size();
 	return m_ndims * (m_ndims + 1) / 2;
 
 }
