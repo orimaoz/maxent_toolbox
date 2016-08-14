@@ -33,24 +33,66 @@
 
 #define DECLARE_ALIGNED
 
-//
-//void ippsAdd_64f_I(double * src, double * dst, int len)
-//{
-//	for (int j = 0; j < len; j++)
-//	{
-//		dst[j] += src[j];
-//	}
-//}
-//
-//
-//void ippsSub_64f_I(double * src, double * dst, int len)
-//{
-//	for (int j = 0; j < len; j++)
-//	{
-//		dst[j] -= src[j];
-//	}
-//}
+
+inline void ippsAdd_64f_I(double * src, double * dst, int len)
+{
+	for (int j = 0; j < len; j++)
+	{
+		dst[j] += src[j];
+	}
+}
 
 
+inline void ippsSub_64f_I(double * src, double * dst, int len)
+{
+	for (int j = 0; j < len; j++)
+	{
+		dst[j] -= src[j];
+	}
+}
+
+inline void ippsDotProd_64f(double *a, double *b, int len, double * sum)
+{
+	for (int i = 0; i < len; i++)
+	{
+		*sum += a[i] * b[i];
+	}
+}
+
+inline void vdAdd(int n, double *a, double *b, double *y)
+{
+	for (uint32_t j = 0; j < n; j++)
+	{
+		y[j] = a[j] + b[j];
+	}
+
+}
+
+
+inline void vdSub(int n, double *a, double *b, double *y)
+{
+	for (uint32_t j = 0; j < n; j++)
+	{
+		y[j] = a[j] - b[j];
+	}
+}
+
+
+inline void cblas_dgthr(MKL_INT nz, double * y, double * x, MKL_INT * idx)
+{
+	for (uint32_t j = 0; j < nz; j++)
+	{
+		x[j] = y[idx[j]];
+	}
+
+}
+
+inline void cblas_daxpyi(MKL_INT nz, double a, double * x, MKL_INT *idx, double * y)
+{
+	for (uint32_t j = 0; j < nz; j++)
+	{
+		y[j] += a*x[idx[j]];
+	}
+}
 
 #endif // NO_INTEL_COMPILER

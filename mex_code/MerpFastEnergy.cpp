@@ -111,29 +111,14 @@ double MerpFastEnergy::getEnergy(uint32_t * x)
 		// Check for each column if we are to sum it
 		if (x[i])
 		{
-#if defined(__IPPDEFS_H__)	
 			ippsAdd_64f_I(ptrW, m_y, m_nfactors);
-#else
-			for (uint32_t j = 0; j < m_nfactors; j++)
-			{
-				m_y[j] += ptrW[j];
-			}
-#endif
 		}
 		ptrW += m_nfactors;
 
 	}
 
 	// subtract the tresholds so we can use check if we are above or below 0
-#if defined(__IPPDEFS_H__)	
 	ippsSub_64f_I(m_threshold, m_y, m_nfactors);
-#else
-	for (uint32_t j = 0; j < m_nfactors; j++)
-	{
-		m_y[j] -= m_threshold[j];
-	}
-#endif
-
 
 	m_energy = applyThreshold(m_y);
 
@@ -181,28 +166,14 @@ void MerpFastEnergy::sumSampleFactor(uint32_t * x, double* factor_sum,double p)
 		// Check for each column if we are to sum it
 		if (x[i])
 		{
-#if defined(__IPPDEFS_H__)	
 			ippsAdd_64f_I(ptrW, m_y, m_nfactors);
-#else
-			for (uint32_t j = 0; j < m_nfactors; j++)
-			{
-				m_y[j] += ptrW[j];
-			}
-#endif
 		}
 		ptrW += m_nfactors;
 
 	}
 
 	// subtract the tresholds so we can use check if we are above or below 0
-#if defined(__IPPDEFS_H__)	
 	ippsSub_64f_I(m_threshold, m_y, m_nfactors);
-#else
-	for (uint32_t j = 0; j < m_nfactors; j++)
-	{
-		m_y[j] -= m_threshold[j];
-	}
-#endif
 
 	// set spiking/nonspiking according to the cutoff threshold
 	#pragma vector aligned 
@@ -232,28 +203,13 @@ double MerpFastEnergy::propose(uint32_t nbit)
 	if (m_x[nbit])
 	{
 		// bit changing 1->0
-#if defined(_MKL_H_)	
 		vdSub(m_nfactors, m_y, m_W + nbit * m_nfactors, m_proposed_y);
-#else
-		for (uint32_t j = 0; j < m_nfactors; j++)
-		{
-			m_proposed_y[j] = m_y[j] - m_W[nbit * m_nfactors + j];
-		}
-#endif
 
 	}
 	else
 	{
 		// bit changing 0->1
-#if defined(_MKL_H_)	
 		vdAdd(m_nfactors, m_y, m_W + nbit * m_nfactors, m_proposed_y);
-#else
-		for (uint32_t j = 0; j < m_nfactors; j++)
-		{
-			m_proposed_y[j] = m_y[j] + m_W[nbit * m_nfactors + j];
-		}
-#endif
-
 	}
 
 	// Apply the threshold

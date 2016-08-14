@@ -70,14 +70,7 @@ MerpSparseEnergy::MerpSparseEnergy(double* in_W, double * in_lambda, uint32_t nc
 		// allocate memory for this sparse bit of lambda and gather the relevant entries into the array
 		m_sparse_lambda[idxLambda] = (double*)malloc_aligned(sizeof(double)*m_nfactors);
 
-#if defined(_MKL_H_)	
 		cblas_dgthr(m_W_nz[idxLambda], m_lambda, m_sparse_lambda[idxLambda], m_W_idx[idxLambda]);
-#else
-		for (uint32_t j = 0; j < m_W_nz[idxLambda]; j++)
-		{
-			(m_sparse_lambda[idxLambda])[j] = m_lambda[(m_W_idx[idxLambda])[j]];
-		}
-#endif
 	}
 
 
@@ -141,21 +134,12 @@ double MerpSparseEnergy::getEnergy(uint32_t * x)
 		if (x[i])
 		{
 			// sparse addition into m_y
-#if defined(_MKL_H_)	
 			cblas_daxpyi(m_W_nz[i], 1, m_W_val[i], m_W_idx[i], m_y);
-#endif
 		}
 	}
 
 	// subtract the tresholds so we can use check if we are above or below 0
-#if defined(__IPPDEFS_H__)	
 	ippsSub_64f_I(m_threshold, m_y, m_nfactors);
-#else
-	for (uint32_t i = 0; i < m_nfactors; i++)
-	{
-		m_y[i] -= m_threshold[i];
-	}
-#endif
 
 	m_energy = applyThreshold(m_y);
 
@@ -205,26 +189,13 @@ void MerpSparseEnergy::sumSampleFactor(uint32_t * x, double* factor_sum,double p
 		if (x[i])
 		{
 			// sparse addition into m_y
-#if defined(_MKL_H_)	
 			cblas_daxpyi(m_W_nz[i], 1, m_W_val[i], m_W_idx[i], m_y);
-#endif
 
 		}
 	}
 
 	// subtract the tresholds so we can use check if we are above or below 0
-#if defined(__IPPDEFS_H__)	
 	ippsSub_64f_I(m_threshold, m_y, m_nfactors);
-#else
-	for (uint32_t i = 0; i < m_nfactors; i++)
-	{
-		m_y[i] -= m_threshold[i];
-	}
-#endif
-
-
-
-
 
 
 	// set spiking/nonspiking according to the cutoff threshold
@@ -272,14 +243,7 @@ double MerpSparseEnergy::getSumDiffBitOn(uint32_t nbit)
 	double energydiff=0;
 
 	// gather the relevant m_y entries into a compressed aray
-#if defined(_MKL_H_)	
 	cblas_dgthr(m_W_nz[nbit], m_y, m_tmp, m_W_idx[nbit]);
-#else
-	for (uint32_t j = 0; j < m_W_nz[nbit]; j++)
-	{
-		m_tmp[j] = m_y[(m_W_idx[nbit])[j]];
-	}
-#endif
 
 	double * sparse_lambda = m_sparse_lambda[nbit];
 
@@ -295,14 +259,8 @@ double MerpSparseEnergy::getSumDiffBitOn(uint32_t nbit)
 	}
 
 	// now add the relevant elements of m_y and see what passed the threshold
-#if defined(__IPPDEFS_H__)	
 	ippsAdd_64f_I(val, m_tmp, m_W_nz[nbit]);
-#else
-	for (uint32_t i = 0; i < m_W_nz[nbit]; i++)
-	{
-		m_tmp[i] += val[i];
-	}
-#endif
+
 
 
 #pragma vector aligned
@@ -327,14 +285,7 @@ double MerpSparseEnergy::getSumDiffBitOff(uint32_t nbit)
 	double energydiff = 0;
 
 	// gather the relevant m_y entries into a compressed aray
-#if defined(_MKL_H_)	
 	cblas_dgthr(m_W_nz[nbit], m_y, m_tmp, m_W_idx[nbit]);
-#else
-	for (uint32_t j = 0; j < m_W_nz[nbit]; j++)
-	{
-		m_tmp[j] = m_y[(m_W_idx[nbit])[j]];
-	}
-#endif
 
 	double * sparse_lambda = m_sparse_lambda[nbit];
 
@@ -350,15 +301,7 @@ double MerpSparseEnergy::getSumDiffBitOff(uint32_t nbit)
 	}
 
 	// now subtract the relevant elements of m_y and see what passed the threshold
-#if defined(__IPPDEFS_H__)	
 	ippsSub_64f_I(val, m_tmp, m_W_nz[nbit]);
-#else
-	for (uint32_t i = 0; i < m_W_nz[nbit]; i++)
-	{
-		m_tmp[i] -= val[i];
-	}
-#endif
-
 
 	
 #pragma vector aligned
@@ -394,17 +337,13 @@ double MerpSparseEnergy::accept(uint32_t bAccept)
 		if (m_x[m_proposed_bit])
 		{
 			// bit changing 1->0
-#if defined(_MKL_H_)	
 			cblas_daxpyi(m_W_nz[m_proposed_bit], -1, m_W_val[m_proposed_bit], m_W_idx[m_proposed_bit], m_y);
-#endif
 		}
 		else
 		{
 			// bit changing 0->1
 			// sparse addition into m_y
-#if defined(_MKL_H_)	
 			cblas_daxpyi(m_W_nz[m_proposed_bit], 1, m_W_val[m_proposed_bit], m_W_idx[m_proposed_bit], m_y);
-#endif
 		}
 
 		// now flip the proposed bit

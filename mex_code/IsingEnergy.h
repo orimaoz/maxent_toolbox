@@ -6,15 +6,6 @@
 
 
 #include "common.h"
-//#include <mkl.h>
-//#include <ipps.h>
-//#include <ippvm.h>
-//
-//#ifdef _WINDOWS
-//#define DECLARE_ALIGNED _declspec(align(64))
-//#else
-//#define DECLARE_ALIGNED
-//#endif
 
 class IsingEnergy : public EnergyFunction
 {
