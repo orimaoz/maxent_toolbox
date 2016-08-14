@@ -4,7 +4,23 @@
 
 #include "EnergyFunction.h"
 
-void getLogProbability(EnergyFunction * energy, uint32_t npatterns, uint32_t * patterns_in, double * logprobs_out, bool bNormalize = true);
+// Returns the log probabilities of samples according to the model
+// Input:
+//		pModel (in)			- model to generate the samples from
+//	    npatterns (in)		- number of patterns
+//		patterns_in (in)	- samples in UINT32 form (32 bit integer)
+//		logprobs_out (out)	- preallocated buffer in which the log probabilities are returned
+void getLogProbability(EnergyFunction * pModel, uint32_t npatterns, uint32_t * patterns_in, double * logprobs_out);
+
+
+// Returns the empirical marginals for a set of samples
+// Input:
+//		pModel (in)			- model to generate the samples from
+//	    npatterns (in)		- number of patterns
+//		patterns_in (in)	- samples in UINT32 form (32 bit integer)
+//		weights (in)		- probabilites used to reweight the patterns or NULL to treat them as uniform
+//		pMarginals (out)	- preallocated buffer in which the marginals are returned
+void getEmpiricalMarginals(EnergyFunction * pModel, uint32_t npatterns, uint32_t * patterns_in, double * weights, double * pMarginals);
 
 
 // Performs a Metropolis-Hasting type MCMC random walk on the state space and returns samples.

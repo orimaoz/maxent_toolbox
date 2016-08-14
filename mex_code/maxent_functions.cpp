@@ -7,12 +7,83 @@
 #include <mkl.h>
 #include "mtrand.h"
 
-void getLogProbability(EnergyFunction * energy, uint32_t npatterns, uint32_t * patterns_in, double * logprobs_out, bool bNormalize = true)
+
+
+
+
+// Returns the log probabilities of samples according to the model
+// Input:
+//		pModel (in)			- model to generate the samples from
+//	    npatterns (in)		- number of patterns
+//		patterns_in (in)	- samples in UINT32 form (32 bit integer)
+//		logprobs_out (out)	- preallocated buffer in which the log probabilities are returned
+void getLogProbability(EnergyFunction * pModel, uint32_t npatterns, uint32_t * patterns_in, double * logprobs_out)
 {
+	uint32_t n = pModel->getDim();
+	uint32_t * x;
+	double * out_probs;
+	double z = pModel->getLogZ();
+
+	// Iterate over each of the input samples
+	x = patterns_in;
+	for (uint32_t curr_sample = 0; curr_sample < npatterns; curr_sample++)
+	{
+		double energy;
+
+		// get energy for current sample and normalize
+		energy = -pModel->getEnergy(x) + z;
+		logprobs_out[curr_sample] = energy;
+
+		// advance to the next sample
+		x += n;
+	}
+}
 
 
+// Returns the empirical marginals for a set of samples
+// Input:
+//		pModel (in)			- model to generate the samples from
+//	    npatterns (in)		- number of patterns
+//		patterns_in (in)	- samples in UINT32 form (32 bit integer)
+//		weights (in)		- probabilites used to reweight the patterns or NULL to treat them as uniform
+//		pMarginals (out)	- preallocated buffer in which the marginals are returned
+void getEmpiricalMarginals(EnergyFunction * pModel, uint32_t npatterns, uint32_t * patterns_in, double * weights, double * pMarginals)
+{
+	uint32_t n = pModel->getDim();
+	uint32_t * x;
+	double * out_probs;
+
+	double uniform_prob = (double)1 / npatterns;	 // default probability is uniform
+
+	// set initial marginals to zero
+	memset(pMarginals, 0, sizeof(double)*pModel->getNumFactors());
+
+	// Iterate over each of the input samples
+	x = patterns_in;
+	for (uint32_t curr_sample = 0; curr_sample < npatterns; curr_sample++)
+	{
 
 
+		// get the probability for this factor (if it was given)
+		double prob;
+		if (weights)
+		{
+			prob = weights[curr_sample];
+		}
+		else
+		{
+			// default is uniform probability. We will perform the division later.
+			prob = uniform_prob;
+		}
+
+
+		// Compute the factor and and sum it
+		pModel->sumSampleFactor(x, pMarginals, prob);
+
+
+		// advance to the next sample
+		x += n;
+	}
 }
 
 
@@ -120,7 +191,7 @@ void recursiveComputeMarginals(EnergyFunction * pModel, unsigned int curr_bit, d
 // Returns the marginals of a model (exhaustively computed)
 // Input:
 //		pModel (in)			- model to generate the samples from
-//		pMarginals (out		- preallocated buffer in which the marginals are returned
+//		pMarginals (out)	- preallocated buffer in which the marginals are returned
 void getMarginals(EnergyFunction * pModel, double * pMarginals)
 {
 	// Fix the starting state as all zeros
