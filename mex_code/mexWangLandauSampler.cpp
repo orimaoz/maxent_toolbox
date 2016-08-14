@@ -17,6 +17,7 @@
 #include "mtrand.h"
 
 #include "EnergyFunctionFactory.h"
+#include "maxent_functions.h"
 
 #include <algorithm>
 #include <iterator>
@@ -30,7 +31,7 @@ static bool bAlreadySeededRand = false;
 //#define DEBUG_PRINTS
 
 void printVector(std::strstream & str, char* name, double vec[], size_t len);
-void runWangLandauStep(uint32_t nsteps, std::vector<uint32_t> & x, EnergyFunction & model, uint32_t nbins, double bin_limits[], double g[], double h[], double update_size, uint32_t nSeparation);
+//void runWangLandauStep(uint32_t nsteps, uint32_t * x, EnergyFunction *  pModel, uint32_t nbins, double bin_limits[], double g[], double h[], double update_size, uint32_t nSeparation);
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
@@ -52,7 +53,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		mexErrMsgIdAndTxt("mexWangLandauSampler:init",
 						  "separation must be of type uint32_t");
 	}
-	std::vector<uint32_t> initial_x(ptr_initial_x,ptr_initial_x+nDims);
 
 
 	// get number of steps
@@ -148,11 +148,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		MTRand engine((uint32_t)time(NULL));
 	}
 
-	runWangLandauStep(nSteps,initial_x,*pModel,nBins,bin_limits,g,h,updateSize,nSeparation);
+	runWangLandauStep(nSteps, ptr_initial_x,pModel,nBins,bin_limits,g,h,updateSize,nSeparation);
 
-	// return the last x in the chain back to matlab
-	// TODO: is this call safe?
-	copy(initial_x.begin(),initial_x.end(),ptr_initial_x);
 
 	// Delete the model that we had previously allocated
 	delete pModel;
@@ -160,93 +157,5 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 }
 
 
-// Actually runs the Wang-Landau steps of random walk on the energy function
-// nsteps - number of steps
-// x - starting point (in/out - returns ending state)
-// model - model that we use to compute energy
-// bin_limits - bin limits for the energy function discretization
-// g - energy density function (discretized)
-// h - energy function histogram
-void runWangLandauStep(uint32_t nsteps, std::vector<uint32_t> & x, EnergyFunction& model, uint32_t nbins, double bin_limits[], double g[], double h[], double update_size, uint32_t nSeparation)
-{
-	std::vector<uint32_t> current_x(x);  // inputed x is the st
-	std::vector<uint32_t> proposed_x;
-	double current_energy;  // energy of the current state
-	double proposed_energy; // energy of the proposed state
-	uint32_t current_bin;		// bin of the current energy
-	uint32_t proposed_bin;		// bin of the proposed energy
-	double transition_probability;
-	double rand_double;
-	uint32_t current_bit;
-	MTRand engine_double; // Random number generator. Class is a singleton so it's
-					// ok that it's just sitting on the stack like this
-	MTRand_int32 engine_integer; // Same but for integers. It shares the internal state
-				// of the other engine so does not need to be initialized anywhere.
 
 
-	// compute energy and parameters for initial x
-	current_energy = model.getEnergy(x.data());
-	current_bin = std::lower_bound(bin_limits,bin_limits+nbins-1,current_energy) - bin_limits;
-
-	// iterate...
-	for (uint32_t iteration=0; iteration < nsteps; iteration++)
-	{
-		
-		// Choose a random bit to flip
-		current_bit = engine_integer() % x.size();
-
-
-		// Find the energy and bin of the proposed state
-		proposed_energy = model.propose(current_bit);
-		proposed_bin = std::lower_bound(bin_limits,bin_limits+nbins-1,proposed_energy) - bin_limits;
-
-		// Transition probability is exponential in the difference in densities
-		transition_probability = exp(g[current_bin] - g[proposed_bin]);
-
-		// Randomly choose if to accept or reject the proposal
-		rand_double = engine_double();
-		if (rand_double < transition_probability)
-		{
-
-			// Accept the proposed x and update everything						
-			model.accept();
-			current_energy = proposed_energy;
-			current_bin = proposed_bin;
-		}
-
-		// update density and histogram
-		g[current_bin] += update_size;
-		
-		// If we have a separation value, we only advance the histogram every several steps
-		// in order to decorrelate the samples
-		if (nSeparation>1)
-		{
-			if (iteration % nSeparation == 0)
-				h[current_bin]++;
-		}
-		else
-		{
-			h[current_bin]++;
-		}
-
-
-	}
-
-	// Return x as the last state
-	//x = (*model.getX());
-	x.assign(model.getX(), model.getX() + x.size());
-}
-
-
-
-// Prints the beginning and end of a vector to the display
-void printVector(std::strstream & str, char* name, double vec[], size_t len)
-{
-
-	str  << name << ": [ ";
-	for (size_t i=0; i < std::min<size_t>(len,4); i++)
-	{
-		str << vec[i] << " ";
-	}
-	str  << "... " << vec[len-1] << " ]\n";
-}

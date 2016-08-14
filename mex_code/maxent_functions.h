@@ -45,3 +45,14 @@ void runGibbsSampler(EnergyFunction * pModel, uint32_t nsteps, uint32_t * x0, un
 //		pModel (in)			- model to generate the samples from
 //		pMarginals (out		- preallocated buffer in which the marginals are returned
 void getMarginals(EnergyFunction * pModel, double * pMarginals);
+
+
+// Runs the Wang-Landau steps of random walk on the energy function
+// nsteps - number of steps
+// x - starting point (in/out - returns ending state)
+// pModel - model that we use to compute energy
+// bin_limits - bin limits for the energy function discretization
+// g - energy density function (discretized)
+// h - energy function histogram
+// separation - how many samples to skip in each MCMC operation
+void runWangLandauStep(uint32_t nsteps, uint32_t * x, EnergyFunction *  pModel, uint32_t nbins, double bin_limits[], double g[], double h[], double update_size, uint32_t nSeparation);

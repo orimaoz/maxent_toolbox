@@ -6,6 +6,7 @@
 #include <vector>
 #include <mkl.h>
 #include "mtrand.h"
+#include <algorithm>
 
 
 
@@ -270,3 +271,83 @@ void recursiveComputeMarginals(EnergyFunction * pModel, unsigned int curr_bit, d
 
 	}
 }
+
+
+// Runs the Wang-Landau steps of random walk on the energy function
+// nsteps - number of steps
+// x - starting point (in/out - returns ending state)
+// pModel - model that we use to compute energy
+// bin_limits - bin limits for the energy function discretization
+// g - energy density function (discretized)
+// h - energy function histogram
+// separation - how many samples to skip in each MCMC operation
+void runWangLandauStep(uint32_t nsteps, uint32_t * x, EnergyFunction *  pModel, uint32_t nbins, double bin_limits[], double g[], double h[], double update_size, uint32_t nSeparation)
+{
+	double current_energy;  // energy of the current state
+	double proposed_energy; // energy of the proposed state
+	uint32_t current_bin;		// bin of the current energy
+	uint32_t proposed_bin;		// bin of the proposed energy
+	double transition_probability;
+	double rand_double;
+	uint32_t current_bit;
+	MTRand engine_double; // Random number generator. Class is a singleton so it's
+						  // ok that it's just sitting on the stack like this
+	MTRand_int32 engine_integer; // Same but for integers. It shares the internal state
+								 // of the other engine so does not need to be initialized anywhere.
+
+	uint32_t n = pModel->getDim();
+
+
+	// compute energy and parameters for initial x
+	current_energy = pModel->getEnergy(x);
+	current_bin = std::lower_bound(bin_limits, bin_limits + nbins - 1, current_energy) - bin_limits;
+
+	// iterate...
+	for (uint32_t iteration = 0; iteration < nsteps; iteration++)
+	{
+
+		// Choose a random bit to flip
+		current_bit = engine_integer() % n;
+
+
+		// Find the energy and bin of the proposed state
+		proposed_energy = pModel->propose(current_bit);
+		proposed_bin = std::lower_bound(bin_limits, bin_limits + nbins - 1, proposed_energy) - bin_limits;
+
+		// Transition probability is exponential in the difference in densities
+		transition_probability = exp(g[current_bin] - g[proposed_bin]);
+
+		// Randomly choose if to accept or reject the proposal
+		rand_double = engine_double();
+		if (rand_double < transition_probability)
+		{
+
+			// Accept the proposed x and update everything						
+			pModel->accept();
+			current_energy = proposed_energy;
+			current_bin = proposed_bin;
+		}
+
+		// update density and histogram
+		g[current_bin] += update_size;
+
+		// If we have a separation value, we only advance the histogram every several steps
+		// in order to decorrelate the samples
+		if (nSeparation>1)
+		{
+			if (iteration % nSeparation == 0)
+				h[current_bin]++;
+		}
+		else
+		{
+			h[current_bin]++;
+		}
+
+
+	}
+
+	// Return x as the last state
+	memcpy(x, pModel->getX(), n * sizeof(uint32_t));
+}
+
+
