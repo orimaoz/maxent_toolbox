@@ -307,7 +307,7 @@ void runGibbsSampler(uint32_t nsteps, std::vector<uint32_t> & x, unsigned char *
 
     
 	// Initial energy for x
-	current_energy = model.getEnergy(x);
+	current_energy = model.getEnergy(x.data());
 
 	for (uint32_t outputIdx = 0; outputIdx < nsteps; outputIdx++)
 	{
@@ -343,19 +343,19 @@ void runGibbsSampler(uint32_t nsteps, std::vector<uint32_t> & x, unsigned char *
 
 		if (bReturnResults)
 		{
-			std::vector<uint32_t> * px = model.getX();
+			uint32_t * px = model.getX();
 			for (unsigned int i = 0; i < n; i++)
 			{
-				pOutputSamples[outputIdx*n + i] = ((*px)[i] == 1);
+				pOutputSamples[outputIdx*n + i] = px[i];
 			}
 		}
 	}
 
 	// Return x as the last state
+	uint32_t * px = model.getX();
 	for (unsigned int i=0; i < n; i++)
 	{
-		std::vector<uint32_t> * px = model.getX();
-		x[i] = ((*px)[i] == 1);
+		x[i] = px[i];
 	}
 
 }

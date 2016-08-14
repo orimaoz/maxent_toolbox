@@ -1,7 +1,4 @@
 #include "MerpSparseEnergy.h"
-#include <mkl.h>
-#include <ipps.h>
-#include <ippvm.h>
 #include <cstring>
 
 #ifdef _WINDOWS
@@ -128,15 +125,15 @@ MerpSparseEnergy::~MerpSparseEnergy()
 //
 // Returns:  
 //		The energy (un-normalized log probability) of the inputed state
-double MerpSparseEnergy::getEnergy(std::vector<uint32_t> & x)
+double MerpSparseEnergy::getEnergy(uint32_t * x)
 {
-	m_x = x;
+	m_x.assign(x, x + m_ndims);
 
 	// Implement random projection - we sum up the columns of W according to x
 
 	std::memset(m_y,0, sizeof(double) * m_nfactors);
 #pragma vector aligned
-	for (uint32_t i = 0; i < x.size(); i++)
+	for (uint32_t i = 0; i < m_ndims; i++)
 	{
 		// Check for each column if we are to sum it
 		if (x[i])
@@ -185,13 +182,13 @@ double MerpSparseEnergy::applyThreshold(double * y)
 //
 // Returns:  
 //		(none)
-void MerpSparseEnergy::sumSampleFactor(std::vector<uint32_t> & x, double* factor_sum,double p)
+void MerpSparseEnergy::sumSampleFactor(uint32_t * x, double* factor_sum,double p)
 {
 	// Implement random projection - we sum up the columns of W according to x
 
 	std::memset(m_y, 0, sizeof(double) * m_nfactors);
 
-	for (uint32_t i = 0; i < x.size(); i++)
+	for (uint32_t i = 0; i < m_ndims; i++)
 	{
 		// Check for each column if we are to sum it
 		if (x[i])
@@ -391,9 +388,9 @@ void MerpSparseEnergy::accept(double * factor_sum, double prob)
 
 
 // Returns the current state of the system
-std::vector<uint32_t> * MerpSparseEnergy::getX()
+uint32_t * MerpSparseEnergy::getX()
 {
-	return &m_x;
+	return m_x.data();
 }
 
 

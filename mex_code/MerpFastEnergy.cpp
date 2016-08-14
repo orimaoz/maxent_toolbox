@@ -106,15 +106,15 @@ MerpFastEnergy::~MerpFastEnergy()
 //
 // Returns:  
 //		The energy (un-normalized log probability) of the inputed state
-double MerpFastEnergy::getEnergy(std::vector<uint32_t> & x)
+double MerpFastEnergy::getEnergy(uint32_t * x)
 {
-	m_x = x;
+	m_x.assign(x, x + m_ndims);
 
 	// Implement random projection - we sum up the columns of W according to x
 
 	std::memset(m_y,0, sizeof(double) * m_nfactors);
 	double * ptrW = m_W;
-	for (uint32_t i = 0; i < x.size(); i++)
+	for (uint32_t i = 0; i < m_ndims; i++)
 	{
 		// Check for each column if we are to sum it
 		if (x[i])
@@ -164,13 +164,13 @@ double MerpFastEnergy::applyThreshold(double * y)
 //
 // Returns:  
 //		(none)
-void MerpFastEnergy::sumSampleFactor(std::vector<uint32_t> & x, double* factor_sum,double p)
+void MerpFastEnergy::sumSampleFactor(uint32_t * x, double* factor_sum,double p)
 {
 	// Implement random projection - we sum up the columns of W according to x
 
 	std::memset(m_y, 0, sizeof(double) * m_nfactors);
 	double * ptrW = m_W;
-	for (uint32_t i = 0; i < x.size(); i++)
+	for (uint32_t i = 0; i < m_ndims; i++)
 	{
 		// Check for each column if we are to sum it
 		if (x[i])
@@ -289,9 +289,9 @@ void MerpFastEnergy::accept(double * factor_sum, double prob)
 
 
 // Returns the current state of the system
-std::vector<uint32_t> * MerpFastEnergy::getX()
+uint32_t * MerpFastEnergy::getX()
 {
-	return &m_x;
+	return m_x.data();
 }
 
 

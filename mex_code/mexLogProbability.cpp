@@ -107,7 +107,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 
 		// compute the log probability (negative energy plus log partition function)
-		pLogprobs[i] = -pModel->getEnergy(x) + z;
+		pLogprobs[i] = -pModel->getEnergy(x.data()) + z;
 
 
 		// advance to next sample

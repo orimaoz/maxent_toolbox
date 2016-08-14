@@ -88,7 +88,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	std::vector<uint32_t> x(pModel->getDim());
 	std::fill(x.begin(), x.end(), 0);
 
-	pModel->getEnergy(x);
+	pModel->getEnergy(x.data());
 
 	// Sum up the un-normalized marginals
 	//recursiveComputeMarginals(pModel,0,pMarginals,z);

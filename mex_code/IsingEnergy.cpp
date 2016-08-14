@@ -2,6 +2,47 @@
 
 #define MAX_LENGTH 500
 
+
+// Constructor - constructs it from a  vector of lagrange multipliers
+IsingEnergy::IsingEnergy(uint32_t ndims, double * lambdas) :
+	m_logz(0)
+{
+	m_ndims = ndims;
+	m_lambdaMatrix = (double*)ippsMalloc_64f(sizeof(double)*ndims*ndims);;
+	m_double_x = (double*)ippsMalloc_64f(sizeof(double)*ndims);
+	m_lambdaVector = lambdas;
+
+	// fill in the matrix of lambdas - first the single factors (matrix diagonal)...
+	double * location = lambdas;
+	for (unsigned long i = 0; i < ndims; i++)
+	{
+		m_lambdaMatrix[i + i*ndims] = *location;
+		location++;
+	}
+
+	// and now the pairs (both sides of the off-diagonal)
+	for (unsigned long i = 0; i < ndims; i++)
+	{
+		for (unsigned long j = i + 1; j < ndims; j++)
+		{
+			m_lambdaMatrix[j + i*ndims] = *location;
+			m_lambdaMatrix[i + j*ndims] = *location;
+			location++;
+		}
+	}
+
+}
+
+
+// destructor
+IsingEnergy::~IsingEnergy()
+{
+	// release allocated memory
+	ippsFree(m_double_x);
+	ippsFree(m_lambdaMatrix);
+}
+
+
 // Accepts a vector x and returns its energy. A class implementing this interface is
 // also expected to store x as the current state of the random walk which is used
 // when proposing a new state.
@@ -11,7 +52,7 @@
 //
 // Returns:  
 //		The energy (un-normalized log probability) of the inputed state
-double IsingEnergy::getEnergy(std::vector<uint32_t> & x)
+double IsingEnergy::getEnergy(uint32_t *  x)
 {
 	double logprob = 0;
 
@@ -49,7 +90,7 @@ double IsingEnergy::getEnergy(std::vector<uint32_t> & x)
 
 
 	// This the value of x for later so we can make incremental changes
-	m_x = x;
+	m_x.assign(x, x + m_ndims);
 
 	m_energy = logprob;
 	m_proposed_energy[0] = m_energy;
@@ -68,7 +109,7 @@ double IsingEnergy::getEnergy(std::vector<uint32_t> & x)
 //
 // Returns:  
 //		(none)
-void IsingEnergy::sumSampleFactor(std::vector<uint32_t> & x, double* factor_sum, double p)
+void IsingEnergy::sumSampleFactor(uint32_t *  x, double* factor_sum, double p)
 {
 
 	// First we will find which values of x are non-zero so we can parse it more efficiently
@@ -129,7 +170,6 @@ double IsingEnergy::propose(uint32_t nbit)
 
 	// Increase the energy if we change from 1 to 0 and decrease it elsewise.
 	// this is equivalent to an "if" statement but hopefully a bit faster.
-	//m_proposed_energy[1]= m_energy + dEnergy * ((((double)m_x[nbit]) * 2) - 1);
 	m_proposed_energy[1]= m_energy - dEnergy * ((((double)m_x[nbit]) * 2) - 1);
 
 	return m_proposed_energy[1];
@@ -161,14 +201,15 @@ void IsingEnergy::accept(double * factor_sum, double prob)
 	// change the state to the proposed state
 	accept();
 
-	sumSampleFactor(m_x,factor_sum,prob);
+	sumSampleFactor(m_x.data(),factor_sum,prob);
 }
 
 
 // Returns the current state of the system
-std::vector<uint32_t> * IsingEnergy::getX()
+uint32_t *  IsingEnergy::getX()
 {
-	return &m_x;
+	//return &m_x;
+	return m_x.data();
 }
 
 

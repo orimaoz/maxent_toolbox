@@ -151,7 +151,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 			
 
 		// Compute the factor and and sum it
-		pModel->sumSampleFactor(x, sum_factors, prob);
+		pModel->sumSampleFactor(x.data(), sum_factors, prob);
 
 		// advance to next sample
 		offset += ndims;

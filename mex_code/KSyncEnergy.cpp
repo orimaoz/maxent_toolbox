@@ -22,7 +22,7 @@ KSyncEnergy::KSyncEnergy(uint32_t nfactors, double * factors) :
 //
 // Returns:  
 //		The energy (un-normalized log probability) of the inputed state
-double KSyncEnergy::getEnergy(std::vector<uint32_t> & x)
+double KSyncEnergy::getEnergy(uint32_t * x)
 {
 	uint32_t bitsum = 0;
 
@@ -35,7 +35,7 @@ double KSyncEnergy::getEnergy(std::vector<uint32_t> & x)
 	}
 
 	// This the value of x for later so we can make incremental changes
-	m_x = x;
+	m_x.assign(x, x + m_ndims);
 
 	m_nbitson = bitsum;
 	m_energy = m_factors[bitsum];
@@ -119,14 +119,14 @@ void KSyncEnergy::accept(double * factor_sum, double p)
 	// change the state to the proposed state
 	accept();
 
-	sumSampleFactor(m_x, factor_sum, p);
+	sumSampleFactor(m_x.data(), factor_sum, p);
 }
 
 
 // Returns the current state of the system
-std::vector<uint32_t> * KSyncEnergy::getX()
+uint32_t * KSyncEnergy::getX()
 {
-	return &m_x;
+	return m_x.data();
 }
 
 // Returns the dimensions of this energy functions' inputs
@@ -152,7 +152,7 @@ uint32_t KSyncEnergy::getNumFactors()
 //
 // Returns:  
 //		(none)
-void KSyncEnergy::sumSampleFactor(std::vector<uint32_t> & x, double * factor_sum, double p)
+void KSyncEnergy::sumSampleFactor(uint32_t * x, double * factor_sum, double p)
 {
 	uint32_t bitsum = 0;
 

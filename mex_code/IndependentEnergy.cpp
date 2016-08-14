@@ -1,5 +1,5 @@
 #include "IndependentEnergy.h"
-
+#include <cstring>
 
 
 // constructor
@@ -8,13 +8,14 @@ m_logz(0)
 {
 	m_ndims = ndims;
 	m_factors = factors;
-
+	m_x = new uint32_t[ndims]; // allocate memory for current state
 }
 
 // destructor
 IndependentEnergy::~IndependentEnergy()
 {
-
+	// remove memory allocated for current state
+	delete m_x;
 }
 
 
@@ -28,12 +29,12 @@ IndependentEnergy::~IndependentEnergy()
 //
 // Returns:  
 //		The energy (un-normalized log probability) of the inputed state
-double IndependentEnergy::getEnergy(std::vector<uint32_t> & x)
+double IndependentEnergy::getEnergy(uint32_t * x)
 {
 	double energy = 0;
 	unsigned long active_bits = 0;
 
-	m_x = x;
+	std::memcpy(m_x, x, m_ndims * sizeof(uint32_t));
 
 	for (unsigned long i = 0; i < m_ndims; i++)
 	{
@@ -111,9 +112,9 @@ void IndependentEnergy::accept(double * factor_sum, double p)
 
 
 // Returns the current state of the system
-std::vector<uint32_t> *IndependentEnergy::getX()
+uint32_t * IndependentEnergy::getX()
 {
-	return &m_x;
+	return m_x;
 }
 
 
@@ -140,7 +141,7 @@ uint32_t IndependentEnergy::getNumFactors()
 //
 // Returns:  
 //		(none)
-void IndependentEnergy::sumSampleFactor(std::vector<uint32_t> & x, double * factor_sum, double p)
+void IndependentEnergy::sumSampleFactor(uint32_t * x, double * factor_sum, double p)
 {
 	double bitsum = 0;
 

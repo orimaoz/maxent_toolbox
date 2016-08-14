@@ -185,7 +185,7 @@ void runWangLandauStep(uint32_t nsteps, std::vector<uint32_t> & x, EnergyFunctio
 
 
 	// compute energy and parameters for initial x
-	current_energy = model.getEnergy(x);
+	current_energy = model.getEnergy(x.data());
 	current_bin = std::lower_bound(bin_limits,bin_limits+nbins-1,current_energy) - bin_limits;
 
 	// iterate...
@@ -233,7 +233,8 @@ void runWangLandauStep(uint32_t nsteps, std::vector<uint32_t> & x, EnergyFunctio
 	}
 
 	// Return x as the last state
-	x = (*model.getX());
+	//x = (*model.getX());
+	x.assign(model.getX(), model.getX() + x.size());
 }
 
 
