@@ -222,11 +222,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	bool bReturnResults = (nlhs>0);  // does the user want us to return anything
 
 	// Allocate an output array
-	unsigned char * pOutputSamples = NULL;
+    uint32_t * pOutputSamples = NULL;
 	if (bReturnResults)
 	{
-		mxArray * samples = mxCreateNumericMatrix(nDims,nSamples, mxUINT8_CLASS, mxREAL);
-		pOutputSamples = (unsigned char*)mxGetData(samples);
+		mxArray * samples = mxCreateNumericMatrix(nDims,nSamples, mxUINT32_CLASS, mxREAL);
+		pOutputSamples = (uint32_t*)mxGetData(samples);
 		plhs[0] = samples;
 	} // bReturnResults 
 

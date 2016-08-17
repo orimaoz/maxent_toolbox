@@ -6,8 +6,9 @@
 #include <vector>
 #include "mtrand.h"
 #include <algorithm>
+#include <cmath>
+#include <cstdlib>
 #include "common.h"
-
 
 
 
@@ -101,7 +102,7 @@ void getEmpiricalMarginals(EnergyFunction * pModel, uint32_t npatterns, uint32_t
 //
 // Returns:  
 //		The energy (un-normalized log probability) of the new state.
-void runGibbsSampler(EnergyFunction * pModel, uint32_t nsteps, uint32_t * x0, unsigned char * pOutputSamples, uint32_t nSeparation, bool bSequentialBits)
+void runGibbsSampler(EnergyFunction * pModel, uint32_t nsteps, uint32_t * x0, uint32_t * pOutputSamples, uint32_t nSeparation, bool bSequentialBits)
 {
 	std::vector<uint32_t> current_x;;  // inputed x is the st
 	std::vector<uint32_t> proposed_x;

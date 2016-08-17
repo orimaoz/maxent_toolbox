@@ -4,11 +4,14 @@
 
 
 #pragma once
+#include <cstdlib>
+
+
 
 // comment these out if you don't want MKL and IPP
-//#include <mkl.h>
-//#include <ipps.h>
-//#include <ippvm.h>
+#include <mkl.h>
+#include <ipps.h>
+#include <ippvm.h>
 
 
 #if defined(_MKL_H_) || defined(__IPPDEFS_H__)

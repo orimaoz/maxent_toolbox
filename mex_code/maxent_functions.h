@@ -37,8 +37,8 @@ void getEmpiricalMarginals(EnergyFunction * pModel, uint32_t npatterns, uint32_t
 //
 // Returns:  
 //		The energy (un-normalized log probability) of the new state.
-void runGibbsSampler(EnergyFunction * pModel, uint32_t nsteps, uint32_t * x0, unsigned char * pOutputSamples, uint32_t nSeparation, bool bSequentialBits);
-
+void runGibbsSampler(EnergyFunction * pModel, uint32_t nsteps, uint32_t * x0, uint32_t * pOutputSamples, uint32_t nSeparation, bool bSequentialBits);
+//void runGibbsSampler(EnergyFunction * pModel, uint32_t nsteps, uint32_t * x0, unsigned char * pOutputSamples, uint32_t nSeparation, bool bSequentialBits);
 
 // Returns the marginals of a model (exhaustively computed)
 // Input:
