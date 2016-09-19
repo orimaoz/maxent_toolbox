@@ -36,6 +36,42 @@ Quick Start Guide</h2>
 <p>This section still has to be written. Meanwhile you can get a good idea of how to use the functionality of this
 package by taking a look at some <a href="maxent_example.html">example code</a>.</p>
 
+
+<p>The basic purpose of the maxent toolbox is learning the probability distributions of multi-dimensional patterns of binary data from a limited set of sample. These probability distributions are approximated as maximum entropy probability distributions, which observe only a set of features of the patterns</p>
+
+<p>Let's assume that we have a probability distribution of 20-bit binary patterns: 00000000000000000000, 00000000000000000001, 00000000000000000010, 00000000000000000011, ... , 11111111111111111111. Each of these 2^20 patterns has a different frequency, and these frequencies
+can be represented as a probability distribution p(x) which assigns a probability to each pattern:<p>
+<p> p(11010001110001100100) =  0.000053</p>
+
+<p> Now let's say that we obtained 5000 independent samples from this distribution of binary patterns (for example, we measured them in an experiment). We clump these 5000 patterns of 20 bits 
+in a (5000 x 20) matrix called <i>raster</i> in MATLAB:
+<pre>
+<b>Name           Size             Bytes  Class     Attributes</b>
+raster      5000x20            400000  uint32     </pre>
+  
+<p>From these 5000 examples we would like to extrapolate the probabilities of encountering each of the 2^20=1048576 patterns. We start by picking which class of maximum-entropy model to use - we will use the <a href="http://www.weizmann.ac.il/neurobiology/labs/schneidman/Publications/Schneidman+al_2006-Nature.pdf">pairwise maximum entropy model</a> (sometimes known as Ising model) which represents the distribution by the average occurances of bits and the correlations between bits. We start by initializing a model of this type:</p>
+
+<pre>model = createModel(20,'ising');</pre>
+
+<p>Then we need to extract the model parameters from the data. This is done by:</p>
+
+<pre>model = trainModel(model, raster,'threshold',1);</pre>
+<p>where the optional <i>threshold</i> argument controls how closely we want to fit the model to the experimental data, and is in units of standard deviations of the measured marginals (refer to the documentation of <a href="trainModel.html">trainModel</a> function for more details). This returns a pairwise maximum entropy model trained on the <i>raster</i> dataset.</p>
+
+<p>Now we want to predict the frequency (probability) of a few input patterns. We can use the <a href="getLogProbability.html">getLogProbability</a> function:</p>
+
+<pre>
+x = [0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0;
+     1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0;
+     0,1,1,0,0,1,0,0,1,0,0,0,1,0,1,1,0,0,0,0]';
+
+logprobs = getLogProbability(model, raster);
+probabilies = exp(logprobs);
+</pre>
+
+
+
+
 </section>
 <footer>
 <p>This project is maintained by <a href="https://github.com/orimaoz">orimaoz</a></p>
