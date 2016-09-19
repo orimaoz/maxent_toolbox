@@ -133,7 +133,8 @@ void runGibbsSampler(EnergyFunction * pModel, uint32_t nsteps, uint32_t * x0, ui
 
 
 	// Initial energy for x
-	current_energy = pModel->getEnergy(current_x.data());
+	//current_energy = pModel->getEnergy(current_x.data());
+	current_energy = pModel->getEnergy(&current_x.front()); // pre-c++11
 
 	for (uint32_t outputIdx = 0; outputIdx < nsteps; outputIdx++)
 	{
@@ -202,7 +203,8 @@ void getMarginals(EnergyFunction * pModel, double * pMarginals)
 	
 	std::vector<uint32_t> x(pModel->getDim());
 	std::fill(x.begin(), x.end(), 0);
-	pModel->getEnergy(x.data());
+//	pModel->getEnergy(x.data());
+    pModel->getEnergy(&x.front());   // pre-x11++
 
 	// make a memory-aligned version of the marginals (on 64-bit boundry for faster operation)
 	double * pAlignedMarginals = (double*)malloc_aligned(sizeof(double)*nfactors);
