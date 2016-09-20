@@ -8,8 +8,8 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
+#include <cstring>
 #include "common.h"
-
 
 
 // Returns the log probabilities of samples according to the model
