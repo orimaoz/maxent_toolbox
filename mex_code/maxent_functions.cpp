@@ -194,7 +194,10 @@ void recursiveComputeMarginals(EnergyFunction * pModel, unsigned int curr_bit, d
 // Input:
 //		pModel (in)			- model to generate the samples from
 //		pMarginals (out)	- preallocated buffer in which the marginals are returned
-void getMarginals(EnergyFunction * pModel, double * pMarginals)
+// 
+// Returns: 
+//		The partition function of the model.
+double getMarginals(EnergyFunction * pModel, double * pMarginals)
 {
 	// Fix the starting state as all zeros
 	int n = pModel->getDim();
@@ -223,6 +226,7 @@ void getMarginals(EnergyFunction * pModel, double * pMarginals)
 	}
 
 	free_aligned(pAlignedMarginals);	// release the aligned buffer
+	return z;
 }
 
 

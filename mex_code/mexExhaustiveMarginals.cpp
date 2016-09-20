@@ -31,6 +31,7 @@ void printVector(std::strstream & str, char* name, double vec[], size_t len);
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
 	EnergyFunction* pModel;
+	double z;
 
 	if(nrhs<1) {
 	    mexErrMsgIdAndTxt("mexExhaustiveMarginals:init",
@@ -67,7 +68,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	double * pMarginals = (double*)mxGetData(mxMarginals);
 	plhs[0] = mxMarginals;
 
-	getMarginals(pModel, pMarginals);
+	z = getMarginals(pModel, pMarginals);
+
+	// return the partition function
+	plhs[1] = mxCreateDoubleScalar(z);
 	
 	// Delete the model that we had previously allocated
 	delete pModel;	

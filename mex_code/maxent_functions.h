@@ -44,7 +44,10 @@ void runGibbsSampler(EnergyFunction * pModel, uint32_t nsteps, uint32_t * x0, ui
 // Input:
 //		pModel (in)			- model to generate the samples from
 //		pMarginals (out		- preallocated buffer in which the marginals are returned
-void getMarginals(EnergyFunction * pModel, double * pMarginals);
+//
+// Returns: 
+//		The partition function of the model.
+double getMarginals(EnergyFunction * pModel, double * pMarginals);
 
 
 // Runs the Wang-Landau steps of random walk on the energy function
