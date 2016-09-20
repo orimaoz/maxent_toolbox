@@ -47,5 +47,8 @@
     <ClCompile Include="..\..\mexExhaustiveMarginals.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\maxent_functions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

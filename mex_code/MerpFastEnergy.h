@@ -2,14 +2,8 @@
 // Ori Maoz 07/2014
 
 #include "EnergyFunction.h"
-#include <mkl.h>
-#include <ipps.h>
-
-#ifdef _WINDOWS
-#define DECLARE_ALIGNED _declspec(align(64))
-#else
-#define DECLARE_ALIGNED
-#endif
+#include <vector>
+#include "common.h"
 
 class MerpFastEnergy : public EnergyFunction
 {
@@ -34,7 +28,7 @@ public:
 	//
 	// Returns:  
 	//		The energy (un-normalized log probability) of the inputed state
-	virtual double getEnergy(std::vector<uint32_t> & x);
+	virtual double getEnergy(uint32_t * x);
 
 	// Proposes a new state obtained by a single bit-flip from the current state,
 	// and returns the new energy level. This implementation of this function may assume that getEnergy() has been called
@@ -71,7 +65,7 @@ public:
 	virtual void accept(double * factor_sum, double p);
 
 	// Returns the current state of the system
-	virtual std::vector<uint32_t> * getX();
+	virtual uint32_t * getX();
 
 	// Returns the dimensions of this energy functions' inputs
 	virtual uint32_t getDim();
@@ -89,7 +83,7 @@ public:
 	//
 	// Returns:  
 	//		(none)
-	virtual void sumSampleFactor(std::vector<uint32_t> & x, double * factor_sum, double p);
+	virtual void sumSampleFactor(uint32_t * x, double * factor_sum, double p);
 
 	// Returns the partition function (it it is known, otherwise just returns 0)
 	virtual double getLogZ();

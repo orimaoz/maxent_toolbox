@@ -20,6 +20,8 @@
 #include "mex.h"
 #include "mtrand.h"
 
+#include "maxent_functions.h"
+#include "matlab_utils.h"
 #include "EnergyFunctionFactory.h"
 
 #include <algorithm>
@@ -80,47 +82,21 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	double * pLogprobs = (double*)mxGetData(mxLogprobs);
 	plhs[0] = mxLogprobs;
 
-	// Get the log probability for each sample
-	double z = pModel->getLogZ();
-	std::vector<uint32_t> x;
-	uint32_t offset = 0;
-	for (size_t i = 0; i < nsamples; i++)
-	{
-		if ((sampleClassid == mxUINT32_CLASS) || (sampleClassid == mxINT32_CLASS))
-		{
-			// fetch the sample
-			x.assign((uint32_t*)px + offset, (uint32_t*)px + offset + ndims);
-		}
-		else if ((sampleClassid == mxCHAR_CLASS) || (sampleClassid == mxLOGICAL_CLASS) || (sampleClassid == mxUINT8_CLASS) || (sampleClassid == mxINT8_CLASS))
-		{
-			x.assign((unsigned char*)px + offset, (unsigned char*)px + offset + ndims);
-		}
-		else if (sampleClassid == mxDOUBLE_CLASS)
-		{
-			x.assign((double*)px + offset, (double*)px + offset + ndims);
-		}
-		else
-		{
-			mexErrMsgIdAndTxt("mexLogProbability:init",
-				"x is of an unsupported type");
-		}
+
+	uint32_t * pInputArray = reallocate_uint32(px, sampleClassid, nsamples*ndims);
 
 
-		// compute the log probability (negative energy plus log partition function)
-		pLogprobs[i] = -pModel->getEnergy(x) + z;
-
-
-		// advance to next sample
-		offset += ndims;
-	}
-
+	getLogProbability(pModel, nsamples, pInputArray, pLogprobs);
 
 	// Delete the model that we had previously allocated
 	delete pModel;
+
+	if (pInputArray != px)
+	{
+		delete [] pInputArray;
+	}
 	
 }
-
-
 
 
 // Prints the beginning and end of a vector to the display

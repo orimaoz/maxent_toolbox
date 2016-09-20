@@ -1,14 +1,5 @@
 #include "MerpSparseEnergy.h"
-#include <mkl.h>
-#include <ipps.h>
-#include <ippvm.h>
 #include <cstring>
-
-#ifdef _WINDOWS
-#define DECLARE_ALIGNED _declspec(align(64))
-#else
-#define DECLARE_ALIGNED
-#endif
 
 
 // Constructor - constructs it from a random projection and a single threshold
@@ -26,16 +17,16 @@ MerpSparseEnergy::MerpSparseEnergy(double* in_W, double * in_lambda, uint32_t nc
 
 
 	// allocate required arrays
-	m_W_val = (double**)ippsMalloc_64f(sizeof(double*)*m_ndims);	// values of each column of W
-	m_W_idx = (MKL_INT**)ippsMalloc_64f(sizeof(MKL_INT*)*m_ndims);	// indices for each column of W
-	m_W_nz = (uint32_t*)ippsMalloc_64f(sizeof(uint32_t)*m_ndims);	// # of elements for each column of W
+	m_W_val = (double**)malloc_aligned(sizeof(double*)*m_ndims);	// values of each column of W
+	m_W_idx = (MKL_INT**)malloc_aligned(sizeof(MKL_INT*)*m_ndims);	// indices for each column of W
+	m_W_nz = (uint32_t*)malloc_aligned(sizeof(uint32_t)*m_ndims);	// # of elements for each column of W
 
-	m_sparse_lambda = (double**)ippsMalloc_64f(sizeof(double*)*m_ndims);	// values of lambda for each column of W
+	m_sparse_lambda = (double**)malloc_aligned(sizeof(double*)*m_ndims);	// values of lambda for each column of W
 
-	m_lambda = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
-	m_threshold = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
-	m_y = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
-	m_tmp = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
+	m_lambda = (double*)malloc_aligned(sizeof(double)*m_nfactors);
+	m_threshold = (double*)malloc_aligned(sizeof(double)*m_nfactors);
+	m_y = (double*)malloc_aligned(sizeof(double)*m_nfactors);
+	m_tmp = (double*)malloc_aligned(sizeof(double)*m_nfactors);
 
 
 	// copy data to the arrays
@@ -48,8 +39,8 @@ MerpSparseEnergy::MerpSparseEnergy(double* in_W, double * in_lambda, uint32_t nc
 	{
 		// Allocate a long enough column so that we can hold even matrix with all elements nonzero.
 		// This doesn't take so much memory so we don't really need to conserve (which would mean to pre-count)
-		m_W_val[idxCol] = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);	// values of current column
-		m_W_idx[idxCol] = (MKL_INT*)ippsMalloc_64f(sizeof(MKL_INT)*m_nfactors);	// indices of current column
+		m_W_val[idxCol] = (double*)malloc_aligned(sizeof(double)*m_nfactors);	// values of current column
+		m_W_idx[idxCol] = (MKL_INT*)malloc_aligned(sizeof(MKL_INT)*m_nfactors);	// indices of current column
 
 		double * p_sparse_W_val = m_W_val[idxCol];
 		MKL_INT * p_sparse_W_idx = m_W_idx[idxCol];
@@ -77,7 +68,8 @@ MerpSparseEnergy::MerpSparseEnergy(double* in_W, double * in_lambda, uint32_t nc
 	for (uint32_t idxLambda = 0; idxLambda < ncells; idxLambda++)
 	{
 		// allocate memory for this sparse bit of lambda and gather the relevant entries into the array
-		m_sparse_lambda[idxLambda] = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
+		m_sparse_lambda[idxLambda] = (double*)malloc_aligned(sizeof(double)*m_nfactors);
+
 		cblas_dgthr(m_W_nz[idxLambda], m_lambda, m_sparse_lambda[idxLambda], m_W_idx[idxLambda]);
 	}
 
@@ -96,25 +88,25 @@ MerpSparseEnergy::~MerpSparseEnergy()
 	for (uint32_t idxLambda = 0; idxLambda < m_ndims; idxLambda++)
 	{
 		// allocate memory for this sparse bit of lambda and gather the relevant entries into the array
-		ippsFree(m_sparse_lambda[idxLambda]);
+		free_aligned(m_sparse_lambda[idxLambda]);
 	}
-	ippsFree(m_sparse_lambda);
+	free_aligned(m_sparse_lambda);
 
 	// Free the sparse matrix W - first all the columns and then the base
 	for (uint32_t idxCol = 0; idxCol < m_ndims; idxCol++)
 	{
-		ippsFree(m_W_val[idxCol]);
-		ippsFree(m_W_idx[idxCol]);
+		free_aligned(m_W_val[idxCol]);
+		free_aligned(m_W_idx[idxCol]);
 	}
 
-	ippsFree(m_W_val);
-	ippsFree(m_W_idx);
-	ippsFree(m_W_nz);
+	free_aligned(m_W_val);
+	free_aligned(m_W_idx);
+	free_aligned(m_W_nz);
 
-	ippsFree(m_lambda);
-	ippsFree(m_threshold);
-	ippsFree(m_y);
-	ippsFree(m_tmp);
+	free_aligned(m_lambda);
+	free_aligned(m_threshold);
+	free_aligned(m_y);
+	free_aligned(m_tmp);
 }
 
 
@@ -128,15 +120,15 @@ MerpSparseEnergy::~MerpSparseEnergy()
 //
 // Returns:  
 //		The energy (un-normalized log probability) of the inputed state
-double MerpSparseEnergy::getEnergy(std::vector<uint32_t> & x)
+double MerpSparseEnergy::getEnergy(uint32_t * x)
 {
-	m_x = x;
+	m_x.assign(x, x + m_ndims);
 
 	// Implement random projection - we sum up the columns of W according to x
 
 	std::memset(m_y,0, sizeof(double) * m_nfactors);
 #pragma vector aligned
-	for (uint32_t i = 0; i < x.size(); i++)
+	for (uint32_t i = 0; i < m_ndims; i++)
 	{
 		// Check for each column if we are to sum it
 		if (x[i])
@@ -185,13 +177,13 @@ double MerpSparseEnergy::applyThreshold(double * y)
 //
 // Returns:  
 //		(none)
-void MerpSparseEnergy::sumSampleFactor(std::vector<uint32_t> & x, double* factor_sum,double p)
+void MerpSparseEnergy::sumSampleFactor(uint32_t * x, double* factor_sum,double p)
 {
 	// Implement random projection - we sum up the columns of W according to x
 
 	std::memset(m_y, 0, sizeof(double) * m_nfactors);
 
-	for (uint32_t i = 0; i < x.size(); i++)
+	for (uint32_t i = 0; i < m_ndims; i++)
 	{
 		// Check for each column if we are to sum it
 		if (x[i])
@@ -204,6 +196,7 @@ void MerpSparseEnergy::sumSampleFactor(std::vector<uint32_t> & x, double* factor
 
 	// subtract the tresholds so we can use check if we are above or below 0
 	ippsSub_64f_I(m_threshold, m_y, m_nfactors);
+
 
 	// set spiking/nonspiking according to the cutoff threshold
 	#pragma vector aligned 
@@ -251,6 +244,7 @@ double MerpSparseEnergy::getSumDiffBitOn(uint32_t nbit)
 
 	// gather the relevant m_y entries into a compressed aray
 	cblas_dgthr(m_W_nz[nbit], m_y, m_tmp, m_W_idx[nbit]);
+
 	double * sparse_lambda = m_sparse_lambda[nbit];
 
 	// now we can have a tight loop on the gathered data
@@ -267,6 +261,8 @@ double MerpSparseEnergy::getSumDiffBitOn(uint32_t nbit)
 	// now add the relevant elements of m_y and see what passed the threshold
 	ippsAdd_64f_I(val, m_tmp, m_W_nz[nbit]);
 
+
+
 #pragma vector aligned
 	for (uint32_t i = 0; i < m_W_nz[nbit]; i++)
 	{
@@ -282,7 +278,6 @@ double MerpSparseEnergy::getSumDiffBitOn(uint32_t nbit)
 
 
 
-
 double MerpSparseEnergy::getSumDiffBitOff(uint32_t nbit)
 {
 	MKL_INT * idx = m_W_idx[nbit];
@@ -291,6 +286,7 @@ double MerpSparseEnergy::getSumDiffBitOff(uint32_t nbit)
 
 	// gather the relevant m_y entries into a compressed aray
 	cblas_dgthr(m_W_nz[nbit], m_y, m_tmp, m_W_idx[nbit]);
+
 	double * sparse_lambda = m_sparse_lambda[nbit];
 
 	// now we can have a tight loop on the gathered data
@@ -307,6 +303,7 @@ double MerpSparseEnergy::getSumDiffBitOff(uint32_t nbit)
 	// now subtract the relevant elements of m_y and see what passed the threshold
 	ippsSub_64f_I(val, m_tmp, m_W_nz[nbit]);
 
+	
 #pragma vector aligned
 	for (uint32_t i = 0; i < m_W_nz[nbit]; i++)
 	{
@@ -341,7 +338,6 @@ double MerpSparseEnergy::accept(uint32_t bAccept)
 		{
 			// bit changing 1->0
 			cblas_daxpyi(m_W_nz[m_proposed_bit], -1, m_W_val[m_proposed_bit], m_W_idx[m_proposed_bit], m_y);
-	
 		}
 		else
 		{
@@ -391,9 +387,9 @@ void MerpSparseEnergy::accept(double * factor_sum, double prob)
 
 
 // Returns the current state of the system
-std::vector<uint32_t> * MerpSparseEnergy::getX()
+uint32_t * MerpSparseEnergy::getX()
 {
-	return &m_x;
+	return m_x.data();
 }
 
 

@@ -11,6 +11,8 @@
 #include <stdint.h>
 #include "mex.h"
 #include "mtrand.h"
+#include "matlab_utils.h"
+#include "maxent_functions.h"
 
 #include "EnergyFunctionFactory.h"
 #include <mkl.h>
@@ -109,64 +111,30 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	mxArray * mxMarginals= mxCreateNumericMatrix(1,nFactors, mxDOUBLE_CLASS, mxREAL);
 	double * pMarginals = (double*)mxGetData(mxMarginals);
 	plhs[0] = mxMarginals;
+	
+	// make sure that the datatype is correct
+	uint32_t * pInputArray = reallocate_uint32(px, sampleClassid, nsamples*ndims);
 
-	// Get the log probability for each sample
-	double z = pModel->getLogZ();
-	std::vector<uint32_t> x;
+	// build a temp output array that is aligned to 64-bit boundaries
 	double * sum_factors = (double*)mkl_malloc(sizeof(double)*nFactors, 64);
-	memset(sum_factors, 0, sizeof(double)*nFactors);
-	uint32_t offset = 0;
-	for (size_t i=0; i < nsamples; i++)
-	{
-		if ((sampleClassid == mxUINT32_CLASS) || (sampleClassid == mxINT32_CLASS))	
-		{
-			// fetch the sample
-			x.assign((uint32_t*)px + offset,(uint32_t*)px + offset +ndims);
-		}
-		else if ((sampleClassid == mxCHAR_CLASS) || (sampleClassid == mxLOGICAL_CLASS) || (sampleClassid == mxUINT8_CLASS)|| (sampleClassid == mxINT8_CLASS))
-		{
-			x.assign((unsigned char*)px + offset,(unsigned char*)px + offset +ndims);
-		}
-		else if (sampleClassid == mxDOUBLE_CLASS)	
-		{
-			x.assign((double*)px + offset,(double*)px + offset + ndims);		
-		}
-		else
-		{
-			mexErrMsgIdAndTxt("mexEmpiricalMarginals:init",
-							  "x is of an unsupported type");
-		}
 
-		// get the probability for this factor (if it was given)
-		double prob;
-		if (bInputedProbabilities)
-		{
-			prob = pInputProbabilities[i];
-		}
-		else
-		{
-			// default is uniform probability. We will perform the division later.
-			prob = uniform_prob;
-		}
-			
+	// run the main function and get the marginals
+	getEmpiricalMarginals(pModel, nsamples, pInputArray, pInputProbabilities, sum_factors);
 
-		// Compute the factor and and sum it
-		pModel->sumSampleFactor(x, sum_factors, prob);
 
-		// advance to next sample
-		offset += ndims;
-	}
-
-	// copy it to the output array
-	for (size_t i=0; i < nFactors;i++)
-	{
-		pMarginals[i] = sum_factors[i];
-	}
+	// copy the result to the output array and release the temp array
+	memcpy(pMarginals, sum_factors, sizeof(double) * nFactors);
 	mkl_free(sum_factors);
 
 	// Delete the model that we had previously allocated
 	delete pModel;
-	
+
+	// if we needed to translate the input datatype, delete that temporary buffer too
+	if (pInputArray != px)
+	{
+		delete[] pInputArray;
+	}
+
 }
 
 

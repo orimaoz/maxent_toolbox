@@ -146,7 +146,7 @@ EnergyFunction * EnergyFunctionFactory::createKIsingEnergy(const mxArray * model
 	}
 
 	// Initialize the Ising model with the parameters we collected
-	pModel = new KIsingEnergy(ncells,nLambdas,pLambdas);
+	pModel = new KIsingEnergy(ncells,pLambdas);
 
 	// Get the partition function (if it exists)
 	mxArray * mxZ = mxGetField(model_params,0,"z");

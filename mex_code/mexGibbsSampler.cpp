@@ -18,9 +18,10 @@
 #include <mex.h>
 #include "mtrand.h"
 
-#include <mkl.h>
 #include "EnergyFunction.h"
 #include "EnergyFunctionFactory.h"
+
+#include "maxent_functions.h"
 
 static bool bAlreadySeededRand = false;
 bool bSequentialBits = true;
@@ -32,8 +33,6 @@ bool bSequentialBits = true;
 #ifdef DEBUG_PRINTS
 void printVector(std::strstream & str, char* name, double vec[], size_t len);
 #endif
-
-void runGibbsSampler(uint32_t nSteps, std::vector<uint32_t> & initial_x, unsigned char * pOutputSamples, EnergyFunction & model, uint32_t nSeparation,uint32_t bReturnResults);
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
@@ -223,22 +222,22 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	bool bReturnResults = (nlhs>0);  // does the user want us to return anything
 
 	// Allocate an output array
-	unsigned char * pOutputSamples = NULL;
+    uint32_t * pOutputSamples = NULL;
 	if (bReturnResults)
 	{
-		mxArray * samples = mxCreateNumericMatrix(nDims,nSamples, mxUINT8_CLASS, mxREAL);
-		pOutputSamples = (unsigned char*)mxGetData(samples);
+		mxArray * samples = mxCreateNumericMatrix(nDims,nSamples, mxUINT32_CLASS, mxREAL);
+		pOutputSamples = (uint32_t*)mxGetData(samples);
 		plhs[0] = samples;
 	} // bReturnResults 
 
 	// If there is a burnin phase, start by cycling through some samples without returning them
 	if (nBurnin>0)
 	{
-		runGibbsSampler(nBurnin, initial_x, pOutputSamples, *pModel, nSeparation,false);
+		runGibbsSampler(pModel, nBurnin, initial_x.data(), NULL, nSeparation, bSequentialBits);
 	}
 
 	// Now work on the samples we do want
-	runGibbsSampler(nSamples, initial_x, pOutputSamples, *pModel, nSeparation,bReturnResults);
+	runGibbsSampler(pModel, nSamples, initial_x.data(), pOutputSamples, nSeparation, bSequentialBits);
 
 
 	if (b_supplied_x0)
@@ -264,100 +263,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	// Delete the model that we had previously allocated
 	delete pModel;
 	
-}
-
-
-// Performs a Metropolis-Hasting type MCMC random walk on the state space and returns samples.
-// For an n-bit word, n bit flips are performed between each returned sample. This can be scaled up with the "nSeparation" argument.
-// The bits are flipped in a sequential order unless specified otherwise by the global bSequentialBits argument.
-//
-// Input:
-//		nsteps (in)			- number of samples to generate
-//		x (in/out)			- accepts initial state and returns the final state of the random walk.
-//		pOutputSamples (out)- pointer to preallocated array that will contain the output samples
-//		model (in)			- model to generate the samples from
-//		nSeparation (in)	- how many samples between every returned sample. Is used to generate less-correlated data.
-//		bReturnResults (in) - If true, pOutputSamples is used to return the results. Otherwise it is ignored and all the samples are thrown away,
-//							in this case the function is used to perform burn-in.
-//
-// Returns:  
-//		The energy (un-normalized log probability) of the new state.
-void runGibbsSampler(uint32_t nsteps, std::vector<uint32_t> & x, unsigned char * pOutputSamples, EnergyFunction & model, uint32_t nSeparation, uint32_t bReturnResults)
-{
-	std::vector<uint32_t> current_x(x);  // inputed x is the st
-	std::vector<uint32_t> proposed_x;
-	double current_energy=0;  // energy of the current state
-	double proposed_energy=0; // energy of the proposed state
-	double transition_probability;
-	double rand_double;
-	uint32_t bit_to_flip=0;
-	MTRand engine_double; // Random number generator. Class is a singleton so it's
-					// ok that it's just sitting on the stack like this
-	MTRand_int32 engine_integer; // Same but for integers. It shares the internal state
-				// of the other engine so does not need to be initialized anywhere.
-
-	uint32_t n = x.size(); // dimension of the data
-
-    if (!bSequentialBits)
-    {
-        // Bits to flip are chosen randomly - randomly choose the last bit (because usually we do this
-        // only at the end of the loop, and we don't want the first bit to be fixed at zero)
-        bit_to_flip = engine_integer() % x.size();
-    }
-
-    
-	// Initial energy for x
-	current_energy = model.getEnergy(x);
-
-	for (uint32_t outputIdx = 0; outputIdx < nsteps; outputIdx++)
-	{
-		// For each sample make as many steps as needed		
-		for (uint32_t iteration = 0; iteration < nSeparation; iteration++)
-		{
-
-            // Find the energy and bin of the proposed state
-            proposed_energy = model.propose(bit_to_flip);
-            
-            // Transition probability is exponential in the difference in densities
-            transition_probability = exp(current_energy - proposed_energy);
-            
-            // Randomly choose if to accept or reject the proposal
-            rand_double = engine_double();
-            
-            uint32_t bAccepted = rand_double < transition_probability;
-            current_energy = model.accept(bAccepted);
-            
-            if (bSequentialBits)
-            {
-                // Bits are flipped one by one in a sequential order
-                bit_to_flip = (bit_to_flip + 1) % x.size();
-            }
-            else
-            {
-                // Bits to flip are chosen randomly
-                bit_to_flip = engine_integer() % x.size();
-            }
-            
-            
-		}
-
-		if (bReturnResults)
-		{
-			std::vector<uint32_t> * px = model.getX();
-			for (unsigned int i = 0; i < n; i++)
-			{
-				pOutputSamples[outputIdx*n + i] = ((*px)[i] == 1);
-			}
-		}
-	}
-
-	// Return x as the last state
-	for (unsigned int i=0; i < n; i++)
-	{
-		std::vector<uint32_t> * px = model.getX();
-		x[i] = ((*px)[i] == 1);
-	}
-
 }
 
 #ifdef DEBUG_PRINTS

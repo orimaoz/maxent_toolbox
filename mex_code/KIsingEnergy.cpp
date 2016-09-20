@@ -3,7 +3,7 @@
 
 
 // Constructor - constructs it with a set of factors
-KIsingEnergy::KIsingEnergy(uint32_t ncells, uint32_t nfactors, double * factors) :
+KIsingEnergy::KIsingEnergy(uint32_t ncells, double * factors) :
 	m_KSyncEnergy(ncells + 1, factors),
 	m_IsingEnergy(ncells, factors + (ncells + 1)),
 	m_logz(0)
@@ -11,7 +11,6 @@ KIsingEnergy::KIsingEnergy(uint32_t ncells, uint32_t nfactors, double * factors)
 	// The first (n+1) factors are k-sync factors, the rest are ising			
 
 	m_ndims = ncells;
-	m_nfactors = nfactors;
 }
 
 
@@ -24,7 +23,7 @@ KIsingEnergy::KIsingEnergy(uint32_t ncells, uint32_t nfactors, double * factors)
 //
 // Returns:  
 //		The energy (un-normalized log probability) of the inputed state
-double KIsingEnergy::getEnergy(std::vector<uint32_t> & x)
+double KIsingEnergy::getEnergy(uint32_t * x)
 {
 	return m_KSyncEnergy.getEnergy(x) + m_IsingEnergy.getEnergy(x);
 }
@@ -77,7 +76,7 @@ void KIsingEnergy::accept(double * factor_sum, double prob)
 
 
 // Returns the current state of the system
-std::vector<uint32_t> * KIsingEnergy::getX()
+uint32_t * KIsingEnergy::getX()
 {
 	return m_IsingEnergy.getX();
 }
@@ -91,7 +90,7 @@ uint32_t KIsingEnergy::getDim()
 // Returns the number of factors (parameters) of the model
 uint32_t KIsingEnergy::getNumFactors()
 {
-	return m_nfactors;
+	return m_KSyncEnergy.getNumFactors() + m_IsingEnergy.getNumFactors();
 }
 
 // Adds the factors of the inputed sample to a vector of factor sums, multiplied by the inputed probabilities. This is mainly used to compute marginals.
@@ -104,7 +103,7 @@ uint32_t KIsingEnergy::getNumFactors()
 //
 // Returns:  
 //		(none)
-void KIsingEnergy::sumSampleFactor(std::vector<uint32_t> & x, double * factor_sum, double p)
+void KIsingEnergy::sumSampleFactor(uint32_t * x, double * factor_sum, double p)
 {
 	// Each of the energy functions only sees part of the factors, so we transfer
 	// them corresponding halves of the factor sum to each of the sub-functions

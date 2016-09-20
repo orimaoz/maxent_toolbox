@@ -55,7 +55,7 @@ net.z = 0;
 
 % if the model is sparse then we take advantage of the sparsity. If it is not sparse enough, it is better
 % to work in a non-sparse manner. We choose this according to a ballpark estimate (TODO: measure speeds later)
-if sparsity < 0.4
+if sparsity < 0.4   
     net.type = 'merpsparse';
 else
     net.type = 'merp';

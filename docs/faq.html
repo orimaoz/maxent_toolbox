@@ -22,8 +22,7 @@
 
 
         <ul>
-          <li><a href="https://github.com/orimaoz/maxent_toolbox/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/orimaoz/maxent_toolbox/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox/releases/latest">Download <strong>Latest version</strong></a></li>
           <li><a href="https://github.com/orimaoz/maxent_toolbox">View On <strong>GitHub</strong></a></li>
         </ul>
       </header>
@@ -34,17 +33,15 @@
 
 
 
-<h3>Can I use the maxent toolbox to learn distributions of non-binary inputs (for examplem spike counts)?</h3>
+<h3>Can I use the maxent toolbox to learn distributions of non-binary inputs (for example spike counts)?</h3>
 <p>The current version only supports binary patterns. In theory the same approach will work for other inputs,
 but some of the optimizations we used to make the package run faster made use of the assumption
 that each input dimension is either 0 or 1. We might extend it to support larger ranges of inputs if there
 is sufficient demand so <a href="mailto:orimaoz@gmail.com">let us know</a>.</p>
 
 
-<h3>Does the maxent toolbox support other environments (Python, R...)?</h3>
-<p>No, it does not. We did consider making a version for Python however compiling the C++ code (which uses the 
-Intel MKL/IPP libraries) to work with Python is tricky and we never got around to it. We might still attempt it
-if there is sufficient demand so <a href="mailto:orimaoz@gmail.com">let us know</a>.</p>
+<h3>Does the maxent toolbox support python?</h3>
+<p>There is an experimental port to Python but it is relatively immature and lacks some of the  optimizations that the MATLAB version has. <a href="mailto:orimaoz@gmail.com">Contact us</a> if you are interested in trying it out.</p>
 
 <h3>Is the maxent toolbox multi-core?</h3>
 <p>The maxent package currently uses only one CPU core, which was useful for us as we used a computing cluster

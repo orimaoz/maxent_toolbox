@@ -1,15 +1,7 @@
 #include "MerpFastEnergy.h"
-#include <mkl.h>
-#include <ipps.h>
-#include <ippvm.h>
 #include <cmath>
 #include <cstring>
 
-#ifdef _WINDOWS
-#define DECLARE_ALIGNED _declspec(align(64))
-#else
-#define DECLARE_ALIGNED
-#endif
 
 
 // Constructor - constructs it from a random projection and a single threshold
@@ -27,12 +19,12 @@ MerpFastEnergy::MerpFastEnergy(double* in_W, double * in_lambda, uint32_t ncells
 
 
 	// allocate required arrays
-	m_W = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors * m_ndims);
-	m_lambda = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
-	m_threshold = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
-	m_y = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
-	m_proposed_y = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
-	m_tmp = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
+	m_W = (double*)malloc_aligned(sizeof(double)*m_nfactors * m_ndims);
+	m_lambda = (double*)malloc_aligned(sizeof(double)*m_nfactors);
+	m_threshold = (double*)malloc_aligned(sizeof(double)*m_nfactors);
+	m_y = (double*)malloc_aligned(sizeof(double)*m_nfactors);
+	m_proposed_y = (double*)malloc_aligned(sizeof(double)*m_nfactors);
+	m_tmp = (double*)malloc_aligned(sizeof(double)*m_nfactors);
 
 
 
@@ -63,12 +55,12 @@ MerpFastEnergy::MerpFastEnergy(double* in_W, double * in_lambda, uint32_t ncells
 
 
 	// allocate required arrays
-	m_W = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors * m_ndims);
-	m_lambda = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
-	m_threshold = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
-	m_y = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
-	m_proposed_y = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
-	m_tmp = (double*)ippsMalloc_64f(sizeof(double)*m_nfactors);
+	m_W = (double*)malloc_aligned(sizeof(double)*m_nfactors * m_ndims);
+	m_lambda = (double*)malloc_aligned(sizeof(double)*m_nfactors);
+	m_threshold = (double*)malloc_aligned(sizeof(double)*m_nfactors);
+	m_y = (double*)malloc_aligned(sizeof(double)*m_nfactors);
+	m_proposed_y = (double*)malloc_aligned(sizeof(double)*m_nfactors);
+	m_tmp = (double*)malloc_aligned(sizeof(double)*m_nfactors);
 
 	// copy data to the arrays
 	std::memcpy(m_lambda, in_lambda, sizeof(double) * m_nfactors);
@@ -87,12 +79,12 @@ MerpFastEnergy::MerpFastEnergy(double* in_W, double * in_lambda, uint32_t ncells
 MerpFastEnergy::~MerpFastEnergy()
 {
 	// free preallocated memory
-	ippsFree(m_W);
-	ippsFree(m_lambda);
-	ippsFree(m_threshold);
-	ippsFree(m_y);
-	ippsFree(m_proposed_y);
-	ippsFree(m_tmp);
+	free_aligned(m_W);
+	free_aligned(m_lambda);
+	free_aligned(m_threshold);
+	free_aligned(m_y);
+	free_aligned(m_proposed_y);
+	free_aligned(m_tmp);
 }
 
 
@@ -106,20 +98,19 @@ MerpFastEnergy::~MerpFastEnergy()
 //
 // Returns:  
 //		The energy (un-normalized log probability) of the inputed state
-double MerpFastEnergy::getEnergy(std::vector<uint32_t> & x)
+double MerpFastEnergy::getEnergy(uint32_t * x)
 {
-	m_x = x;
+	m_x.assign(x, x + m_ndims);
 
 	// Implement random projection - we sum up the columns of W according to x
 
 	std::memset(m_y,0, sizeof(double) * m_nfactors);
 	double * ptrW = m_W;
-	for (uint32_t i = 0; i < x.size(); i++)
+	for (uint32_t i = 0; i < m_ndims; i++)
 	{
 		// Check for each column if we are to sum it
 		if (x[i])
 		{
-			//vdAdd(m_nfactors, m_y, m_W + i * m_nfactors, m_proposed_y);
 			ippsAdd_64f_I(ptrW, m_y, m_nfactors);
 		}
 		ptrW += m_nfactors;
@@ -164,13 +155,13 @@ double MerpFastEnergy::applyThreshold(double * y)
 //
 // Returns:  
 //		(none)
-void MerpFastEnergy::sumSampleFactor(std::vector<uint32_t> & x, double* factor_sum,double p)
+void MerpFastEnergy::sumSampleFactor(uint32_t * x, double* factor_sum,double p)
 {
 	// Implement random projection - we sum up the columns of W according to x
 
 	std::memset(m_y, 0, sizeof(double) * m_nfactors);
 	double * ptrW = m_W;
-	for (uint32_t i = 0; i < x.size(); i++)
+	for (uint32_t i = 0; i < m_ndims; i++)
 	{
 		// Check for each column if we are to sum it
 		if (x[i])
@@ -245,10 +236,7 @@ double MerpFastEnergy::accept(uint32_t bAccept)
 		m_x[m_proposed_bit] = !m_x[m_proposed_bit];
 
 		// Update the partially-computed energy
-		//m_y = m_proposed_y;
 		std::memcpy(m_y,m_proposed_y,sizeof(double) * m_nfactors);
-		//ippsCopy_64f(m_y, m_proposed_y, m_nfactors);
-		//cblas_dcopy(m_nfactors,m_y,1, m_proposed_y, 1);
 
 		// Mark that there is no pending proposal on this energy function
 		m_energy = m_proposed_energy;
@@ -289,9 +277,9 @@ void MerpFastEnergy::accept(double * factor_sum, double prob)
 
 
 // Returns the current state of the system
-std::vector<uint32_t> * MerpFastEnergy::getX()
+uint32_t * MerpFastEnergy::getX()
 {
-	return &m_x;
+	return m_x.data();
 }
 
 
