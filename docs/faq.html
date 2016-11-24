@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Maximum entropy toolbox</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1><a href="index.html" style="color:black">maxent_toolbox</a></h1>
+        <p>Maximum Entropy toolbox for MATLAB</p>
+
+        <p class="view"><a href="https://github.com/orimaoz/maxent_toolbox">View the Project on GitHub <small>orimaoz/maxent_toolbox</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox/releases/latest">Download <strong>Latest version</strong></a></li>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        
+<h2>
+<a id="faq" class="anchor" href="#faq" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Frequently asked questions</h2>
+
+
+
+
+<h3>Does the maxent toolbox support python?</h3>
+<p>We have made an experimental port to Python but it is relatively immature and lacks some of the optimizations that the MATLAB version has. <a href="mailto:orimaoz@gmail.com">Contact us</a> if you are interested in trying it out.</p>
+
+<h3>Can I use the maxent toolbox to learn distributions of non-binary inputs (for example spike counts)?</h3>
+<p>The current version only supports binary patterns. In theory the same approach will work for other inputs,
+but some of the optimizations we used to make the package run faster made use of the assumption
+that each input dimension is either 0 or 1. We might extend the toolbox to support larger ranges of inputs if there
+is sufficient demand so <a href="mailto:orimaoz@gmail.com">let us know</a>.</p>
+
+<h3>Is the maxent toolbox multi-core?</h3>
+<p>The maxent package currently uses only one CPU core, which was useful for us because we used a computing cluster
+where each node had access to a single core. Making the package multi-core (as well as adding things like GPU support)
+is non-trivial because of the inherently sequential nature of MCMC techniques, but as before
+<a href="mailto:orimaoz@gmail.com">let us know</a> if you think this would have a big impact on you.</p>
+
+
+
+
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/orimaoz">orimaoz</a></p>
+        <p><small>Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>

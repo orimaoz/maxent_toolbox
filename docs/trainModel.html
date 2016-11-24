@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Maximum entropy toolbox</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1><a href="index.html" style="color:black">maxent_toolbox</a></h1>
+        <p>Maximum Entropy toolbox for MATLAB</p>
+
+        <p class="view"><a href="https://github.com/orimaoz/maxent_toolbox">View the Project on GitHub <small>orimaoz/maxent_toolbox</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox/releases/latest">Download <strong>Latest version</strong></a></li>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        
+<h2>trainModel</h2>
+
+
+<article>
+
+<h2>Description</h2>
+<p>Trains a maximum entropy model on empirical data.  The function will automatically choose, based on the number of 
+dimensions in the input distribution, which of two modes of operation to use:<p>
+<ul>
+<li>For a small number (default &lt; 30) of input dimensions it will compute an exact solution and return a normalized probability distribution.</li>
+<li>For a large number (default &gt;=30) of input dimensions it will compute an approximate solution using Monte-Carlo Markov Chain (MCMC) methods and return a non-normalized distribution. This distribution can later be normalized using other functions in the toolbox such as <a href='wangLandau.html'>wangLandau</a>.</li>
+<li>If the input model is an independent model, the function will return a normalized probability distribution regardless of the input dimension.</li>
+</ul>
+The user can force either an exhaustive solution or an MCMC solution by supplying optional arguments.
+</p>
+
+</article>
+<article>
+
+<h2>Usage</h2>
+<pre>[model_out, bConverged] = trainModel(model,samples)</pre>
+<pre>[model_out, bConverged] = trainModel(model,samples,Name,Value,...)</pre>
+</article>
+<article>
+
+<h2>Arguments</h2>
+<article>
+<h3>Mandatory arguments</h3>
+<ul>
+<li><b>model</b> - Maximum entropy model as returned by the <a href="createModel.html">createModel</a> function. </li>   
+<li><b>samples</b> - Set of samples to train the model on, in the format (ncells x nsamples). If the input dimensionality is small enough for an exhaustive computation, a Boltzmann distribution (in the same format as returned by createModel) may be inputed instead of a raster, in this case the target marginals will be computed in an exact manner from the distribution.   
+ </li>   
+
+</ul>
+</article>
+
+<article>
+<h3>Optional arguments (in the form of name,value pairs)</h3>
+<ul>
+<li><b>threshold</b>        - convergence threshold in units of standard deviations in the marginals. This standard deviation is estimated using the number of samples the marginal was computed from, which means that larger datasets will be assigned tighter (actual) thresholds. For small groups of inputs (where the model can be built in an exhaustive manner) specifying a threshold of zero will set the threshold to the quantization error of the marginals, which is equal to (1/(nsamples*2)).</li>
+<li><b>silent</b>           - don't print anything.</li>
+<li><b>max_steps</b>        - limit to a maximum number of steps. </li>
+<li><b>use_acceleration</b> - true/false to use accelerated gradient descent (enabled by default).</li>
+<li><b>force_exhaustive</b> - set to true to force an exhaustive numerical solution. This entails storing in memory all 2^ncells states of the distribution which can grow really fast, so is not recommended for inputs of more than 30 cells.</li>
+<li><b>force_mcmc</b>       - set to true to force an MCMC solver even when a btter option is available.</li>
+<li><b>savefile</b>         - will constantly save the state in this file, and try to resume from it if it already exists.</li>
+</ul>
+</article>
+</article>
+
+<article>
+<h2>Output</h2>
+<li><b>model_out</b> - Maximum entropy model describing the distribution of inputs. </li>   
+<li><b>bConverged</b> - Returns <em>true</em> if the learning process converged, or <em>false</em> if it terminated because the specified maximum number of iterations was reached. </li>   
+</article>
+
+
+<article>
+<h2>Example usage</h2>
+<pre>
+% create an ME model
+model = createModel(30,'ising');   
+
+% train it with a sample set to a threshold of two standard deviations
+model = trainModel(model,samples,'threshold',2);  
+</pre>
+</article>
+
+
+
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/orimaoz">orimaoz</a></p>
+        <p><small>Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>

@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Maximum entropy toolbox</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1><a href="index.html" style="color:black">maxent_toolbox</a></h1>
+        <p>Maximum Entropy toolbox for MATLAB</p>
+
+        <p class="view"><a href="https://github.com/orimaoz/maxent_toolbox">View the Project on GitHub <small>orimaoz/maxent_toolbox</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox/releases/latest">Download <strong>Latest version</strong></a></li>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        
+<h2><a id="building" class="anchor" href="#building" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>
+Building the maxent toolbox</h2>
+<p>The maxent toolbox is pre-compiled for Windows, OSX and CentOS so you can often skip building it and directly download the binaries from <a href="https://github.com/orimaoz/maxent_toolbox/releases/latest">here</a>.
+
+<p>In order to provide faster run-time, the maxent toolbox was built with the <a href="https://en.wikipedia.org/wiki/Intel_C%2B%2B_Compiler">Intel C++ compiler</a> and makes use of the <a href="https://en.wikipedia.org/wiki/Integrated_Performance_Primitives">IPP</a> and <a href="https://en.wikipedia.org/wiki/Math_Kernel_Library">MKL</a> libraries. These are available as part of the <a href="https://software.intel.com/en-us/intel-parallel-studio-xe">Intel Parallel Studio</a> which is a commercial package but <a href="https://software.intel.com/en-us/qualify-for-free-software/student">offers free licenses for students</a>. It is possible, with minor modifications, to build the code without these packages but this will result in noticeably slower runtimes.
+
+
+<h3>Building the toolbox for Windows</h3>
+<p>We provide a prebuilt project file for Microsoft Visual studio named  <strong>maxentToolbox_windows.sln</strong>. This project file was created using Visual Studio Community 2015 which is <a href=="https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx">available for free from Microsoft</a>. Note that the project settings assume that you have Intel Parallel Studio installed.
+
+<h3>Building the toolbox for Mac</h3>
+<p>Edit the file <strong>build_mac.sh</strong> to set the directories of the MKL/IPP packages provided by Intel Composer XE. Then run:
+<pre>sh build_mac.sh</pre> to build the .mex files.</p>
+
+<h3>Building the toolbox for Unix</h3>
+<p>Edit the file <strong>build_unix.sh</strong> to set the directories of the MKL/IPP packages provided by Intel Composer XE. Then run:
+ <pre>sh build_unix.sh</pre> to build the .mex files.</p>
+
+
+
+</section>
+<footer>
+<p>This project is maintained by <a href="https://github.com/orimaoz">orimaoz</a></p>
+<p><small>Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+</footer>
+</div>
+<script src="javascripts/scale.fix.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Maximum entropy toolbox</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1><a href="index.html" style="color:black">maxent_toolbox</a></h1>
+        <p>Maximum Entropy toolbox for MATLAB</p>
+
+        <p class="view"><a href="https://github.com/orimaoz/maxent_toolbox">View the Project on GitHub <small>orimaoz/maxent_toolbox</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox/releases/latest">Download <strong>Latest version</strong></a></li>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        
+<h2><a id="quickstart" class="anchor" href="#quickstart" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>
+Quick Start Guide</h2>
+
+
+<p>If you are familiar with maximum entropy distributions, you might want to skip directly to this <a href="maxent_example.html">code example</a> which demonstrates most of the functionality of the package.</p>
+
+<p>The basic purpose of the maxent toolbox is to learn probability distributions of multi-dimensional patterns of binary data from a limited set of samples, by modeling them as maximum-entropy distributions based on some particular features of the patterns.</p>
+
+
+<p>As an example, assume there are 20-bit binary patterns: <small>00000000000000000000, 00000000000000000001, ... , 11111111111111111111</small> which are distributed in some way - the probability distribution p(x) denotes the probability of encountering each of the patterns. We have obtained 5000 independent samples from <i>p(x)</i> and we want to use these to approximate <i>p(x)</i>, i.e. obtain the probabilities of encountering each of the 2^20=1048576 possible patterns. We clump these 5000 patterns of 20 bits in a (20 x 5000) MATLAB matrix called <i>raster</i>:<p>
+
+<pre>
+<b>
+Name      Size             Bytes  Class     Attributes</b>
+raster      20x5000            400000  uint32     </pre>
+  
+<p>We start by picking which class of maximum-entropy model to use - in this example we will use the <a href="http://www.weizmann.ac.il/neurobiology/labs/schneidman/Publications/Schneidman+al_2006-Nature.pdf">pairwise maximum entropy model</a> (sometimes known as Ising model) which is a minimal model based on individual bits and correlations between pairs of bits. We initialize the model:</p>
+
+<pre>model = maxent.createModel(20,'ising');</pre>
+
+<p>Then we need to train the model. i.e. extract the model parameters from the data:</p>
+
+<pre>model = maxent.trainModel(model, raster,'threshold',1);</pre>
+<p>The optional argument <i>threshold</i>  controls how closely we want to fit the model to the experimental data, which is a noisy observation. Setting it to "1" means we allow an error of up to one standard deviation of the expected measurement noise. Note that the measurement noise is smaller when more training samples are available, so this threshold is a relative threshold and not an absolute threshold (refer to the documentation of <a href="trainModel.html">trainModel</a> function for more details). </p>
+
+<p>Training the model returned a pairwise maximum entropy model trained on the <i>raster</i> dataset. In order to use the model to predict the frequency (probability) of a few input patterns. We can use the <a href="getLogProbability.html">getLogProbability</a> function:</p>
+</p>
+
+
+<pre>
+x = [0,0,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0;
+     1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0;
+     0,1,1,0,0,1,0,0,1,0,0,0,1,0,1,1,0,0,0,0]';
+
+logprobs = maxent.getLogProbability(model, raster);
+probabilies = exp(logprobs);
+</pre>
+
+<p>The <a href="getLogProbability.html">getLogProbability</a> function returns, for each of the input patterns y, its approximate probability <i>p(y)</i> according to the maximum entropy model.</p>
+
+
+<p>If the distribution we want to learn is relatively small (less than 30 bits), the default behaviour of the toolbox is to compute the maximum entropy model in an exhaustive fashion. For larger distributions this becomes untractable, and the toolbox uses MCMC (Markov Chain Monte Carlo) methods instead. One drawback of MCMC techniques is that they return an unnormalized model, i.e. its probabilities do not necessarily sum to 1. In order to normalize the model, the package provides an implementation of the <a href="https://en.wikipedia.org/wiki/Wang_and_Landau_algorithm">Wang Landau</a> algorithm:</p>
+<pre>
+model = maxent.wangLandau(model);
+</pre>
+<p>Which will return a model which is approximately normalized, and will also approximate the <a href="https://en.wikipedia.org/wiki/Entropy_(information_theory)">entropy</a> of the model (refer to <a href="wangLandau.html">wangLandau</a> for details).
+
+<p>If you want the obtain of empirical marginals of the data, according to a certain maximum entropy model:</p>
+<pre>
+model = maxent.getEmpiricalMarginals(raster,model);
+</pre>
+<p>If you want to obtain the marginals of a trained maximum entropy model:</p>
+<pre>
+model = maxent.getMarginals(raster);
+</pre>
+<p>which returns the exact marginals for small (&lt;30 bits) distributions or approximate marginals for large distributions.</p>
+
+<p>A more <a href="maxent_example.html">complete code example</a> is available, or you can browse through the <a href="function_reference.html">function reference</a>.</p>
+
+
+
+</section>
+<footer>
+<p>This project is maintained by <a href="https://github.com/orimaoz">orimaoz</a></p>
+<p><small>Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+</footer>
+</div>
+<script src="javascripts/scale.fix.js"></script>
+
+</body>
+</html>

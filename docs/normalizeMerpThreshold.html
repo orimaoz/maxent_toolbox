@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Maximum entropy toolbox</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1><a href="index.html" style="color:black">maxent_toolbox</a></h1>
+        <p>Maximum Entropy toolbox for MATLAB</p>
+
+        <p class="view"><a href="https://github.com/orimaoz/maxent_toolbox">View the Project on GitHub <small>orimaoz/maxent_toolbox</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox/releases/latest">Download <strong>Latest version</strong></a></li>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        
+<h2>normalizeMerpThreshold</h2>
+
+
+<article>
+<h2>Description</h2>
+<p>
+This function will change the thresholds used by a MERP model so that the average activity of the hidden layer
+will be around the requested number. It can either set all the thresholds to the same value (in which case it will
+try to match the mean activity to the requested value) or each of the values individually.
+</p>
+</article>
+
+
+<article>
+<h2>Usage</h2>
+<pre>model_out = normalizeMerpThreshold(model,samples)</pre>
+<pre>model_out = normalizeMerpThreshold(model,samples,Name,Value,...)</pre>
+</article>
+
+<article>
+<h2>Arguments</h2>
+<article>
+<h3>Mandatory arguments</h3>
+<ul>
+<li><b>model</b>- Maximum entropy model as returned by the <a href="createModel.html">createModel</a> function. </li>   
+<li><b>samples</b>- Set of samples used to normalize the model, in the format (ncells x nsamples). </li>   
+</ul>
+</article>
+
+<article>
+<h3>Optional arguments (in the form of name,value pairs)</h3>
+<ul>
+<li><b>target</b> - target marginal value (default 0.3).</li>
+<li><b>individual</b> - set to true if you want to tune each threhold by itself, false to make all the threholds the
+same value and only look at the median value (default false).</li>
+<li><b>threshold_range</b> - range of allowed thresholds in the format [min_threshold, max_threshold]</li>
+<li><b>silent</b> - don't print anything.</li>
+</ul>
+</article>
+</article>
+
+
+<article>
+<h2>Output</h2>
+<li><b>model</b> - normalized MERP model. </li>   
+</article>
+
+<article>
+<h2>Example usage</h2>
+<pre>
+model_out = normalizeMerpThreshold(model,samples,'target',0.2)
+</pre>
+</article>
+
+
+
+
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/orimaoz">orimaoz</a></p>
+        <p><small>Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>

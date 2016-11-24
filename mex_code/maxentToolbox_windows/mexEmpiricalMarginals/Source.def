@@ -1,0 +1,2 @@
+LIBRARY mexEmpiricalMarginals
+EXPORTS mexFunction

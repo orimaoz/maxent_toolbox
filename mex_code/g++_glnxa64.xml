@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config
+    Name="g++"
+    ShortName="g++"
+    Manufacturer="GNU"
+    Version=""
+    Language="C++"
+    Priority="A"
+    Location="$GCC" >
+    <Details
+        CompilerExecutable="$CXX"
+        CompilerDefines="$DEFINES"
+        CompilerFlags="$CXXFLAGS"
+        OptimizationFlags="$CXXOPTIMFLAGS"
+        DebugFlags="$CXXDEBUGFLAGS"
+        IncludeFlags="$INCLUDE"
+        LinkerLibraries="$LINKLIBS"
+        LinkerOptimizationFlags="$LDOPTIMFLAGS"
+        LinkerDebugFlags="$LDDEBUGFLAGS"
+
+        CompilerDefineFormatter="-D%s"
+        LinkerLibrarySwitchFormatter="-l%s"
+        LinkerPathFormatter="-L%s"
+    />
+    <vars
+          CMDLINE1="$CXX -c $DEFINES $INCLUDE $CXXFLAGS $OPTIM $SRC -o $OBJ"
+          CMDLINE2="$LDXX $LDFLAGS $LDTYPE $LINKOPTIM $LINKEXPORT $OBJS $CXXLIBS $LINKLIBS -o $EXE"
+          CXX="$GCC"
+          DEFINES="-D_GNU_SOURCE $MATLABMEX"
+	  MATLABMEX="-DMATLAB_MEX_FILE "
+          CXXFLAGS="-ansi -fexceptions -fPIC -fno-omit-frame-pointer -pthread -std=c++11"
+          INCLUDE="-I&quot;$MATLABROOT/extern/include&quot; -I&quot;$MATLABROOT/simulink/include&quot;"
+          CXXOPTIMFLAGS="-O2 -DNDEBUG -xSSE3"
+          CXXDEBUGFLAGS="-g"
+          
+          LDXX="$CXX"
+          LDFLAGS="-pthread -Wl,--no-undefined -static-intel"
+		  LDTYPE="-shared"
+          LINKEXPORT="-Wl,--version-script,&quot;$MATLABROOT/extern/lib/$ARCH/mexFunction.map&quot;"
+          LINKLIBS="-Wl,-rpath-link,$MATLABROOT/bin/$ARCH -L&quot;$MATLABROOT/bin/$ARCH&quot; -lmx -lmex -lmat -lm -lstdc++"
+          LDOPTIMFLAGS="-O"
+          LDDEBUGFLAGS="-g"
+          
+          OBJEXT=".o"
+          LDEXT=".mexa64">
+    </vars>
+    <client>
+        <engine
+          LINKLIBS="$LINKLIBS -leng"
+          LINKEXPORT=""
+          LDEXT=""
+		  LDTYPE=""
+        />
+        
+        <mbuild
+          DEFINES="-D_GNU_SOURCE $MATLABMEX -DUNIX -DX11 -DGLNXA64 -DGCC"
+          CXXFLAGS="-ansi -pthread -std=c++11"
+          INCLUDE="$INCLUDE -I&quot;$MATLABROOT/extern/include/cpp&quot;"
+          LDFLAGS="-pthread -Wl,-rpath-link,$MATLABROOT/bin/$ARCH"
+          LINKEXPORT=""
+          LINKLIBS="-L&quot;$MATLABROOT/runtime/$ARCH&quot; -lm -lmwmclmcrrt"
+          LDEXT="" 
+	      MATLABMEX=""
+		  LDTYPE=""
+        /> 
+        
+    </client>
+    <locationFinder>
+        <GCC>
+			<cmdReturns name="which g++" />
+        </GCC>
+        <CPPLIB_DIR>
+				<cmdReturns name="g++ -print-file-name=libstdc++.so"
+				 diagnostic="GCC appears to be installed, but supporting C++ libraries were not found.  You must first install the gcc-c++ packge, or similiar, to complete this action."/>
+        </CPPLIB_DIR>
+    </locationFinder>
+</config>

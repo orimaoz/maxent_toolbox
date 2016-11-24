@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Maximum entropy toolbox</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1><a href="index.html" style="color:black">maxent_toolbox</a></h1>
+        <p>Maximum Entropy toolbox for MATLAB</p>
+
+        <p class="view"><a href="https://github.com/orimaoz/maxent_toolbox">View the Project on GitHub <small>orimaoz/maxent_toolbox</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox/releases/latest">Download <strong>Latest version</strong></a></li>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        
+<h2>getLogProbability</h2>
+
+
+<article>
+<h2>Description</h2>
+<p>Returns the log probability (in natural logarithm) of samples according to a trained maximum entropy model.
+The function accepts a model and an array of samples and returns the log probability for each sample 
+according to the model. If the model has not been normalize, the results will also be un-normalized.</p>
+</article>
+
+
+<article>
+<h2>Usage</h2>
+<pre>logprobs = getLogProbability(model, samples)</pre>
+<pre>logprobs = getLogProbability(model, samples,Name,Value,...)</pre>
+</article>
+
+<article>
+<h2>Arguments</h2>
+<article>
+<h3>Mandatory arguments</h3>
+<ul>
+<li><b>model</b> - Maximum entropy model as returned by the <a href="trainModel.html">trainModel</a> function. </li>   
+<li><b>samples</b> - Set of samples to get the probabilities of, in the format (ncells x nsamples). </li>   
+</ul>
+</article>
+
+<article>
+<h3>Optional arguments (in the form of name,value pairs)</h3>
+<ul>
+<li><b>normalize</b>        - force with or without normalization. If this value is true but the model is un-normalized, the function will issue a warning.</li>
+</ul>
+</article>
+</article>
+
+
+<article>
+<h2>Output</h2>
+<ul>
+<li><b>logprobs</b> - an (1xnsamples) vector of log probabilities in natural logarithm. </li>   
+</ul>
+</article>
+
+
+
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/orimaoz">orimaoz</a></p>
+        <p><small>Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>

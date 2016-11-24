@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding="utf-8"?>
+<toc version="2.0">
+
+    <tocitem target="index.html">Maximum Entropy toolbox
+        <tocitem target="quickstart.html">Quick start guide</tocitem>
+        <tocitem target="function_reference.html">Function Reference 
+            <tocitem target="createModel.html">createModel</tocitem>
+            <tocitem target="trainModel.html">trainModel</tocitem>
+            <tocitem target="getLogProbability.html">getLogProbability</tocitem>            
+            <tocitem target="getMarginals.html">getMarginals</tocitem>
+            <tocitem target="getEmpiricalMarginals.html">getEmpiricalMarginals</tocitem>
+            <tocitem target="getWeightedMarginals.html">getWeightedMarginals</tocitem>
+            <tocitem target="generateSamples.html">generateSamples</tocitem>
+            <tocitem target="wangLandau.html">wangLandau</tocitem>
+            <tocitem target="getEntropy.html">getEntropy</tocitem>
+            <tocitem target="getEmpiricalModel.html">getEmpiricalModel</tocitem>
+            <tocitem target="dkl.html">dkl</tocitem>
+            <tocitem target="djs.html">djs</tocitem>
+        </tocitem>
+        <tocitem target="maxent_example.html">Code example</tocitem>
+    </tocitem>
+
+</toc>

@@ -1,0 +1,559 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>maxent_example</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-11-24"><meta name="DC.source" content="maxent_example.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">part 1: working with small distributions of neurons (exhaustively)</a></li><li><a href="#3">part 2: working with larger distributions of neurons (MCMC)</a></li><li><a href="#4">part 3: specifying a custom list of correlations</a></li><li><a href="#5">part 4: constructing composite models</a></li></ul></div><pre class="codeinput"><span class="comment">% maxent_example.m</span>
+<span class="comment">%</span>
+<span class="comment">% Example code for the maximum entropy toolkit</span>
+<span class="comment">% Ori Maoz, July 2016:  orimaoz@gmail.com,</span>
+
+
+<span class="comment">%</span>
+<span class="comment">% Note: all the "maxent." prefixes before the function calls can be omitted by commenting out the following line:</span>
+<span class="comment">%import maxent.*</span>
+</pre><h2>part 1: working with small distributions of neurons (exhaustively)<a name="2"></a></h2><pre class="codeinput"><span class="comment">% load spiking data of 15 neurons</span>
+load <span class="string">example15</span>
+
+<span class="comment">% randomly divide it into a training set and a test set (so we can verify how well we trained)</span>
+[ncells,nsamples] = size(spikes15);
+idx_train = randperm(nsamples,ceil(nsamples/2));
+idx_test = setdiff(1:nsamples,idx_train);
+samples_train = spikes15(:,idx_train);
+samples_test = spikes15(:,idx_test);
+
+<span class="comment">% create a k-pairwise model (pairwise maxent with synchrony constraints)</span>
+model = maxent.createModel(ncells,<span class="string">'kising'</span>);
+
+<span class="comment">% train the model to a threshold of one standard deviation from the error of computing the marginals.</span>
+<span class="comment">% because the distribution is relatively small (15 dimensions) we can explicitly represent all 2^15 states</span>
+<span class="comment">% in memory and train the model in an exhaustive fashion.</span>
+model = maxent.trainModel(model,samples_train,<span class="string">'threshold'</span>,1);
+
+<span class="comment">% now check the kullback-leibler divergence between the model predictions and the pattern counts in the test-set</span>
+empirical_distribution = maxent.getEmpiricalModel(samples_test);
+model_logprobs = maxent.getLogProbability(model,empirical_distribution.words);
+test_dkl = maxent.dkl(empirical_distribution.logprobs,model_logprobs);
+fprintf(<span class="string">'Kullback-Leibler divergence from test set: %f\n'</span>,test_dkl);
+
+model_entropy = maxent.getEntropy(model);
+fprintf(<span class="string">'Model entropy: %.03f   empirical dataset entropy: %.03f\n'</span>, model_entropy, empirical_distribution.entropy);
+
+<span class="comment">% get the marginals (firing rates and correlations) of the test data and see how they compare to the model predictions</span>
+marginals_data = maxent.getEmpiricalMarginals(samples_test,model);
+marginals_model = maxent.getMarginals(model);
+
+<span class="comment">% plot them on a log scale</span>
+figure
+loglog(marginals_data,marginals_model,<span class="string">'b*'</span>);
+hold <span class="string">on</span>;
+minval = min([marginals_data(marginals_data&gt;0)]);
+plot([minval 1],[minval 1],<span class="string">'-r'</span>); <span class="comment">% identity line</span>
+xlabel(<span class="string">'empirical marginal'</span>);
+ylabel(<span class="string">'predicted marginal'</span>);
+title(sprintf(<span class="string">'marginals in %d cells'</span>,ncells));
+</pre><pre class="codeoutput">Training to threshold: 1.000 standard deviations
+Maximum MSE: 1.000
+156/Inf  MSE=0.014 (mean), 1.872 (max) [10]  DKL: 0.089
+converged (marginals match)
+Standard deviations from marginals: 0.061 (mean), 0.996 (max) [9]  DKL: 0.089
+Kullback-Leibler divergence from test set: 0.109675
+Model entropy: 6.467   empirical dataset entropy: 6.369
+</pre><img vspace="5" hspace="5" src="maxent_example_01.png" style="width:560px;height:420px;" alt=""> <h2>part 2: working with larger distributions of neurons (MCMC)<a name="3"></a></h2><pre class="codeinput">load <span class="string">example50</span>
+
+<span class="comment">% randomly divide into train/test sets</span>
+[ncells,nsamples] = size(spikes50);
+idx_train = randperm(nsamples,ceil(nsamples/2));
+idx_test = setdiff(1:nsamples,idx_train);
+samples_train = spikes50(:,idx_train);
+samples_test = spikes50(:,idx_test);
+
+<span class="comment">% create a pairwise maximum entropy model</span>
+model = maxent.createModel(50,<span class="string">'pairwise'</span>);
+
+<span class="comment">% train the model to a threshold of 1.5 standard deviations from the error of computing the marginals.</span>
+<span class="comment">% because the distribution is larger (50 dimensions) we cannot explicitly iterate over all 5^20 states</span>
+<span class="comment">% in memory and will use markov chain monte carlo (MCMC) methods to obtain an approximation</span>
+model = maxent.trainModel(model,samples_train,<span class="string">'threshold'</span>,1.5);
+
+
+<span class="comment">% get the marginals (firing rates and correlations) of the test data and see how they compare to the model predictions.</span>
+<span class="comment">% here the model marginals could not be computed exactly so they will be estimated using monte-carlo. We specify the</span>
+<span class="comment">% number of samples we use so that their estimation will have the same amoutn noise as the empirical marginal values</span>
+marginals_data = maxent.getEmpiricalMarginals(samples_test,model);
+marginals_model = maxent.getMarginals(model,<span class="string">'nsamples'</span>,size(samples_test,2));
+
+<span class="comment">% plot them on a log scale</span>
+figure
+loglog(marginals_data,marginals_model,<span class="string">'b*'</span>);
+hold <span class="string">on</span>;
+minval = min([marginals_data(marginals_data&gt;0)]);
+plot([minval 1],[minval 1],<span class="string">'-r'</span>); <span class="comment">% identity line</span>
+xlabel(<span class="string">'empirical marginal'</span>);
+ylabel(<span class="string">'predicted marginal'</span>);
+title(sprintf(<span class="string">'marginals in %d cells'</span>,ncells));
+
+<span class="comment">% the model that the MCMC solver returns is not normalized. If we want to compare the predicted and actual probabilities</span>
+<span class="comment">% of individual firing patterns, we will need to first normalize the model. We will use the wang-landau algorithm for</span>
+<span class="comment">% this. We chose parameters which are less strict than the default settings so that we will have a faster runtime.</span>
+disp(<span class="string">'Normalizing model...'</span>);
+model = maxent.wangLandau(model,<span class="string">'binsize'</span>,0.1,<span class="string">'depth'</span>,15);
+
+<span class="comment">% the normalization factor was added to the model structure. Now that we have a normalized model, we'll use it to</span>
+<span class="comment">% predict the frequency of activity patterns. We will start by observing all the patterns that repeated at least twice</span>
+<span class="comment">% (because a pattern that repeated at least once may grossly overrepresent its probability and is not meaningful in this</span>
+<span class="comment">% sort of analysis)</span>
+limited_empirical_distribution = maxent.getEmpiricalModel(samples_test,<span class="string">'min_count'</span>,2);
+
+
+<span class="comment">% get the model predictions for these patterns</span>
+model_logprobs = maxent.getLogProbability(model,limited_empirical_distribution.words);
+
+<span class="comment">% nplot on a log scale</span>
+figure
+plot(limited_empirical_distribution.logprobs,model_logprobs,<span class="string">'bo'</span>);
+hold <span class="string">on</span>;
+minval = min(limited_empirical_distribution.logprobs);
+plot([minval 0],[minval 0],<span class="string">'-r'</span>);  <span class="comment">% identity line</span>
+xlabel(<span class="string">'empirical pattern log frequency'</span>);
+ylabel(<span class="string">'predicted pattern log frequency'</span>);
+title(sprintf(<span class="string">'activity pattern frequency in %d cells'</span>,ncells));
+
+
+
+<span class="comment">% Wang-landau also approximated the model entropy, let's compare it to the entropy of the empirical dataset.</span>
+<span class="comment">% for this we want to look at the entire set, not just the set limited repeating patterns</span>
+empirical_distribution = maxent.getEmpiricalModel(samples_test);
+
+<span class="comment">% it will not be surprising to see that the empirical entropy is much lower than the model, this is because the</span>
+<span class="comment">% distribution is very undersampled</span>
+fprintf(<span class="string">'Model entropy: %.03f bits, empirical entropy (test set): %.03f bits\n'</span>,model.entropy,empirical_distribution.entropy);
+
+<span class="comment">% generate samples from the distribution and compute their entropy. This should give a result which is must closer to</span>
+<span class="comment">% the entropy of the empirical distribution...</span>
+samples_simulated = maxent.generateSamples(model,numel(idx_test));
+simulated_empirical_distribution = maxent.getEmpiricalModel(samples_simulated);
+fprintf(<span class="string">'Entropy of simulated data: %.03f bits\n'</span>,simulated_empirical_distribution.entropy);
+</pre><pre class="codeoutput">Training to threshold: 1.500 standard deviations
+Maximum samples: 17778   maximum MSE: 3.375
+338/Inf samples=4338  MSE=8.138 (mean), 68.376 (max) [30]
+408/Inf samples=8755  MSE=4.396 (mean), 49.440 (max) [17]
+449/Inf samples=13186  MSE=3.720 (mean), 69.128 (max) [2]
+478/Inf samples=17612  MSE=2.567 (mean), 35.248 (max) [40]
+503/Inf samples=17778  MSE=2.016 (mean), 24.021 (max) [40]
+528/Inf samples=17778  MSE=1.916 (mean), 30.722 (max) [12]
+553/Inf samples=17778  MSE=1.674 (mean), 26.987 (max) [12]
+578/Inf samples=17778  MSE=1.586 (mean), 16.304 (max) [45]
+603/Inf samples=17778  MSE=1.753 (mean), 9.394 (max) [31]
+628/Inf samples=17778  MSE=1.993 (mean), 11.920 (max) [2]
+653/Inf samples=17778  MSE=1.826 (mean), 12.493 (max) [1140]
+678/Inf samples=17778  MSE=1.755 (mean), 14.302 (max) [1140]
+703/Inf samples=17778  MSE=1.720 (mean), 10.222 (max) [1140]
+728/Inf samples=17778  MSE=1.472 (mean), 7.022 (max) [1147]
+753/Inf samples=17778  MSE=1.504 (mean), 6.722 (max) [1176]
+778/Inf samples=17778  MSE=1.533 (mean), 9.090 (max) [12]
+803/Inf samples=17778  MSE=1.496 (mean), 10.559 (max) [12]
+828/Inf samples=17778  MSE=1.526 (mean), 6.851 (max) [12]
+853/Inf samples=17778  MSE=1.446 (mean), 4.788 (max) [43]
+878/Inf samples=17778  MSE=1.330 (mean), 5.673 (max) [1150]
+903/Inf samples=17778  MSE=1.409 (mean), 5.199 (max) [1264]
+928/Inf samples=17778  MSE=1.370 (mean), 3.929 (max) [2]
+converged (marginals match)
+Normalizing model...
+[...............]
+Model entropy: 17.527 bits, empirical entropy (test set): 11.967 bits
+Entropy of simulated data: 12.483 bits
+</pre><img vspace="5" hspace="5" src="maxent_example_02.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="maxent_example_03.png" style="width:560px;height:420px;" alt=""> <h2>part 3: specifying a custom list of correlations<a name="4"></a></h2><pre class="codeinput"><span class="comment">% load spiking data of 15 neurons</span>
+load <span class="string">example15</span>
+
+<span class="comment">% randomly divide it into a training set and a test set (so we can verify how well we trained)</span>
+[ncells,nsamples] = size(spikes15);
+idx_train = randperm(nsamples,ceil(nsamples/2));
+idx_test = setdiff(1:nsamples,idx_train);
+samples_train = spikes15(:,idx_train);
+samples_test = spikes15(:,idx_test);
+
+
+<span class="comment">% create a model with first, second, and third-order correlations. (third-order model)</span>
+<span class="comment">% we will do this by specifying a list of all the possible combinations of single factors, pairs and triplets</span>
+correlations = cat(1,num2cell(nchoosek(1:ncells,1),2), <span class="keyword">...</span>
+                num2cell(nchoosek(1:ncells,2),2),<span class="keyword">...</span>
+                num2cell(nchoosek(1:ncells,3),2));
+
+model = maxent.createModel(ncells,<span class="string">'highorder'</span>,correlations);
+
+<span class="comment">% train it</span>
+model = maxent.trainModel(model,samples_train,<span class="string">'threshold'</span>,1);
+
+<span class="comment">% use the model to predict the frequency of activity patterns.</span>
+<span class="comment">% We will start by observing all the patterns that repeated at least twice (because a pattern that repeated at least</span>
+<span class="comment">% once may grossly overrepresent its probability and is not meaningful in this sort of analysis)</span>
+limited_empirical_distribution = maxent.getEmpiricalModel(samples_test,<span class="string">'min_count'</span>,2);
+
+<span class="comment">% get the model predictions for these patterns</span>
+model_logprobs = maxent.getLogProbability(model,limited_empirical_distribution.words);
+
+<span class="comment">% nplot on a log scale</span>
+figure
+plot(limited_empirical_distribution.logprobs,model_logprobs,<span class="string">'bo'</span>);
+hold <span class="string">on</span>;
+minval = min(limited_empirical_distribution.logprobs);
+plot([minval 0],[minval 0],<span class="string">'-r'</span>);  <span class="comment">% identity line</span>
+xlabel(<span class="string">'empirical pattern log frequency'</span>);
+ylabel(<span class="string">'predicted pattern log frequency'</span>);
+title(sprintf(<span class="string">'Third order model: activity patterns in %d cells'</span>,ncells));
+</pre><pre class="codeoutput">Training to threshold: 1.000 standard deviations
+Maximum MSE: 1.000
+19/Inf  MSE=8.889 (mean), 2863.190 (max) [12]  DKL: 0.447
+41/Inf  MSE=2.894 (mean), 47.171 (max) [12]  DKL: 0.183
+63/Inf  MSE=1.270 (mean), 18.680 (max) [32]  DKL: 0.130
+85/Inf  MSE=0.630 (mean), 23.237 (max) [13]  DKL: 0.108
+107/Inf  MSE=0.276 (mean), 28.068 (max) [2]  DKL: 0.097
+129/Inf  MSE=0.135 (mean), 12.790 (max) [1]  DKL: 0.091
+151/Inf  MSE=0.098 (mean), 10.719 (max) [12]  DKL: 0.088
+173/Inf  MSE=0.079 (mean), 4.787 (max) [1]  DKL: 0.086
+195/Inf  MSE=0.050 (mean), 2.911 (max) [12]  DKL: 0.085
+217/Inf  MSE=0.039 (mean), 2.401 (max) [12]  DKL: 0.084
+239/Inf  MSE=0.032 (mean), 2.481 (max) [351]  DKL: 0.083
+261/Inf  MSE=0.025 (mean), 1.990 (max) [351]  DKL: 0.082
+283/Inf  MSE=0.016 (mean), 1.059 (max) [351]  DKL: 0.081
+converged (marginals match)
+Standard deviations from marginals: 0.125 (mean), 0.992 (max) [351]  DKL: 0.081
+</pre><img vspace="5" hspace="5" src="maxent_example_04.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="maxent_example_05.png" style="width:560px;height:420px;" alt=""> <h2>part 4: constructing composite models<a name="5"></a></h2><pre class="codeinput"><span class="comment">% load spiking data of 15 neurons</span>
+load <span class="string">example15</span>
+
+<span class="comment">% randomly divide it into a training set and a test set (so we can verify how well we trained)</span>
+[ncells,nsamples] = size(spikes15);
+idx_train = randperm(nsamples,ceil(nsamples/2));
+idx_test = setdiff(1:nsamples,idx_train);
+samples_train = spikes15(:,idx_train);
+samples_test = spikes15(:,idx_test);
+
+
+<span class="comment">% create a model with independent factors, k-synchrony and third-order correlations</span>
+<span class="comment">% we will do this by initializing 3 separate models and then combining them to a single model</span>
+third_order_correlations = num2cell(nchoosek(1:ncells,3),2);
+model_indep = maxent.createModel(ncells,<span class="string">'indep'</span>);
+model_ksync = maxent.createModel(ncells,<span class="string">'ksync'</span>);
+model_thirdorder = maxent.createModel(ncells,<span class="string">'highorder'</span>,third_order_correlations);
+model = maxent.createModel(ncells,<span class="string">'composite'</span>,{model_indep,model_ksync,model_thirdorder});
+
+<span class="comment">% train it</span>
+model = maxent.trainModel(model,samples_train,<span class="string">'threshold'</span>,1);
+
+<span class="comment">% use the model to predict the frequency of activity patterns.</span>
+<span class="comment">% We will start by observing all the patterns that repeated at least twice (because a pattern that repeated at least</span>
+<span class="comment">% once may grossly overrepresent its probability and is not meaningful in this sort of analysis)</span>
+limited_empirical_distribution = maxent.getEmpiricalModel(samples_test,<span class="string">'min_count'</span>,2);
+
+<span class="comment">% get the model predictions for these patterns</span>
+model_logprobs = maxent.getLogProbability(model,limited_empirical_distribution.words);
+
+<span class="comment">% nplot on a log scale</span>
+figure
+plot(limited_empirical_distribution.logprobs,model_logprobs,<span class="string">'bo'</span>);
+hold <span class="string">on</span>;
+minval = min(limited_empirical_distribution.logprobs);
+plot([minval 0],[minval 0],<span class="string">'-r'</span>);  <span class="comment">% identity line</span>
+xlabel(<span class="string">'empirical pattern log frequency'</span>);
+ylabel(<span class="string">'predicted pattern log frequency'</span>);
+title(sprintf(<span class="string">'Composite model: activity patterns in %d cells'</span>,ncells));
+</pre><pre class="codeoutput">Training to threshold: 1.000 standard deviations
+Maximum MSE: 1.000
+24/Inf  MSE=0.665 (mean), 76.452 (max) [12]  DKL: 0.129
+50/Inf  MSE=0.260 (mean), 7.199 (max) [24]  DKL: 0.112
+76/Inf  MSE=0.100 (mean), 5.460 (max) [24]  DKL: 0.107
+101/Inf  MSE=0.056 (mean), 3.783 (max) [150]  DKL: 0.104
+127/Inf  MSE=0.033 (mean), 2.032 (max) [150]  DKL: 0.102
+152/Inf  MSE=0.028 (mean), 2.760 (max) [24]  DKL: 0.101
+178/Inf  MSE=0.021 (mean), 1.503 (max) [24]  DKL: 0.100
+converged (marginals match)
+Standard deviations from marginals: 0.134 (mean), 0.974 (max) [24]  DKL: 0.100
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+% maxent_example.m
+%
+% Example code for the maximum entropy toolkit
+% Ori Maoz, July 2016:  orimaoz@gmail.com,
+
+
+%
+% Note: all the "maxent." prefixes before the function calls can be omitted by commenting out the following line:
+%import maxent.*
+
+%% part 1: working with small distributions of neurons (exhaustively)
+
+% load spiking data of 15 neurons
+load example15
+
+% randomly divide it into a training set and a test set (so we can verify how well we trained)
+[ncells,nsamples] = size(spikes15);
+idx_train = randperm(nsamples,ceil(nsamples/2));
+idx_test = setdiff(1:nsamples,idx_train);
+samples_train = spikes15(:,idx_train);
+samples_test = spikes15(:,idx_test);
+
+% create a k-pairwise model (pairwise maxent with synchrony constraints)
+model = maxent.createModel(ncells,'kising');
+
+% train the model to a threshold of one standard deviation from the error of computing the marginals.
+% because the distribution is relatively small (15 dimensions) we can explicitly represent all 2^15 states 
+% in memory and train the model in an exhaustive fashion.
+model = maxent.trainModel(model,samples_train,'threshold',1);
+
+% now check the kullback-leibler divergence between the model predictions and the pattern counts in the test-set 
+empirical_distribution = maxent.getEmpiricalModel(samples_test);
+model_logprobs = maxent.getLogProbability(model,empirical_distribution.words);
+test_dkl = maxent.dkl(empirical_distribution.logprobs,model_logprobs);
+fprintf('Kullback-Leibler divergence from test set: %f\n',test_dkl);
+
+model_entropy = maxent.getEntropy(model);
+fprintf('Model entropy: %.03f   empirical dataset entropy: %.03f\n', model_entropy, empirical_distribution.entropy);
+
+% get the marginals (firing rates and correlations) of the test data and see how they compare to the model predictions
+marginals_data = maxent.getEmpiricalMarginals(samples_test,model);
+marginals_model = maxent.getMarginals(model);
+
+% plot them on a log scale
+figure
+loglog(marginals_data,marginals_model,'b*');
+hold on;
+minval = min([marginals_data(marginals_data>0)]);
+plot([minval 1],[minval 1],'-r'); % identity line
+xlabel('empirical marginal');
+ylabel('predicted marginal');
+title(sprintf('marginals in %d cells',ncells));
+
+
+%% part 2: working with larger distributions of neurons (MCMC)
+
+load example50
+
+% randomly divide into train/test sets
+[ncells,nsamples] = size(spikes50);
+idx_train = randperm(nsamples,ceil(nsamples/2));
+idx_test = setdiff(1:nsamples,idx_train);
+samples_train = spikes50(:,idx_train);
+samples_test = spikes50(:,idx_test);
+
+% create a pairwise maximum entropy model
+model = maxent.createModel(50,'pairwise');
+
+% train the model to a threshold of 1.5 standard deviations from the error of computing the marginals.
+% because the distribution is larger (50 dimensions) we cannot explicitly iterate over all 5^20 states 
+% in memory and will use markov chain monte carlo (MCMC) methods to obtain an approximation
+model = maxent.trainModel(model,samples_train,'threshold',1.5);
+
+
+% get the marginals (firing rates and correlations) of the test data and see how they compare to the model predictions.
+% here the model marginals could not be computed exactly so they will be estimated using monte-carlo. We specify the
+% number of samples we use so that their estimation will have the same amoutn noise as the empirical marginal values
+marginals_data = maxent.getEmpiricalMarginals(samples_test,model);
+marginals_model = maxent.getMarginals(model,'nsamples',size(samples_test,2));
+
+% plot them on a log scale
+figure
+loglog(marginals_data,marginals_model,'b*');
+hold on;
+minval = min([marginals_data(marginals_data>0)]);
+plot([minval 1],[minval 1],'-r'); % identity line
+xlabel('empirical marginal');
+ylabel('predicted marginal');
+title(sprintf('marginals in %d cells',ncells));
+
+% the model that the MCMC solver returns is not normalized. If we want to compare the predicted and actual probabilities
+% of individual firing patterns, we will need to first normalize the model. We will use the wang-landau algorithm for
+% this. We chose parameters which are less strict than the default settings so that we will have a faster runtime.
+disp('Normalizing model...');
+model = maxent.wangLandau(model,'binsize',0.1,'depth',15);
+
+% the normalization factor was added to the model structure. Now that we have a normalized model, we'll use it to
+% predict the frequency of activity patterns. We will start by observing all the patterns that repeated at least twice
+% (because a pattern that repeated at least once may grossly overrepresent its probability and is not meaningful in this
+% sort of analysis)
+limited_empirical_distribution = maxent.getEmpiricalModel(samples_test,'min_count',2);
+
+
+% get the model predictions for these patterns
+model_logprobs = maxent.getLogProbability(model,limited_empirical_distribution.words);
+
+% nplot on a log scale
+figure
+plot(limited_empirical_distribution.logprobs,model_logprobs,'bo');
+hold on;
+minval = min(limited_empirical_distribution.logprobs);
+plot([minval 0],[minval 0],'-r');  % identity line
+xlabel('empirical pattern log frequency');
+ylabel('predicted pattern log frequency');
+title(sprintf('activity pattern frequency in %d cells',ncells));
+
+
+
+% Wang-landau also approximated the model entropy, let's compare it to the entropy of the empirical dataset.
+% for this we want to look at the entire set, not just the set limited repeating patterns
+empirical_distribution = maxent.getEmpiricalModel(samples_test);
+
+% it will not be surprising to see that the empirical entropy is much lower than the model, this is because the
+% distribution is very undersampled
+fprintf('Model entropy: %.03f bits, empirical entropy (test set): %.03f bits\n',model.entropy,empirical_distribution.entropy);
+
+% generate samples from the distribution and compute their entropy. This should give a result which is must closer to
+% the entropy of the empirical distribution...
+samples_simulated = maxent.generateSamples(model,numel(idx_test));
+simulated_empirical_distribution = maxent.getEmpiricalModel(samples_simulated);
+fprintf('Entropy of simulated data: %.03f bits\n',simulated_empirical_distribution.entropy);
+
+
+
+%% part 3: specifying a custom list of correlations
+
+% load spiking data of 15 neurons
+load example15
+
+% randomly divide it into a training set and a test set (so we can verify how well we trained)
+[ncells,nsamples] = size(spikes15);
+idx_train = randperm(nsamples,ceil(nsamples/2));
+idx_test = setdiff(1:nsamples,idx_train);
+samples_train = spikes15(:,idx_train);
+samples_test = spikes15(:,idx_test);
+
+
+% create a model with first, second, and third-order correlations. (third-order model)
+% we will do this by specifying a list of all the possible combinations of single factors, pairs and triplets
+correlations = cat(1,num2cell(nchoosek(1:ncells,1),2), ...
+                num2cell(nchoosek(1:ncells,2),2),...
+                num2cell(nchoosek(1:ncells,3),2));
+
+model = maxent.createModel(ncells,'highorder',correlations);
+            
+% train it
+model = maxent.trainModel(model,samples_train,'threshold',1);
+
+% use the model to predict the frequency of activity patterns. 
+% We will start by observing all the patterns that repeated at least twice (because a pattern that repeated at least 
+% once may grossly overrepresent its probability and is not meaningful in this sort of analysis)
+limited_empirical_distribution = maxent.getEmpiricalModel(samples_test,'min_count',2);
+
+% get the model predictions for these patterns
+model_logprobs = maxent.getLogProbability(model,limited_empirical_distribution.words);
+
+% nplot on a log scale
+figure
+plot(limited_empirical_distribution.logprobs,model_logprobs,'bo');
+hold on;
+minval = min(limited_empirical_distribution.logprobs);
+plot([minval 0],[minval 0],'-r');  % identity line
+xlabel('empirical pattern log frequency');
+ylabel('predicted pattern log frequency');
+title(sprintf('Third order model: activity patterns in %d cells',ncells));
+
+
+%% part 4: constructing composite models
+
+
+% load spiking data of 15 neurons
+load example15
+
+% randomly divide it into a training set and a test set (so we can verify how well we trained)
+[ncells,nsamples] = size(spikes15);
+idx_train = randperm(nsamples,ceil(nsamples/2));
+idx_test = setdiff(1:nsamples,idx_train);
+samples_train = spikes15(:,idx_train);
+samples_test = spikes15(:,idx_test);
+
+
+% create a model with independent factors, k-synchrony and third-order correlations
+% we will do this by initializing 3 separate models and then combining them to a single model
+third_order_correlations = num2cell(nchoosek(1:ncells,3),2);
+model_indep = maxent.createModel(ncells,'indep');
+model_ksync = maxent.createModel(ncells,'ksync');
+model_thirdorder = maxent.createModel(ncells,'highorder',third_order_correlations);
+model = maxent.createModel(ncells,'composite',{model_indep,model_ksync,model_thirdorder});
+            
+% train it
+model = maxent.trainModel(model,samples_train,'threshold',1);
+
+% use the model to predict the frequency of activity patterns. 
+% We will start by observing all the patterns that repeated at least twice (because a pattern that repeated at least 
+% once may grossly overrepresent its probability and is not meaningful in this sort of analysis)
+limited_empirical_distribution = maxent.getEmpiricalModel(samples_test,'min_count',2);
+
+% get the model predictions for these patterns
+model_logprobs = maxent.getLogProbability(model,limited_empirical_distribution.words);
+
+% nplot on a log scale
+figure
+plot(limited_empirical_distribution.logprobs,model_logprobs,'bo');
+hold on;
+minval = min(limited_empirical_distribution.logprobs);
+plot([minval 0],[minval 0],'-r');  % identity line
+xlabel('empirical pattern log frequency');
+ylabel('predicted pattern log frequency');
+title(sprintf('Composite model: activity patterns in %d cells',ncells));
+
+
+##### SOURCE END #####
+--></body></html>

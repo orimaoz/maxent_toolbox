@@ -1,0 +1,2 @@
+LIBRARY mexGibbsSampler
+EXPORTS mexFunction

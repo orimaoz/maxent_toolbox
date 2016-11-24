@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Maximum entropy toolbox</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1><a href="index.html" style="color:black">maxent_toolbox</a></h1>
+        <p>Maximum Entropy toolbox for MATLAB</p>
+
+        <p class="view"><a href="https://github.com/orimaoz/maxent_toolbox">View the Project on GitHub <small>orimaoz/maxent_toolbox</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox/releases/latest">Download <strong>Latest version</strong></a></li>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        
+<h2>createModel</h2>
+
+
+
+<h3>Description</h3>
+<p>Initializes a new maximum entropy model of a specified type. After creating a model, you will probably want to fit it to the experimental data with <a href="trainModel.html">trainModel</a>.</p>
+
+
+<h3>Usage</h3>
+<pre>model = createModel(ncells,model_string)</pre>
+<pre>model = createModel(ncells,'highorder',correlations)</pre>
+<pre>model = createModel(ncells,'composite',inner_models)</pre>
+<pre>model = createModel(ncells,model_string,Name,Value,...)</pre>   
+
+<h3>Arguments</h3>
+<h4>Mandatory arguments</h4>
+<ul>
+<li><b>ncells</b> - number of cells (dimensions) in the distribution</li>
+<li><b>model_string</b> - string denoting the type of models. Currently supported model types:</li>
+	<ul>
+	              <li><b>indep</b>  - independent model</li>
+                  <li><b>pairwise</b> (or "ising") - pairwise maximum entropy model</li>
+                  <li><b>ksync</b>  - k-synchrony</li>
+                  <li><b>kpairwise</b> (or "kising") - pairwise maximum entropy mdoel with k-synchrony</li>
+                  <li><b>highorder</b> - custom high-order interaction model, supplied as a third argument in the form of a cell array of arrays, for example: {[1 3],[3 5 7 8],[2 3]} denotes interactions x1x3, x3x5x7x8, x2x3 </li>
+                  <li><b>composite</b>- composite model combining the energy function of several other maximum entropy models. these should be provided in the 3rd argument as pre-created models in a cell array.</li>
+	</ul>
+</ul>
+
+
+<h3>Output</h3>
+<ul>
+<li><b>model_out</b> - Untrained maximum entropy model.</li>   
+</ul>
+
+<h3>Example usage</h3>
+Create a pairwise maximum entropy model:
+<pre>model = maxent.createModel(100,'pairwise')</pre>
+Create a maximum entropy models with moments x<sub>1</sub>x<sub>2</sub>, x<sub>3</sub>x<sub>5</sub>x<sub>7</sub>x<sub>8</sub>, x<sub>2</sub>x<sub>3</sub>:
+<pre>model = maxent.createModel(30,'highorder',{[1 3],[3 5 7 8],[2 3]})</pre>
+Create a composite model consisting of an indepedent model, population synchrony and third-order correlations:
+<pre>
+m1 = maxent.createModel(20,'indep');
+m2 = maxent.createModel(20,'ksync');
+m3 = maxent.createModel(20,'highorder',num2cell(nchoosek(1:30,3),2));
+model = maxent.createModel(20,'composite',{m1,m2,m3});
+</pre>
+
+
+
+
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/orimaoz">orimaoz</a></p>
+        <p><small>Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>

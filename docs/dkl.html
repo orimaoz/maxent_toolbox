@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Maximum entropy toolbox</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1><a href="index.html" style="color:black">maxent_toolbox</a></h1>
+        <p>Maximum Entropy toolbox for MATLAB</p>
+
+        <p class="view"><a href="https://github.com/orimaoz/maxent_toolbox">View the Project on GitHub <small>orimaoz/maxent_toolbox</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox/releases/latest">Download <strong>Latest version</strong></a></li>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        
+<h2>dkl</h2>
+
+
+<article>
+<h2>Description</h2>
+<p>Computes the <a href="https://en.wikipedia.org/wiki/Kullback-Leibler_divergence">Kullback-Leibler divergence</a> 
+between two distributions with a finite number of states. The inputs can be vectors of probabilities or log-probabilities (natural logarithm).</p>
+</article>
+
+
+<article>
+<h2>Usage</h2>
+<pre>d = dkl(p1,p2)</pre>
+</article>
+
+<article>
+<h2>Arguments</h2>
+<article>
+<h3>Mandatory arguments</h3>
+<ul>
+<li><b>p1</b>- Vector of probabilities for the first distribution (or log probabilities in natural logarithm).
+The numbers should either be >=0 and sum to one, or their natural exponent should be >= and some to one. </li>   
+<li><b>p2</b> - Vector of probabilities for the second distribution (ame format as p1) </li>   
+</ul>
+</article>
+
+
+
+<article>
+<h2>Output</h2>
+<li><b>d</b> - Kullback-Leibler divergence between the distributions: DKL(p1||p2) </li>   
+</article>
+
+
+
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/orimaoz">orimaoz</a></p>
+        <p><small>Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>

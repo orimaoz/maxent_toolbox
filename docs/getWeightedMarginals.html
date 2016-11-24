@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Maximum entropy toolbox</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1><a href="index.html" style="color:black">maxent_toolbox</a></h1>
+        <p>Maximum Entropy toolbox for MATLAB</p>
+
+        <p class="view"><a href="https://github.com/orimaoz/maxent_toolbox">View the Project on GitHub <small>orimaoz/maxent_toolbox</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox/releases/latest">Download <strong>Latest version</strong></a></li>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        
+<h2>getWeightedMarginals</h2>
+
+
+
+<article>
+<h2>Description</h2>
+<p>Returns the marginals of a maximum entropy model for a set of samples weighted by a set of probabilities.
+This is typically used in order to compute the expected value of the moment-generating functions according to a second distribution.
+</p>
+</article>
+
+
+<article>
+<h2>Usage</h2>
+<pre>marginals = getWeightedMarginals(samples,model, probabilities)</pre>
+</article>
+
+<article>
+<h2>Arguments</h2>
+<article>
+<h3>Mandatory arguments</h3>
+<ul>
+<li><b>samples</b> - Set of samples to train the model on, in the format (ncells x nsamples). </li>   
+<li><b>model</b> - Maximum entropy model as returned by the <a href="createModel.html">createModel</a> function.
+It does not matter whether or not this model has been trained because only the its moment-generating functions are 
+used in order to compute the marginals</li>   
+<li><b>probabilities</b> - The values used to reweight each sample, this should be a vector of size (1 xnsamples). </li>   
+</ul>
+</article>
+
+
+<article>
+<h2>Output</h2>
+<li><b>marginals</b> - an (1xnfactors) vector of marginals.</li>   
+</article>
+
+<article>
+<h2>Example usage</h2>
+<pre>
+% create an ME model
+model = createModel(10,'ising');   
+
+% train it on a set of samples
+model = trainModel(model,samples);
+
+% create a set of samples corresponding to all possible states of the system
+npatterns = 2^model.ncells;
+unique_words = logical(de2bi(0:(npatterns-1)))';
+    
+% get the probabilities of all the possible patterns
+logprobs = getLogProbability(model,unique_words);
+probabilities = exp(logprobs);
+
+% taking the values of all the unique words, reweighted by their probabilities,
+% is equivalent to taking the observables of the model E_p[h(x)]:
+marginals = getWeightedMarginals(unique_words,model,probabilities);
+
+% the code above is functionally equivalent to calling: 
+% marginals = getMarginals(model)
+
+</pre>
+
+</article>
+  
+
+
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/orimaoz">orimaoz</a></p>
+        <p><small>Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>

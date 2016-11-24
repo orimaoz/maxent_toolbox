@@ -1,0 +1,2 @@
+LIBRARY mexLogProbability
+EXPORTS mexFunction
