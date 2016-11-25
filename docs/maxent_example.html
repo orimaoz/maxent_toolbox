@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>maxent_example</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-11-24"><meta name="DC.source" content="maxent_example.m"><style type="text/css">
+      --><title>maxent_example</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-11-25"><meta name="DC.source" content="maxent_example.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -117,7 +117,7 @@ ylabel(<span class="string">'predicted marginal'</span>);
 title(sprintf(<span class="string">'marginals in %d cells'</span>,ncells));
 </pre><pre class="codeoutput">Training to threshold: 1.000 standard deviations
 Maximum MSE: 1.000
-156/Inf  MSE=0.014 (mean), 1.872 (max) [10]  DKL: 0.089
+149/Inf  MSE=0.014 (mean), 1.937 (max) [10]  DKL: 0.090
 converged (marginals match)
 Standard deviations from marginals: 0.061 (mean), 0.996 (max) [9]  DKL: 0.089
 Kullback-Leibler divergence from test set: 0.109675
@@ -199,33 +199,42 @@ simulated_empirical_distribution = maxent.getEmpiricalModel(samples_simulated);
 fprintf(<span class="string">'Entropy of simulated data: %.03f bits\n'</span>,simulated_empirical_distribution.entropy);
 </pre><pre class="codeoutput">Training to threshold: 1.500 standard deviations
 Maximum samples: 17778   maximum MSE: 3.375
-338/Inf samples=4338  MSE=8.138 (mean), 68.376 (max) [30]
-408/Inf samples=8755  MSE=4.396 (mean), 49.440 (max) [17]
-449/Inf samples=13186  MSE=3.720 (mean), 69.128 (max) [2]
-478/Inf samples=17612  MSE=2.567 (mean), 35.248 (max) [40]
-503/Inf samples=17778  MSE=2.016 (mean), 24.021 (max) [40]
-528/Inf samples=17778  MSE=1.916 (mean), 30.722 (max) [12]
-553/Inf samples=17778  MSE=1.674 (mean), 26.987 (max) [12]
-578/Inf samples=17778  MSE=1.586 (mean), 16.304 (max) [45]
-603/Inf samples=17778  MSE=1.753 (mean), 9.394 (max) [31]
-628/Inf samples=17778  MSE=1.993 (mean), 11.920 (max) [2]
-653/Inf samples=17778  MSE=1.826 (mean), 12.493 (max) [1140]
-678/Inf samples=17778  MSE=1.755 (mean), 14.302 (max) [1140]
-703/Inf samples=17778  MSE=1.720 (mean), 10.222 (max) [1140]
-728/Inf samples=17778  MSE=1.472 (mean), 7.022 (max) [1147]
-753/Inf samples=17778  MSE=1.504 (mean), 6.722 (max) [1176]
-778/Inf samples=17778  MSE=1.533 (mean), 9.090 (max) [12]
-803/Inf samples=17778  MSE=1.496 (mean), 10.559 (max) [12]
-828/Inf samples=17778  MSE=1.526 (mean), 6.851 (max) [12]
-853/Inf samples=17778  MSE=1.446 (mean), 4.788 (max) [43]
-878/Inf samples=17778  MSE=1.330 (mean), 5.673 (max) [1150]
-903/Inf samples=17778  MSE=1.409 (mean), 5.199 (max) [1264]
-928/Inf samples=17778  MSE=1.370 (mean), 3.929 (max) [2]
+332/Inf samples=4084  MSE=7.932 (mean), 73.904 (max) [43]
+406/Inf samples=8582  MSE=4.128 (mean), 56.293 (max) [31]
+447/Inf samples=12925  MSE=3.528 (mean), 54.880 (max) [2]
+477/Inf samples=17437  MSE=2.524 (mean), 33.872 (max) [40]
+503/Inf samples=17778  MSE=1.832 (mean), 23.930 (max) [40]
+527/Inf samples=17778  MSE=1.723 (mean), 29.147 (max) [12]
+552/Inf samples=17778  MSE=1.638 (mean), 24.035 (max) [12]
+577/Inf samples=17778  MSE=1.622 (mean), 13.748 (max) [45]
+603/Inf samples=17778  MSE=1.642 (mean), 8.946 (max) [31]
+627/Inf samples=17778  MSE=1.761 (mean), 10.442 (max) [1140]
+653/Inf samples=17778  MSE=1.784 (mean), 12.400 (max) [1140]
+679/Inf samples=17778  MSE=1.803 (mean), 11.871 (max) [1140]
+703/Inf samples=17778  MSE=1.963 (mean), 10.665 (max) [1069]
+728/Inf samples=17778  MSE=1.672 (mean), 7.134 (max) [1147]
+754/Inf samples=17778  MSE=1.511 (mean), 7.057 (max) [1176]
+779/Inf samples=17778  MSE=1.834 (mean), 8.628 (max) [1176]
+805/Inf samples=17778  MSE=1.818 (mean), 10.413 (max) [12]
+831/Inf samples=17778  MSE=1.476 (mean), 8.057 (max) [12]
+857/Inf samples=17778  MSE=1.441 (mean), 4.119 (max) [1264]
+883/Inf samples=17778  MSE=1.433 (mean), 4.763 (max) [1150]
+909/Inf samples=17778  MSE=1.375 (mean), 4.571 (max) [1150]
+935/Inf samples=17778  MSE=1.459 (mean), 4.811 (max) [1150]
+961/Inf samples=17778  MSE=1.519 (mean), 5.088 (max) [1151]
+987/Inf samples=17778  MSE=1.525 (mean), 5.412 (max) [1151]
+1013/Inf samples=17778  MSE=1.556 (mean), 5.915 (max) [1151]
+1039/Inf samples=17778  MSE=1.462 (mean), 3.737 (max) [1151]
+1065/Inf samples=17778  MSE=1.420 (mean), 3.957 (max) [324]
+1091/Inf samples=17778  MSE=1.333 (mean), 4.364 (max) [1166]
+1117/Inf samples=17778  MSE=1.319 (mean), 3.980 (max) [1166]
+1143/Inf samples=17778  MSE=1.343 (mean), 3.695 (max) [1069]
+1169/Inf samples=17778  MSE=1.343 (mean), 3.694 (max) [1069]
 converged (marginals match)
 Normalizing model...
 [...............]
-Model entropy: 17.527 bits, empirical entropy (test set): 11.967 bits
-Entropy of simulated data: 12.483 bits
+Model entropy: 17.560 bits, empirical entropy (test set): 11.967 bits
+Entropy of simulated data: 12.495 bits
 </pre><img vspace="5" hspace="5" src="maxent_example_02.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="maxent_example_03.png" style="width:560px;height:420px;" alt=""> <h2>part 3: specifying a custom list of correlations<a name="4"></a></h2><pre class="codeinput"><span class="comment">% load spiking data of 15 neurons</span>
 load <span class="string">example15</span>
 
@@ -267,22 +276,14 @@ ylabel(<span class="string">'predicted pattern log frequency'</span>);
 title(sprintf(<span class="string">'Third order model: activity patterns in %d cells'</span>,ncells));
 </pre><pre class="codeoutput">Training to threshold: 1.000 standard deviations
 Maximum MSE: 1.000
-19/Inf  MSE=8.889 (mean), 2863.190 (max) [12]  DKL: 0.447
-41/Inf  MSE=2.894 (mean), 47.171 (max) [12]  DKL: 0.183
-63/Inf  MSE=1.270 (mean), 18.680 (max) [32]  DKL: 0.130
-85/Inf  MSE=0.630 (mean), 23.237 (max) [13]  DKL: 0.108
-107/Inf  MSE=0.276 (mean), 28.068 (max) [2]  DKL: 0.097
-129/Inf  MSE=0.135 (mean), 12.790 (max) [1]  DKL: 0.091
-151/Inf  MSE=0.098 (mean), 10.719 (max) [12]  DKL: 0.088
-173/Inf  MSE=0.079 (mean), 4.787 (max) [1]  DKL: 0.086
-195/Inf  MSE=0.050 (mean), 2.911 (max) [12]  DKL: 0.085
-217/Inf  MSE=0.039 (mean), 2.401 (max) [12]  DKL: 0.084
-239/Inf  MSE=0.032 (mean), 2.481 (max) [351]  DKL: 0.083
-261/Inf  MSE=0.025 (mean), 1.990 (max) [351]  DKL: 0.082
-283/Inf  MSE=0.016 (mean), 1.059 (max) [351]  DKL: 0.081
+47/Inf  MSE=1.664 (mean), 29.168 (max) [108]  DKL: 0.161
+99/Inf  MSE=0.311 (mean), 16.928 (max) [2]  DKL: 0.100
+150/Inf  MSE=0.101 (mean), 10.970 (max) [12]  DKL: 0.088
+202/Inf  MSE=0.049 (mean), 3.490 (max) [12]  DKL: 0.085
+254/Inf  MSE=0.030 (mean), 2.331 (max) [351]  DKL: 0.082
 converged (marginals match)
 Standard deviations from marginals: 0.125 (mean), 0.992 (max) [351]  DKL: 0.081
-</pre><img vspace="5" hspace="5" src="maxent_example_04.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="maxent_example_05.png" style="width:560px;height:420px;" alt=""> <h2>part 4: constructing composite models<a name="5"></a></h2><pre class="codeinput"><span class="comment">% load spiking data of 15 neurons</span>
+</pre><img vspace="5" hspace="5" src="maxent_example_04.png" style="width:560px;height:420px;" alt=""> <h2>part 4: constructing composite models<a name="5"></a></h2><pre class="codeinput"><span class="comment">% load spiking data of 15 neurons</span>
 load <span class="string">example15</span>
 
 <span class="comment">% randomly divide it into a training set and a test set (so we can verify how well we trained)</span>
@@ -323,16 +324,12 @@ ylabel(<span class="string">'predicted pattern log frequency'</span>);
 title(sprintf(<span class="string">'Composite model: activity patterns in %d cells'</span>,ncells));
 </pre><pre class="codeoutput">Training to threshold: 1.000 standard deviations
 Maximum MSE: 1.000
-24/Inf  MSE=0.665 (mean), 76.452 (max) [12]  DKL: 0.129
-50/Inf  MSE=0.260 (mean), 7.199 (max) [24]  DKL: 0.112
-76/Inf  MSE=0.100 (mean), 5.460 (max) [24]  DKL: 0.107
-101/Inf  MSE=0.056 (mean), 3.783 (max) [150]  DKL: 0.104
-127/Inf  MSE=0.033 (mean), 2.032 (max) [150]  DKL: 0.102
-152/Inf  MSE=0.028 (mean), 2.760 (max) [24]  DKL: 0.101
-178/Inf  MSE=0.021 (mean), 1.503 (max) [24]  DKL: 0.100
+48/Inf  MSE=0.280 (mean), 7.289 (max) [24]  DKL: 0.113
+96/Inf  MSE=0.061 (mean), 3.689 (max) [150]  DKL: 0.105
+145/Inf  MSE=0.029 (mean), 2.302 (max) [24]  DKL: 0.101
 converged (marginals match)
 Standard deviations from marginals: 0.134 (mean), 0.974 (max) [24]  DKL: 0.100
-</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+</pre><img vspace="5" hspace="5" src="maxent_example_05.png" style="width:560px;height:420px;" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 % maxent_example.m
 %
