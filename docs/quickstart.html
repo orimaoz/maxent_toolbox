@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Maximum entropy toolbox</title>
+    <title>maxent_toolbox: quickstart guide</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/github-light.css">
@@ -40,8 +40,7 @@ Quick Start Guide</h2>
 <p>As an example, assume there are 20-bit binary patterns: <small>00000000000000000000, 00000000000000000001, ... , 11111111111111111111</small> which are distributed in some way - the probability distribution p(x) denotes the probability of encountering each of the patterns. We have obtained 5000 independent samples from <i>p(x)</i> and we want to use these to approximate <i>p(x)</i>, i.e. obtain the probabilities of encountering each of the 2^20=1048576 possible patterns. We clump these 5000 patterns of 20 bits in a (20 x 5000) MATLAB matrix called <i>raster</i>:<p>
 
 <pre>
-<b>
-Name      Size             Bytes  Class     Attributes</b>
+<b>Name      Size             Bytes  Class     Attributes</b>
 raster      20x5000            400000  uint32     </pre>
   
 <p>We start by picking which class of maximum-entropy model to use - in this example we will use the <a href="http://www.weizmann.ac.il/neurobiology/labs/schneidman/Publications/Schneidman+al_2006-Nature.pdf">pairwise maximum entropy model</a> (sometimes known as Ising model) which is a minimal model based on individual bits and correlations between pairs of bits. We initialize the model:</p>

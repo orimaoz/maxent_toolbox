@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Maximum entropy toolbox</title>
+    <title>maxent_toolbox: getEmipricalMarginals()</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/github-light.css">
@@ -28,7 +28,7 @@
       </header>
       <section>
         
-<h2>getWeightedMarginals</h2>
+<h2>maxent.getWeightedMarginals</h2>
 
 
 
@@ -42,7 +42,7 @@ This is typically used in order to compute the expected value of the moment-gene
 
 <article>
 <h2>Usage</h2>
-<pre>marginals = getWeightedMarginals(samples,model, probabilities)</pre>
+<pre>marginals = maxent.getWeightedMarginals(samples,model, probabilities)</pre>
 </article>
 
 <article>
@@ -68,25 +68,25 @@ used in order to compute the marginals</li>
 <h2>Example usage</h2>
 <pre>
 % create an ME model
-model = createModel(10,'ising');   
+model = maxent.createModel(10,'ising');   
 
 % train it on a set of samples
-model = trainModel(model,samples);
+model = maxent.trainModel(model,samples);
 
 % create a set of samples corresponding to all possible states of the system
 npatterns = 2^model.ncells;
 unique_words = logical(de2bi(0:(npatterns-1)))';
     
 % get the probabilities of all the possible patterns
-logprobs = getLogProbability(model,unique_words);
+logprobs = maxent.getLogProbability(model,unique_words);
 probabilities = exp(logprobs);
 
 % taking the values of all the unique words, reweighted by their probabilities,
 % is equivalent to taking the observables of the model E_p[h(x)]:
-marginals = getWeightedMarginals(unique_words,model,probabilities);
+marginals = maxent.getWeightedMarginals(unique_words,model,probabilities);
 
 % the code above is functionally equivalent to calling: 
-% marginals = getMarginals(model)
+% marginals = maxent.getMarginals(model)
 
 </pre>
 

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Maximum entropy toolbox</title>
+    <title>maxent_toolbox: trainModel()</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/github-light.css">
@@ -28,7 +28,7 @@
       </header>
       <section>
         
-<h2>trainModel</h2>
+<h2>maxent.trainModel</h2>
 
 
 <article>
@@ -48,8 +48,8 @@ The user can force either an exhaustive solution or an MCMC solution by supplyin
 <article>
 
 <h2>Usage</h2>
-<pre>[model_out, bConverged] = trainModel(model,samples)</pre>
-<pre>[model_out, bConverged] = trainModel(model,samples,Name,Value,...)</pre>
+<pre>[model_out, bConverged] = maxent.trainModel(model,samples)</pre>
+<pre>[model_out, bConverged] = maxent.trainModel(model,samples,Name,Value,...)</pre>
 </article>
 <article>
 
@@ -89,10 +89,10 @@ The user can force either an exhaustive solution or an MCMC solution by supplyin
 <h2>Example usage</h2>
 <pre>
 % create an ME model
-model = createModel(30,'ising');   
+model = maxent.createModel(30,'ising');   
 
 % train it with a sample set to a threshold of two standard deviations
-model = trainModel(model,samples,'threshold',2);  
+model = maxent.trainModel(model,samples,'threshold',2);  
 </pre>
 </article>
 

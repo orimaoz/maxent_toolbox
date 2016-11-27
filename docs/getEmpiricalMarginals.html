@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Maximum entropy toolbox</title>
+    <title>maxent_toolbox: getEmpiricalMarginals()</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/github-light.css">
@@ -28,7 +28,7 @@
       </header>
       <section>
         
-<h2>getEmpiricalMarginals</h2>
+<h2>maxent.getEmpiricalMarginals</h2>
 
 <article>
 <h2>Description</h2>
@@ -40,7 +40,7 @@ samples over which the marginals are to be computed, and a model which defines t
 
 <article>
 <h2>Usage</h2>
-<pre>marginals = getEmpiricalMarginals(samples,model)</pre>
+<pre>marginals = maxent.getEmpiricalMarginals(samples,model)</pre>
 </article>
 
 <article>
@@ -67,11 +67,11 @@ used in order to compute the marginals</li>
 <h2>Example usage</h2>
 <pre>
 % initialize a maximum entropy model
-model = createModel(30,'ising');   
+model = maxent.createModel(30,'ising');   
 
 % The observables of Ising model are firing rates and correlations, so getting the empirical marginals of this
 % set of samples will actually return the firing rates and correlations of the population activity
-marginals = getEmpiricalMarginals(samples,model);
+marginals = maxent.getEmpiricalMarginals(samples,model);
 </pre>
 </article>
 
