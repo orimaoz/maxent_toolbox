@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Maximum entropy toolbox</title>
+    <title>Building the Maximum entropy toolbox</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/github-light.css">
@@ -36,15 +36,25 @@ Building the maxent toolbox</h2>
 
 
 <h3>Building the toolbox for Windows</h3>
-<p>We provide a prebuilt project file for Microsoft Visual studio named  <strong>maxentToolbox_windows.sln</strong>. This project file was created using Visual Studio Community 2015 which is <a href=="https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx">available for free from Microsoft</a>. Note that the project settings assume that you have Intel Parallel Studio installed.
+<p>We provide a prebuilt project file for Microsoft Visual studio named  <strong>maxentToolbox_windows.sln</strong>. This project file was created using Visual Studio Community 2015 which is <a href=="https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx">available for free from Microsoft</a>. Note that the project settings assume that you have Intel Parallel Studio installed.</p>
+<p>After the build is complete, copy all the <strong>*.mexw64</strong> files to the root of the maxent_toolbox package.</p>
+
 
 <h3>Building the toolbox for Mac</h3>
-<p>Edit the file <strong>build_mac.sh</strong> to set the directories of the MKL/IPP packages provided by Intel Composer XE. Then run:
-<pre>sh build_mac.sh</pre> to build the .mex files.</p>
+<p>Edit the file <strong>build_mac.sh</strong> to set the directories of the MKL/IPP packages provided by Intel Composer XE. Then run either:</p>
+<pre>source build_mac.sh optimized</pre> 
+<p>to build the package with maximum optimizations for your CPU, or: </p>
+<pre>source build_mac.sh compatible</pre> 
+<p>to build binaries backwards-compatible for older CPUs.</p>
+<p>After the build is complete, copy all the <strong>*.mexmaci64</strong> files to the root of the maxent_toolbox package.</p>
 
 <h3>Building the toolbox for Unix</h3>
-<p>Edit the file <strong>build_unix.sh</strong> to set the directories of the MKL/IPP packages provided by Intel Composer XE. Then run:
- <pre>sh build_unix.sh</pre> to build the .mex files.</p>
+<p>Edit the file <strong>build_unix.sh</strong> to set the directories of the MKL/IPP packages provided by Intel Composer XE. Then run either:</p>
+<pre>source build_unix.sh optimized</pre> 
+<p>to build the package with maximum optimizations for your CPU, or: </p>
+<pre>source build_unix.sh compatible</pre> 
+<p>to build binaries backwards-compatible for older CPUs.</p>
+<p>After the build is complete, copy all the <strong>*.mexa64</strong> files to the root of the maxent_toolbox package.</p>
 
 
 
