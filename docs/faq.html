@@ -35,7 +35,7 @@
 
 
 <h3>Does the maxent toolbox support python?</h3>
-<p>We have made an experimental port to Python but it is relatively immature and lacks some of the optimizations that the MATLAB version has. <a href="mailto:orimaoz@gmail.com">Contact us</a> if you are interested in trying it out.</p>
+<p>There is an experimental port to Python but it is relatively immature and lacks some of the optimizations that the MATLAB version has. <a href="mailto:orimaoz@gmail.com">Contact us</a> if you are interested in trying it out.</p>
 
 <h3>Can I use the maxent toolbox to learn distributions of non-binary inputs (for example spike counts)?</h3>
 <p>The current version only supports binary patterns. In theory the same approach will work for other inputs,
@@ -43,9 +43,9 @@ but some of the optimizations we used to make the package run faster made use of
 that each input dimension is either 0 or 1. We might extend the toolbox to support larger ranges of inputs if there
 is sufficient demand so <a href="mailto:orimaoz@gmail.com">let us know</a>.</p>
 
-<h3>Is the maxent toolbox multi-core?</h3>
-<p>The maxent package currently uses only one CPU core, which was useful for us because we used a computing cluster
-where each node had access to a single core. Making the package multi-core (as well as adding things like GPU support)
+<h3>Support for multi-core? MIC/GPU?</h3>
+<p>The maxent package uses a single CPU core, which was useful for us because we used a computing cluster
+where each node had access to a single core. Making the package multi-core (or adding GPU support)
 is non-trivial because of the inherently sequential nature of MCMC techniques, but as before
 <a href="mailto:orimaoz@gmail.com">let us know</a> if you think this would have a big impact on you.</p>
 
