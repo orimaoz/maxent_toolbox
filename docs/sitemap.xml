@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+   <url><loc>https://orimaoz.github.io/maxent_toolbox/</loc>
+   <priority>0.8</priority>	
+   </url>
+
+   <url><loc>https://orimaoz.github.io/maxent_toolbox/build.html</loc></url>
+   <url><loc>https://orimaoz.github.io/maxent_toolbox/createModel.html</loc></url>
+   <url><loc>https://orimaoz.github.io/maxent_toolbox/djs.html</loc></url>
+   <url><loc>https://orimaoz.github.io/maxent_toolbox/dkl.html</loc></url>
+   <url><loc>https://orimaoz.github.io/maxent_toolbox/faq.html</loc></url>
+   <url><loc>https://orimaoz.github.io/maxent_toolbox/function_reference.html</loc></url>
+   <url><loc>https://orimaoz.github.io/maxent_toolbox/generateSamples.html</loc></url>
+   <url><loc>https://orimaoz.github.io/maxent_toolbox/getEmpiricalMarginals.html</loc></url>
+   <url><loc>https://orimaoz.github.io/maxent_toolbox/getEmpiricalModel.html</loc></url>
+   <url><loc>https://orimaoz.github.io/maxent_toolbox/getEntropy.html</loc></url>
+   <url><loc>https://orimaoz.github.io/maxent_toolbox/getLogProbability.html</loc></url>
+   <url><loc>https://orimaoz.github.io/maxent_toolbox/getMarginals.html</loc></url>
+   <url><loc>https://orimaoz.github.io/maxent_toolbox/getWeightedMarginals.htm</loc></url>
+   <url><loc>https://orimaoz.github.io/maxent_toolbox/index.html</loc></url>
+   <url><loc>https://orimaoz.github.io/maxent_toolbox/maxent_example.html</loc></url>
+   <url><loc>https://orimaoz.github.io/maxent_toolbox/quickstart.html</loc></url>
+   <url><loc>https://orimaoz.github.io/maxent_toolbox/trainModel.html</loc></url>
+   <url><loc>https://orimaoz.github.io/maxent_toolbox/wangLandau.html</loc></url>
+
+</urlset> 
