@@ -89,7 +89,7 @@ The user can force either an exhaustive solution or an MCMC solution by supplyin
 <h2>Example usage</h2>
 <pre>
 % create an ME model
-model = maxent.createModel(30,'ising');   
+model = maxent.createModel(30,'pairwise');   
 
 % train it with a sample set to a threshold of two standard deviations
 model = maxent.trainModel(model,samples,'threshold',2);  

@@ -10,6 +10,18 @@
 % later be approximately normalized using other functions in this package). The user can force either an exhaustive
 % solution or an MCMC solution by supplying optional arugments.
 % If the model is an independent model, it will extract the model parameters analytically.
+% Trains a maximum entropy model on empirical data. The function will automatically choose, based on the number of 
+% dimensions in the input distribution, which of two modes of operation to use:
+%
+% * For a small number (default < 30) of input dimensions it will compute an exact solution and return 
+%   a normalized probability distribution.
+% * For a large number (default >=30) of input dimensions it will compute an approximate solution using 
+%   Monte-Carlo Markov Chain (MCMC) methods and return a non-normalized distribution. This distribution 
+%   can later be normalized using other functions in the toolbox such as wangLandau.
+% * If the input model is an independent model, the function will return a normalized probability distribution 
+%   regardless of the input dimension.
+%
+% The user can force either an exhaustive solution or an MCMC solution by supplying optional arguments.
 %
 % Arguments (mandatory):
 %   model   - Maximum entropy model as returned by the createModel() function. 
@@ -40,7 +52,8 @@
 %
 %
 % Example usage:
-%   model_out = trainModel(model,raster,'threshold',0.005,'savefile','training_reentry.mat');
+%   model = maxent.createModel(20,'pairwise');
+%   model_out = maxent.trainModel(model,samples,'threshold',1,'savefile','training_reentry.mat');
 %
 % Last update: Ori Maoz 30/06/2016
 function [model_out, bConverged] = trainModel(input_model,samples,varargin)
