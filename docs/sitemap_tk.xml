@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+   <url><loc>https://www.maxent.tk/</loc>
+   <priority>0.8</priority>	
+   </url>
+
+   <url><loc>https://www.maxent.tk/build.html</loc></url>
+   <url><loc>https://www.maxent.tk/createModel.html</loc></url>
+   <url><loc>https://www.maxent.tk/djs.html</loc></url>
+   <url><loc>https://www.maxent.tk/dkl.html</loc></url>
+   <url><loc>https://www.maxent.tk/faq.html</loc></url>
+   <url><loc>https://www.maxent.tk/function_reference.html</loc></url>
+   <url><loc>https://www.maxent.tk/generateSamples.html</loc></url>
+   <url><loc>https://www.maxent.tk/getEmpiricalMarginals.html</loc></url>
+   <url><loc>https://www.maxent.tk/getEmpiricalModel.html</loc></url>
+   <url><loc>https://www.maxent.tk/getEntropy.html</loc></url>
+   <url><loc>https://www.maxent.tk/getLogProbability.html</loc></url>
+   <url><loc>https://www.maxent.tk/getMarginals.html</loc></url>
+   <url><loc>https://www.maxent.tk/getWeightedMarginals.htm</loc></url>
+   <url><loc>https://www.maxent.tk/index.html</loc></url>
+   <url><loc>https://www.maxent.tk/maxent_example.html</loc></url>
+   <url><loc>https://www.maxent.tk/quickstart.html</loc></url>
+   <url><loc>https://www.maxent.tk/trainModel.html</loc></url>
+   <url><loc>https://www.maxent.tk/wangLandau.html</loc></url>
+
+</urlset> 
