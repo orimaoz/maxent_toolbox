@@ -71,7 +71,7 @@ logz = sum(log(1-firing_rates(nonstatic_indices)));
 
 
 % now compute the entropy
-model_out.H = sum(-firing_rates(nonstatic_indices) .* log2(firing_rates(nonstatic_indices)) - (1-firing_rates(nonstatic_indices)) .* log2(1-firing_rates(nonstatic_indices)));
+model_out.entropy = sum(-firing_rates(nonstatic_indices) .* log2(firing_rates(nonstatic_indices)) - (1-firing_rates(nonstatic_indices)) .* log2(1-firing_rates(nonstatic_indices)));
 
 
 % compute each of the factors
