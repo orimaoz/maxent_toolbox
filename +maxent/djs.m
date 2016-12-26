@@ -21,6 +21,6 @@ end
 
 % DJS is just DKL of the two distributions to a middle distribution
 m = (p1+p2)/2;  
-out = (dkl(p1,m) + dkl(p2,m))/2;
+out = (maxent.dkl(p1,m) + maxent.dkl(p2,m))/2;
 
 end
