@@ -64,35 +64,33 @@ end
 model_out = model;
 
 % we need special handling for cells that never fire or that always fire
-nonstatic_indices = logical(firing_rates > 0) & logical(firing_rates < 1);
+idx_always_zero = logical(firing_rates == 0);
+idx_always_one = logical(firing_rates == 1);
+
+% assume that our measurements are approximate: if we encountered a marginal of zero, then the actual marginal
+% is just below the quantization error i.e. 1/(2*nsamples). Similarly a marginal of one is actually just below one.
+firing_rates(idx_always_zero) = 1 / (2*nsamples);
+firing_rates(idx_always_one) = 1 - (1 / (2*nsamples));
 
 % compute the partition function: z = (1-p1)(1-p2).....(1-pn)
-logz = sum(log(1-firing_rates(nonstatic_indices)));
+logz = sum(log(1-firing_rates));
 
 
 % now compute the entropy
-model_out.entropy = sum(-firing_rates(nonstatic_indices) .* log2(firing_rates(nonstatic_indices)) - (1-firing_rates(nonstatic_indices)) .* log2(1-firing_rates(nonstatic_indices)));
+model_out.entropy = sum(-firing_rates .* log2(firing_rates) - (1-firing_rates) .* log2(1-firing_rates));
 
 
 % compute each of the factors
 for i = 1:ncells
     
-    if (nonstatic_indices(i))    
-        % first compute (1-p1)(1-p2)....(pi)(1-p_1+1)...(1-pn)
-        vec = ones(ncells,1);
-        vec(i) = 2*firing_rates(i);
-        lambda = -(sum(log(vec(nonstatic_indices) - firing_rates(nonstatic_indices))) - logz);
-    else
-       % this cell never fired, its Lagrange factor will be 0 
-       % (the normal computation would result in infinity)
-       lambda = 0;
-        
-    end
+    % first compute (1-p1)(1-p2)....(pi)(1-p_1+1)...(1-pn)
+    vec = ones(ncells,1);
+    vec(i) = 2*firing_rates(i);
+    lambda = -(sum(log(vec - firing_rates)) - logz);
     model_out.factors(i) = lambda;
 end
 
-% compensate for the indices which are static (each one effectively doubling the state space)
-logz = logz - sum(~nonstatic_indices) * log(2);
+
 model_out.z = logz;
 
 
