@@ -1,15 +1,9 @@
 % Trains a maximum-entropy model on a set of samples.
 %
 % Usage:
-%   model_out = trainModel(model,samples)
-%   model_out = trainModel(model,samples,Name,Value,...)
+%   [model_out, bConverged] = trainModel(model,samples)
+%   [model_out, bConverged] = trainModel(model,samples,Name,Value,...)
 %
-% The function will automatically choose, based on the number of dimensions in the input distribution, whether to
-% compute the distribution exhaustively (in which case it will return a normalized model) or to compute the distribution
-% using Monte-Carlo Markov Chain (MCMC) techniques (in which case it will return an un-normalized model, which can 
-% later be approximately normalized using other functions in this package). The user can force either an exhaustive
-% solution or an MCMC solution by supplying optional arugments.
-% If the model is an independent model, it will extract the model parameters analytically.
 % Trains a maximum entropy model on empirical data. The function will automatically choose, based on the number of 
 % dimensions in the input distribution, which of two modes of operation to use:
 %
