@@ -74,7 +74,7 @@ HighOrderEnergy::HighOrderEnergy(float* in_W, double * in_lambda, uint32_t ncell
 
 
 	// copy the thresholds
-	std::memcpy(m_threshold, in_thresholds, sizeof(double) * m_nfactors);
+	std::memcpy(m_threshold, in_thresholds, sizeof(float) * m_nfactors);
 }
 
 
