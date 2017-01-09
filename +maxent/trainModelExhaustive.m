@@ -28,7 +28,7 @@ DEFAULT_TIME_BETWEEN_SAVES = 60;
 
 % factor_gradient ascent maximum number of steps
 DEFAULT_NUM_STEPS = Inf;
-CONVERGED_STEP_SIZE = 10^-8;
+CONVERGED_STEP_SIZE = 10^-12;
 
 beta = 0.5;    % parameter for backtracking line search
 alpha = 0.5;   % parameter for backtracking line search
@@ -101,7 +101,7 @@ internal_print('Maximum MSE: %.03f',threshold^2);
 nfactors = maxent.getNumFactors(model);
 
 backtrack_now = false;
-
+bConverged = false;
 
 current_dkl = inf;
 previous_dkl = inf;
@@ -228,6 +228,7 @@ while i < num_steps
 
                 if (step_size < CONVERGED_STEP_SIZE)
                     internal_print('converged.');
+                    bConverged = true;
                     break;
                 end
 
