@@ -30,7 +30,7 @@
 	  MATLABMEX="-DMATLAB_MEX_FILE "
           CXXFLAGS="-ansi -fexceptions -fPIC -fno-omit-frame-pointer -pthread -std=c++11"
           INCLUDE="-I&quot;$MATLABROOT/extern/include&quot; -I&quot;$MATLABROOT/simulink/include&quot;"
-          CXXOPTIMFLAGS="-O2 -DNDEBUG -xHOST"
+          CXXOPTIMFLAGS="-O3 -ipo -DNDEBUG -xSSE4.2 -axCORE_AVX2"
           CXXDEBUGFLAGS="-g"
           
           LDXX="$CXX"

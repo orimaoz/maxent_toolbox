@@ -32,7 +32,7 @@
     MATLABMEX="-DMATLAB_MEX_FILE "
     CXXFLAGS="-fno-common -arch x86_64 -mmacosx-version-min=$SDKVER -fexceptions -isysroot $ISYSROOT -fobjc-arc -std=c++11 -stdlib=libc++"
     INCLUDE="-I&quot;$MATLABROOT/extern/include&quot; -I&quot;$MATLABROOT/simulink/include&quot;"
-    CXXOPTIMFLAGS="-O2 -DNDEBUG -xHOST"
+    CXXOPTIMFLAGS="-O3 -ipo -DNDEBUG -xSSE4.2 -axCORE_AVX2"
     CXXDEBUGFLAGS="-g"
     
     LDXX="$CXX"
