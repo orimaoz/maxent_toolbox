@@ -12,13 +12,14 @@
 %   model_out - trained ME model, un-normalized.
 %   bConverged - true if the training process converged, false if it reached the maximum #iterations
 %
-% Last update: Ori Maoz 30/06/2016
+% Last update: Ori Maoz 25/01/2017
 function [model, bConverged] = trainModelMCMC(input_model,raster,varargin)
 
 
 last_save = tic;
 
 % how many recent iterations we use for the distribution of marginal errors
+GRADIENT_MEMORY_SIZE_INCREMENT = 50;
 GRADIENT_MEMORY_SIZE = 50;
 
 % how many initial steps of GIS to use before switching back to gradient descent
@@ -38,6 +39,14 @@ DEFAULT_TIME_BETWEEN_SAVES = 60;
 
 DEFAULT_NUM_STEPS = inf;
 DEFAULT_MAX_ERROR_THRESHOLD = 1.3;
+
+
+% number of steps after which we start by increase the sample size
+NSTEPS_ADJUST_SAMPLE_SIZE = 5000;
+time_since_last_adjustment = 0;
+
+% MSE for which we decide that we have diverged and should reset the training
+DIVERGENCE_THRESHOLD = 100;
 
 
 % check dimensionality
@@ -75,6 +84,7 @@ if isnan(max_nsamples)
     % enough to obtain a reliable measurement for the requested confidence interval
     max_nsamples = ceil(2*data_nsamples /((requested_threshold)^2));
 end
+original_max_samples = max_nsamples;
 
 % The internal threshold is a function of both the variance of the MCMC (reflected in max_nsamples) and the requeted
 % threshold. Choose an internal threshold that would force the distance to the target to be within the specified range.
@@ -95,6 +105,7 @@ end
 
 %if the re-entry file exists, load running status from it
 i=0;
+curr_iteration = 0;
 if exist(reentry_filename, 'file') == 2
     load(reentry_filename);
     
@@ -159,9 +170,60 @@ last_print_time = tic;
 while i < num_steps
           
        
-    i = i + 1;
+    i = i + 1;  % steps in the main loop
+    curr_iteration = curr_iteration + 1;   % steps for the solver
 
 
+    % if we seem to be running a very long time, increase the sample size
+    time_since_last_adjustment = time_since_last_adjustment + 1;
+    if time_since_last_adjustment > NSTEPS_ADJUST_SAMPLE_SIZE
+        time_since_last_adjustment = 0;
+        
+        
+        % every time increase the number of samples by one "jump"
+        max_nsamples = max_nsamples + original_max_samples;
+
+        % also remember a longer history of steps for a more accurate variance estimation
+        GRADIENT_MEMORY_SIZE = GRADIENT_MEMORY_SIZE + GRADIENT_MEMORY_SIZE_INCREMENT;
+        
+        % adjust threshold accordingly to account for the more accurate measurement
+        max_error_threshold = sqrt(requested_threshold^2 + data_nsamples/max_nsamples);
+
+        % apprently we are way off, reset back to initial guess and let it reconverge with stricter sampling
+        if (mean_error^2 > DIVERGENCE_THRESHOLD)
+            internal_print('Solver diverged, resetting parameters and increasing max sample size (maximum MSE: %.03f)',max_error_threshold); 
+
+            
+            % reset everything- factors, history etc
+            
+            model = maxent.setFactors(model,zeros(1,maxent.getNumFactors(model)));
+            
+            % here we will keep the recent gradient norm history, we will use this to estimate the step size
+            gradient_norm_history = ones(1,GRADIENT_NORM_COUNT);
+            gradient_norm_idx = 1;
+
+            % here we will keep the absolute deviations of marginals, we will use this to check for convergence
+            gradient_memory = nan(GRADIENT_MEMORY_SIZE,nfactors);
+            gradient_memory_idx = 1;
+            
+            mean_error = nan;
+            max_error = nan;
+            stderr = nan;
+            max_idx= nan;
+            
+            curr_iteration = 0;
+            
+            if (use_acceleration)
+                nesterov_acceleration = maxent.Nesterov;  % initialize Nesterov accelerated gradient descent
+                y = maxent.getFactors(model);
+            end
+        else            
+            internal_print('Unable to converge, increasing max sample size (maximum MSE: %.03f)',max_error_threshold);      
+        end
+        
+    end
+    
+    
 
     % limit the growth speed of the # of samples
     nsamples = ceil(prev_nsamples * nsamples_increase);
@@ -186,7 +248,7 @@ while i < num_steps
    
     % compute the variance of estimation error for each marginal across time, normalized by the expected standard
     % deviation of this marginal
-    if (i >= GRADIENT_MEMORY_SIZE)
+    if (curr_iteration >= GRADIENT_MEMORY_SIZE)
         stderr = sqrt(mean(gradient_memory.^2)) ./ empirical_marginals_std;
     end    
     mean_error = mean(stderr);
@@ -222,12 +284,12 @@ while i < num_steps
     % step_size = D / (G * sqrt(t))    (t = current step index)
     % D is an upper bound on the diameter of the problem and is therefore problem-specific. 
     G2 = mean(gradient_norm_history);
-    curr_step_size = step_scaling ./ sqrt(G2 * i);    
+    curr_step_size = step_scaling ./ sqrt(G2 * curr_iteration);    
 
     
     % for a certain number of initial steps we will perform Generalized Iterative Scaling which is more stable than
     % gradient descent when we are still far from convergence
-    if i < GIS_INITIAL_STEPS        
+    if curr_iteration < GIS_INITIAL_STEPS        
         
         %GIS update
         C = min(1.1*sum(empirical_marginals),nfactors);        

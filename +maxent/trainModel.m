@@ -55,7 +55,7 @@ function [model_out, bConverged] = trainModel(input_model,samples,varargin)
 MAXIMUM_NCELLS_FOR_EXHAUSTIVE = 25;
 
 if (nargin<2)
-    error('Usage: model_out = trainModel(model,samples,optional_arguments)');
+    error('Usage: model_out = trainModel(model,samples,[optional_arguments])');
 end
 
 % before checking the population size, check if we got as input an empirical set or a model

@@ -12,12 +12,12 @@
 %   model_out  - trained ME model (normalized)
 %   bConverged - true if the training process converged, false if it reached the maximum #iterations
 %
-% Last update: Ori Maoz 30/06/2016
+% Last update: Ori Maoz 25/07/2017
 
 function [model, bConverged] = trainModelExhaustive(input_model,raster,varargin)
 
 if nargin<2
-    error('Usage: trainModelComplete(input_model,raster,threshold)');
+    error('Usage: trainModelExhaustive(input_model,raster,...)');
 end
 
 MAXIMUM_EXHAUSTIVE_NCELLS = 30;
