@@ -112,9 +112,11 @@
                     <dirExists name="$$/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk" />
                     <dirExists name="$$/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk" />
 					<dirExists name="$$/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk" /> 
+                    <dirExists name="$$/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk" /> 
                     <cmdReturns name="find $$ -name MacOSX10.9.sdk" />
                     <cmdReturns name="find $$ -name MacOSX10.10.sdk" />
 					<cmdReturns name="find $$ -name MacOSX10.11.sdk" />
+                    <cmdReturns name="find $$ -name MacOSX10.12.sdk" />
                 </or>
             </and>
         </ISYSROOT>
@@ -126,9 +128,11 @@
                         <dirExists name="$$/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk" />
                         <dirExists name="$$/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk" />
 						<dirExists name="$$/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk" /> 
+                        <dirExists name="$$/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk" /> 
                         <cmdReturns name="find $$ -name MacOSX10.9.sdk" />
                         <cmdReturns name="find $$ -name MacOSX10.10.sdk" />
 						<cmdReturns name="find $$ -name MacOSX10.11.sdk" />
+                        <cmdReturns name="find $$ -name MacOSX10.12.sdk" />
                     </or>
                 </and>
                 <cmdReturns name="echo $$ | rev | cut -c1-10 | rev | egrep -oh '[0-9]+\.[0-9]+'" />
