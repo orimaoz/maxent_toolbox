@@ -55,7 +55,7 @@ model.z = 0;
 
 if (analytic)
     % exhaustive computation of the energy histogram
-    [e, g] = energyDensity(model,binsize);
+    [e, g] = maxent.energyDensity(model,binsize);
 else
     % Use MCMC on the energies
     [e, g] = maxent.WLS_estimateDensity(model,binsize,depth,separation);
