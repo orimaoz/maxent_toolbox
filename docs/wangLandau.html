@@ -62,9 +62,8 @@
 <li><b>binsize</b> - Bin size for the energy histogram (Default: 0.01). </li>
 <li><b>depth</b> - Accuracy parameter for the simulation (integer). Higher values mean a higher accuracy and longer runtime. The final accuracy is in the order of exp(2^-(depth-1)).</li>
 <li><b>separation</b>         - Number of samples to skip for every sample obtained in the MCMC random walk. A larger value decorrelates the samples and provides more accurate results, but incurs a longer run-time.</li>
-<li><b>analytic</b>     - If this value is set as 'true' then the contents of the energy bins are computed analytically instead of
-using MCMC methods. This is mainly used to evaluate the accuracy of the MCMC process and will only work
-on small (up to ~25 dimension) distributions.</li>
+<li><b>savefile</b>         - will constantly save the state in this file, and try to resume from it if it already exists.</li>
+<li><b>save_delay</b>       -  delay between saves (in seconds).</li>
 </ul>
 </article>
 </article>

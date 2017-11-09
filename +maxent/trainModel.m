@@ -37,8 +37,9 @@
 %   force_exhaustive - set to true to force an exhaustive numerical solution. This entails storing in memory all
 %                      2^ncells states of the distribution which can grow really fast, so is not recommended for 
 %                      inputs of more than 30 cells.
-%   force_mcmc -       set to true to force an MCMC solver even when a btter option is available.
+%   force_mcmc       - set to true to force an MCMC solver even when a btter option is available.
 %   savefile         - will constantly save the state in this file, and try to resume from it if it already exists.
+%   save_delay       - delay between saves (in seconds).
 %
 % Output:
 %   model      - trained ME model. If the input size was small enough, the model will also be normalized.
@@ -49,7 +50,7 @@
 %   model = maxent.createModel(20,'pairwise');
 %   model_out = maxent.trainModel(model,samples,'threshold',1,'savefile','training_reentry.mat');
 %
-% Last update: Ori Maoz 30/06/2016
+% Last update: Ori Maoz 09/11/2017
 function [model_out, bConverged] = trainModel(input_model,samples,varargin)
 
 MAXIMUM_NCELLS_FOR_EXHAUSTIVE = 25;

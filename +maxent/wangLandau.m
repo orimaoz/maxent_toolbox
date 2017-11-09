@@ -13,16 +13,15 @@
 %               The final accuracy is in the order of exp(2^-(depth-1))
 %   separation: Number of samples to skip for every sample obtained in the MCMC random walk. A larger value decorrelates
 %               the samples and provides more accurate results, but incurs a longer run-time.
-%   analytic:   If this value is set as 'true' then the contents of the energy bins are computed analytically instead of
-%               using MCMC methods. This is mainly used to evaluate the accuracy of the MCMC process and will only work
-%               on small (up to ~25 dimension) distributions.
+%   savefile         - will constantly save the state in this file, and try to resume from it if it already exists.
+%   save_delay       - delay between saves (in seconds).
 %
 % Output:
 % model_out - Model structure with two additional fields appended to it:
 % model_out.z - Log partition function of the model.
 % model_out.entropy -Entropy of the model (in bits).
 %
-% Last update: Ori Maoz, July 2016
+% Last update: Ori Maoz, July 2017
 %
 function model_out = wangLandau(model,varargin)
 
@@ -30,6 +29,10 @@ DEFAULT_BIN_SIZE = 0.01;
 DEFAULT_DEPTH = 20;
 DEFAULT_SEPARATION = 1;
 DEFAULT_ANALYTIC = false;
+
+% number of seconds after we save our current status to a file
+DEFAULT_TIME_BETWEEN_SAVES = 60;
+
 
 if nargin==0
     error('usage: wanglandau(model,[optional arguments])')
@@ -43,12 +46,16 @@ addOptional(p,'binsize',DEFAULT_BIN_SIZE,@isnumeric); % energy bin size
 addOptional(p,'depth',DEFAULT_DEPTH,@isnumeric); % depth of MCMC interations
 addOptional(p,'separation',DEFAULT_SEPARATION,@isnumeric); % separation between samples
 addOptional(p,'analytic',DEFAULT_ANALYTIC,@islogical);    % exhaustive computation
+addOptional(p,'savefile','');                 % save file for re-entrant code
+addOptional(p,'save_delay',DEFAULT_TIME_BETWEEN_SAVES);    % time between re-entry file saves
+
 p.parse(varargin{:});
 binsize = p.Results.binsize;
 depth = p.Results.depth;
 separation = p.Results.separation;
 analytic = p.Results.analytic;
-
+savefile = p.Results.savefile;
+save_delay = p.Results.save_delay;
 
 % remove any current value of the partition function, we will estimate it by ourselves
 model.z = 0;
@@ -58,7 +65,7 @@ if (analytic)
     [e, g] = maxent.energyDensity(model,binsize);
 else
     % Use MCMC on the energies
-    [e, g] = maxent.WLS_estimateDensity(model,binsize,depth,separation);
+    [e, g] = maxent.WLS_estimateDensity(model,binsize,depth,separation,savefile,save_delay);
 end
 
 % since g is not normalized we can scale it down to save numerical problems.
