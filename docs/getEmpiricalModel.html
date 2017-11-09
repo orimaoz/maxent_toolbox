@@ -52,14 +52,9 @@
 <article>
 <h3>Mandatory arguments</h3>
 <ul>
-<li><b>model</b> - Maximum entropy model as returned by the <a href="createModel.html">createModel</a> function.</li>   
-<li><b>samples</b> - Set of samples to train the model on, in the format (ncells x nsamples). 
-             If the input dimensionality is small enough for an exhaustive computation, a Boltzmann distribution (in the
-             same format as returned by createModel) may be inputed instead of a raster, in this case the target
-             marginals will be computed in an exact manner from the distribution.  </li>   
+<li><b>samples</b> - Set of samples to train the model on, in the format (ncells x nsamples).  </li>   
 </ul>
 </article>
-
 
 <article>
 <h3>Optional arguments (in the form of name,value pairs)</h3>
@@ -70,12 +65,16 @@
 
 <article>
 <h2>Output</h2>
-<li><b>model_out</b> - Empirical distribution baesd on the input samples.</li>   
+<li><b>model_out</b> - structure with several fields describing the empirical distrbution:</li>   
+<ul>
+<li><b>model_out.words</b> - unique codewords in the empirical distribution.</li>   
+<li><b>model_out.counts</b> - how many times each of these codewords repeated in the empirical dataset.</li>   
+<li><b>model_out.logprobs</b> - log probabilities of the codewords in the empirical distribution.</li>   
+<li><b>model_out.entropy</b> - entropy of the empirical distribution, in bits.</li>   
+</ul>
 </article>
 
 </article>
-
-
 
 
       </section>
