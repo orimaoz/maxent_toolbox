@@ -36,7 +36,7 @@
 Building the maxent toolbox</h2>
 <p>The maxent toolbox is pre-compiled for Windows, OSX and CentOS so you can often skip building it and directly download the binaries from <a href="https://github.com/orimaoz/maxent_toolbox/releases/latest">here</a>.
 
-<p>In order to provide faster run-time, the maxent toolbox was built with the <a href="https://en.wikipedia.org/wiki/Intel_C%2B%2B_Compiler">Intel C++ compiler</a> and makes use of the <a href="https://en.wikipedia.org/wiki/Integrated_Performance_Primitives">IPP</a> and <a href="https://en.wikipedia.org/wiki/Math_Kernel_Library">MKL</a> libraries. These are available as part of the <a href="https://software.intel.com/en-us/intel-parallel-studio-xe">Intel Parallel Studio</a> which is a commercial package but <a href="https://software.intel.com/en-us/qualify-for-free-software/student">offers free licenses for students</a>. It is possible, with minor modifications, to build the code without these packages but this will result in noticeably slower runtimes.
+<p>In order to provide faster run-time, the maxent toolbox was built with the <a href="https://en.wikipedia.org/wiki/Intel_C%2B%2B_Compiler">Intel C++ compiler</a> and makes use of the <a href="https://en.wikipedia.org/wiki/Math_Kernel_Library">MKL</a> library. These are available as part of the <a href="https://software.intel.com/en-us/intel-parallel-studio-xe">Intel Parallel Studio</a> which is a commercial package but <a href="https://software.intel.com/en-us/qualify-for-free-software/student">offers free licenses for students</a>. It is possible, with minor modifications, to build the code without these packages but this will result in noticeably slower runtimes.
 
 
 <h3>Building the toolbox for Windows</h3>
@@ -45,12 +45,12 @@ Building the maxent toolbox</h2>
 
 
 <h3>Building the toolbox for Mac</h3>
-<p>Edit the file <strong>build_mac.sh</strong> to set the directories of the MKL/IPP packages provided by Intel Composer XE. Then run:</p>
+<p>Edit the file <strong>build_mac.sh</strong> to set the directories of the MKL packages provided by Intel Composer XE. Then run:</p>
 <pre>source build_mac.sh</pre> 
 <p>After the build is complete, copy all the <strong>*.mexmaci64</strong> files to the root of the maxent_toolbox package.</p>
 
 <h3>Building the toolbox for Unix</h3>
-<p>Edit the file <strong>build_unix.sh</strong> to set the directories of the MKL/IPP packages provided by Intel Composer XE. Then run:</p>
+<p>Edit the file <strong>build_unix.sh</strong> to set the directories of the MKL packages provided by Intel Composer XE. Then run:</p>
 <pre>source build_unix.sh</pre> 
 <p>to build binaries backwards-compatible for older CPUs.</p>
 <p>After the build is complete, copy all the <strong>*.mexa64</strong> files to the root of the maxent_toolbox package.</p>

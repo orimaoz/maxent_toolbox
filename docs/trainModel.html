@@ -41,8 +41,8 @@
 <p>Trains a maximum entropy model on empirical data.  The function will automatically choose, based on the number of 
 dimensions in the input distribution, which of two modes of operation to use:<p>
 <ul>
-<li>For a small number (default &lt; 30) of input dimensions it will compute an exact solution and return a normalized probability distribution.</li>
-<li>For a large number (default &gt;=30) of input dimensions it will compute an approximate solution using Monte-Carlo Markov Chain (MCMC) methods and return a non-normalized distribution. This distribution can later be normalized using other functions in the toolbox such as <a href='wangLandau.html'>wangLandau</a>.</li>
+<li>For a small number (default &le; 25) of input dimensions it will compute an exact solution and return a normalized probability distribution.</li>
+<li>For a large number (default &gt; 25) of input dimensions it will compute an approximate solution using Monte-Carlo Markov Chain (MCMC) methods and return a non-normalized distribution. This distribution can later be normalized using other functions in the toolbox such as <a href='wangLandau.html'>wangLandau</a>.</li>
 <li>If the input model is an independent model, the function will return a normalized probability distribution regardless of the input dimension.</li>
 </ul>
 The user can force either an exhaustive solution or an MCMC solution by supplying optional arguments.

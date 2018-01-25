@@ -64,10 +64,47 @@ most of the samples generated along the way ("separation"). These parameters can
 <article>
 <h3>Optional arguments (in the form of name,value pairs)</h3>
 <ul>
-<li><b>x0</b>         - starting state for MCMC walk. This can also be "0" signifying the all-zero (0000...) pattern.</li>
+<li><b>x0</b>         - starting state for MCMC walk. Default: the all-zero (0000...) pattern.</li>
 <li><b>burnin</b>     - how many samples to drop before returning results (default: 10000).</li>
 <li><b>separation</b> - how many bit flips to perform before taking each sample (default: one for every dimension of the input).</li>
+<li><b>fix_indices</b> -indices to elements that should be fixed during sampling (i.e. remain unchanged).</li>
 </ul>
+</article>
+
+
+<article>
+<h2>Example usage</h2>
+<pre>
+
+% generate 5000 samples from the distribution with default starting  
+% point of 0 and default burn-in of 10000 samples
+generated_samples = maxent.generateSamples(model, 5000);
+
+
+% generate 500 samples from the distribution that are more decorrelated
+% by increasing the distance betwen each sample to 300 bit-flips
+generated_samples = maxent.generateSamples(model, 5000, 'separation',30);
+
+
+% generate samples from the distribution, starting from [0,0,...]
+% using multiple blocks of 1000 where each continues from where the last 
+% one left off:
+all_generated_samples = []; % here we collect the data
+x0 = zeros(model.ncells,1); % starting point
+for i = 1:num_repeats
+  curr_samples = maxent.generateSamples(model, 1000, 'x0', x0);
+  x0 = curr_samples(:,end);  % starting point for next call 
+  all_generated_samples = [all_generated_samples,curr_samples];
+end
+
+
+% generate samples from a distribution while locking the first 5 bits 
+% and sampling only from the marginal distribution:
+x0 = [1,0,1,0,1,0,0,0,0,0]';
+maxent.generateSamples(model, 1000, 'x0', x0,'fix_indices',1:5);
+
+
+</pre>
 </article>
 
 
