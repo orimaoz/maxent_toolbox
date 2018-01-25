@@ -30,14 +30,14 @@
 	  MATLABMEX="-DMATLAB_MEX_FILE "
           CXXFLAGS="-ansi -fexceptions -fPIC -fno-omit-frame-pointer -pthread -std=c++11"
           INCLUDE="-I&quot;$MATLABROOT/extern/include&quot; -I&quot;$MATLABROOT/simulink/include&quot;"
-          CXXOPTIMFLAGS="-O3 -ipo -DNDEBUG -xSSE4.2 -axCORE_AVX2"
+          CXXOPTIMFLAGS="-O3 -ipo -D WITH_LAPACK=OFF -DNDEBUG -xSSE3 -axCORE_AVX2,SSE4.2"
           CXXDEBUGFLAGS="-g"
           
           LDXX="$CXX"
-          LDFLAGS="-pthread -Wl,--no-undefined -static-intel"
+          LDFLAGS="-lpthread -Wl,--no-undefined -static-intel"
 		  LDTYPE="-shared"
           LINKEXPORT="-Wl,--version-script,&quot;$MATLABROOT/extern/lib/$ARCH/mexFunction.map&quot;"
-          LINKLIBS="-Wl,-rpath-link,$MATLABROOT/bin/$ARCH -L&quot;$MATLABROOT/bin/$ARCH&quot; -lmx -lmex -lmat -lm -lstdc++"
+          LINKLIBS="-Wl,-rpath-link,$MATLABROOT/bin/$ARCH --start-group ${MKLROOT}/lib/intel64/libmkl_intel_lp64.a ${MKLROOT}/lib/intel64/libmkl_sequential.a ${MKLROOT}/lib/intel64/libmkl_core.a -Wl,--end-group -L&quot;$MATLABROOT/bin/$ARCH&quot; -lmx -lmex -lmat -lm -lstdc++"
           LDOPTIMFLAGS="-O"
           LDDEBUGFLAGS="-g"
           

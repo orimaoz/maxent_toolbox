@@ -36,10 +36,10 @@
     CXXDEBUGFLAGS="-g"
     
     LDXX="$CXX"
-    LDFLAGS="-Wl,-twolevel_namespace -undefined error -arch x86_64 -mmacosx-version-min=$SDKVER -Wl,-syslibroot,$ISYSROOT -framework Cocoa $LDBUNDLE $LINKEXPORT -stdlib=libc++"
+    LDFLAGS="-lpthread -static-intel -Wl,-twolevel_namespace -undefined error -arch x86_64 -mmacosx-version-min=$SDKVER -Wl,-syslibroot,$ISYSROOT -framework Cocoa $LDBUNDLE $LINKEXPORT -stdlib=libc++"
     LDBUNDLE="-bundle "
     LINKEXPORT="-Wl,-exported_symbols_list,&quot;$MATLABROOT/extern/lib/maci64/mexFunction.map&quot;"
-    LINKLIBS="-L&quot;$MATLABROOT/bin/maci64&quot; -lmx -lmex -lmat"
+    LINKLIBS="${MKLROOT}/lib/libmkl_intel_lp64.a ${MKLROOT}/lib/libmkl_sequential.a ${MKLROOT}/lib/libmkl_core.a -L&quot;$MATLABROOT/bin/maci64&quot; -lmx -lmex -lmat"
     LDOPTIMFLAGS="-O"
     LDDEBUGFLAGS="-g"
     

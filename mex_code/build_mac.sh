@@ -5,15 +5,11 @@
 # "source build_mac.sh" - builds with the mex code
 
 
-source /opt/intel/compilers_and_libraries_2017/mac/bin/compilervars.sh intel64
-export COMPILERLIBDIR=/opt/intel/compilers_and_libraries_2017/mac/lib
+source /opt/intel/compilers_and_libraries/mac/bin/compilervars.sh intel64
 
 
 # The following options file creates two execution branches, one with AVX2 and one with SSE4.2 for older processors
 export OPTIONSFILE="mex_C++_maci64.xml"
-
-export MKLLIB=$MKLROOT/lib
-export IPPLIB=$IPPROOT/lib
 
 
 sh ./buildmex.sh
