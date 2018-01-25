@@ -18,6 +18,9 @@
 %                  composite- composite model combining the energy function of several other maximum entropy models.
 %                             these should be provided in the 3rd argument as pre-created models in a cell array.
 %
+% Optional arguments (in the form of Name,Value pairs):
+%   interactions - cell array of interacting groups for high-order maxent model (for "highorder" model)
+%
 function model = createModel(ncells, model_string, varargin)
 
 if nargin<2

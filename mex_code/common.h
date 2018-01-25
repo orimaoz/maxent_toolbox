@@ -8,23 +8,27 @@
 
 
 
-// comment these out if you don't want MKL and IPP
-#include <mkl.h>
-#include <ipps.h>
-#include <ippvm.h>
 
 
-#if defined(_MKL_H_) || defined(__IPPDEFS_H__)
 
-
-#ifdef _WINDOWS
+#ifdef _MSC_VER
 #define DECLARE_ALIGNED _declspec(align(64))
+#define ALIGN_AFTER 
 #else
 #define DECLARE_ALIGNED
+#define ALIGN_AFTER __attribute__((aligned(64)))
 #endif
 
-#define malloc_aligned ippsMalloc_64f
-#define free_aligned ippsFree
+
+// comment these out if you don't want MKL and IPP
+#include <mkl.h>
+
+
+#if defined(_MKL_H_)
+
+#define malloc_aligned(X) mkl_malloc(X,64)
+#define free_aligned mkl_free
+
 
 #else
 // not using the intel compiler

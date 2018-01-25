@@ -9,6 +9,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
+#include <time.h>
 #include "common.h"
 
 
@@ -89,20 +90,24 @@ void getEmpiricalMarginals(EnergyFunction * pModel, uint32_t npatterns, uint32_t
 
 
 // Performs a Metropolis-Hasting type MCMC random walk on the state space and returns samples.
-// For an n-bit word, n bit flips are performed between each returned sample. This can be scaled up with the "nSeparation" argument.
+// For an n-bit word, n bit flips are performed between each returned sample. This can be changed with the "nSeparation" argument.
 // The bits are flipped in a sequential order unless specified otherwise by the global bSequentialBits argument.
 //
 // Input:
 //		pModel (in)			- model to generate the samples from
 //		nsteps (in)			- number of samples to generate
-//		x0 (in/out)			- accepts initial state and returns the final state of the random walk.
+//		x0 (in/out)			- initial state for the random walk
+//		x0_out (out)		- final state of the random walk.
 //		pOutputSamples (out)- pointer to preallocated array that will contain the output samples, or NULL if we don't want to return samples (for burn-in)
 //		nSeparation (in)	- how many samples between every returned sample. Is used to generate less-correlated data.
 //		bSequentialBits (in)- true if we want bits to be flipped in a sequential order, false for random order
+//	    indices_to_change   - array of indices to be changed by the random walk. Default, if NULL,  is equivalent to an array containing 0..(ncells-1)
+//						      which denotes that all the bits are to be changed.
+//		num_indices_to_change - number of elements in the array indices_to_change.
 //
 // Returns:  
-//		The energy (un-normalized log probability) of the new state.
-void runGibbsSampler(EnergyFunction * pModel, uint32_t nsteps, uint32_t * x0, uint32_t * pOutputSamples, uint32_t nSeparation, bool bSequentialBits)
+//		Generated samples in array pointed by pOutputSamples
+void runGibbsSampler(EnergyFunction * pModel, uint32_t nsteps, uint32_t * x0, uint32_t * x0_out, uint32_t * pOutputSamples, uint32_t nSeparation, bool bSequentialBits, uint32_t * indices_to_change, uint32_t num_indices_to_change)
 {
 	std::vector<uint32_t> current_x;;  // inputed x is the st
 	std::vector<uint32_t> proposed_x;
@@ -111,6 +116,7 @@ void runGibbsSampler(EnergyFunction * pModel, uint32_t nsteps, uint32_t * x0, ui
 	double transition_probability;
 	double rand_double;
 	uint32_t bit_to_flip = 0;
+	uint32_t dereferenced_bit_to_flip;
 	MTRand engine_double; // Random number generator. Class is a singleton so it's
 						  // ok that it's just sitting on the stack like this
 	MTRand_int32 engine_integer; // Same but for integers. It shares the internal state
@@ -118,18 +124,23 @@ void runGibbsSampler(EnergyFunction * pModel, uint32_t nsteps, uint32_t * x0, ui
 
 
 	uint32_t n = pModel->getDim(); // dimension of the data
+	uint32_t active_n;
+
+	// get number of indices that we are actually going to change in the random walk (which will define the range of "effective" dimensions)
+	if (indices_to_change)
+	{
+		active_n = num_indices_to_change;
+	}
+	else
+	{
+		// if no indices to change have been specified, assume that all of them are to be changed.
+		active_n = n;
+	}
+
 
 	// starting point for MCMC walk
 	current_x.assign(x0, x0 + n);
 
-
-
-	if (!bSequentialBits)
-	{
-		// Bits to flip are chosen randomly - randomly choose the last bit (because usually we do this
-		// only at the end of the loop, and we don't want the first bit to be fixed at zero)
-		bit_to_flip = engine_integer() % n;
-	}
 
 
 	// Initial energy for x
@@ -142,8 +153,17 @@ void runGibbsSampler(EnergyFunction * pModel, uint32_t nsteps, uint32_t * x0, ui
 		for (uint32_t iteration = 0; iteration < nSeparation; iteration++)
 		{
 
+			if (indices_to_change)
+			{
+				dereferenced_bit_to_flip = indices_to_change[bit_to_flip];
+			}
+			else
+			{
+				dereferenced_bit_to_flip = bit_to_flip;
+			}
+
 			// Find the energy and bin of the proposed state
-			proposed_energy = pModel->propose(bit_to_flip);
+			proposed_energy = pModel->propose(dereferenced_bit_to_flip);
 
 			// Transition probability is exponential in the difference in densities
 			transition_probability = exp(current_energy - proposed_energy);
@@ -157,12 +177,12 @@ void runGibbsSampler(EnergyFunction * pModel, uint32_t nsteps, uint32_t * x0, ui
 			if (bSequentialBits)
 			{
 				// Bits are flipped one by one in a sequential order
-				bit_to_flip = (bit_to_flip + 1) % n;
+				bit_to_flip = (bit_to_flip + 1) % active_n;
 			}
 			else
 			{
 				// Bits to flip are chosen randomly
-				bit_to_flip = engine_integer() % n;
+				bit_to_flip = engine_integer() % active_n;
 			}
 
 
@@ -182,7 +202,7 @@ void runGibbsSampler(EnergyFunction * pModel, uint32_t nsteps, uint32_t * x0, ui
 	uint32_t * px = pModel->getX();
 	for (unsigned int i = 0; i < n; i++)
 	{
-		x0[i] = px[i];
+		x0_out[i] = px[i];
 	}
 
 }
@@ -203,11 +223,11 @@ double getMarginals(EnergyFunction * pModel, double * pMarginals)
 	int n = pModel->getDim();
 	int nfactors = pModel->getNumFactors();
 	double z = 0;	// partition function
-	
+
 	std::vector<uint32_t> x(pModel->getDim());
 	std::fill(x.begin(), x.end(), 0);
-//	pModel->getEnergy(x.data());
-    pModel->getEnergy(&x.front());   // pre-x11++
+	//	pModel->getEnergy(x.data());
+	pModel->getEnergy(&x.front());   // pre-x11++
 
 	// make a memory-aligned version of the marginals (on 64-bit boundry for faster operation)
 	double * pAlignedMarginals = (double*)malloc_aligned(sizeof(double)*nfactors);
@@ -339,7 +359,7 @@ void runWangLandauStep(uint32_t nsteps, uint32_t * x, EnergyFunction *  pModel, 
 
 		// If we have a separation value, we only advance the histogram every several steps
 		// in order to decorrelate the samples
-		if (nSeparation>1)
+		if (nSeparation > 1)
 		{
 			if (iteration % nSeparation == 0)
 				h[current_bin]++;
@@ -357,3 +377,21 @@ void runWangLandauStep(uint32_t nsteps, uint32_t * x, EnergyFunction *  pModel, 
 }
 
 
+
+
+
+// Seeds the random number generator using the system time
+void seedRNG()
+{
+	// Use system time for seed
+	MTRand engine((uint32_t)time(NULL));
+}
+
+// Seeds the random number generator with a user-specified seed
+// seed - seed for the RNG
+void seedRNG(uint32_t seed)
+{
+	// Use system time for seed
+	MTRand engine(seed);
+
+}

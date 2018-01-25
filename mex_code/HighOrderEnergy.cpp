@@ -124,7 +124,7 @@ double HighOrderEnergy::getEnergy(uint32_t * x)
 
 	// Implement random projection - we sum up the columns of W according to x
 
-	std::memset(m_y,0, sizeof(double) * m_nfactors);
+	std::memset(m_y,0, sizeof(float) * m_nfactors);
 #pragma vector aligned
 	for (uint32_t i = 0; i < m_ndims; i++)
 	{
@@ -137,7 +137,9 @@ double HighOrderEnergy::getEnergy(uint32_t * x)
 	}
 
 	// subtract the tresholds so we can use check if we are above or below 0
-	ippsSub_32f_I(m_threshold, m_y, m_nfactors);
+	vsSub(m_nfactors, m_y, m_threshold, m_y);
+
+
 
 	m_energy = applyThreshold(m_y);
 
@@ -149,8 +151,10 @@ double HighOrderEnergy::getEnergy(uint32_t * x)
 // Applies threshold on the projection and returns the summed results
 double HighOrderEnergy::applyThreshold(float * y)
 {
-	DECLARE_ALIGNED double outprod = 0;
-	DECLARE_ALIGNED unsigned int i;
+	DECLARE_ALIGNED double outprod ALIGN_AFTER;
+	DECLARE_ALIGNED unsigned int i ALIGN_AFTER;
+
+	outprod = 0;
 
 	#pragma vector aligned 
 	for (i = 0; i < m_nfactors; i++)
@@ -179,7 +183,7 @@ void HighOrderEnergy::sumSampleFactor(uint32_t * x, double* factor_sum,double p)
 {
 	// Implement random projection - we sum up the columns of W according to x
 
-	std::memset(m_y, 0, sizeof(double) * m_nfactors);
+	std::memset(m_y, 0, sizeof(float) * m_nfactors);
 
 	for (uint32_t i = 0; i < m_ndims; i++)
 	{
@@ -194,7 +198,8 @@ void HighOrderEnergy::sumSampleFactor(uint32_t * x, double* factor_sum,double p)
 	}
 
 	// subtract the tresholds so we can use check if we are above or below 0
-	ippsSub_32f_I(m_threshold, m_y, m_nfactors);
+	vsSub(m_nfactors, m_y, m_threshold, m_y);
+
 
 
 	// set spiking/nonspiking according to the cutoff threshold
@@ -257,7 +262,7 @@ double HighOrderEnergy::getSumDiffBitOn(uint32_t nbit)
 	}
 
 	// now add the relevant elements of m_y and see what passed the threshold
-	ippsAdd_32f_I(val, m_tmp, m_W_nz[nbit]);
+	vsAdd(m_W_nz[nbit], val, m_tmp, m_tmp);
 
 
 
@@ -299,7 +304,7 @@ double HighOrderEnergy::getSumDiffBitOff(uint32_t nbit)
 	}
 
 	// now subtract the relevant elements of m_y and see what passed the threshold
-	ippsSub_32f_I(val, m_tmp, m_W_nz[nbit]);
+	vsSub(m_W_nz[nbit], m_tmp, val, m_tmp);
 
 	
 #pragma vector aligned

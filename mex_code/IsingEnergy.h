@@ -99,12 +99,12 @@ public:
 private:
 
 	std::vector<uint32_t> m_x;
-	DECLARE_ALIGNED double * m_double_x; // double version of m_x for accelerated computation
+	DECLARE_ALIGNED double * m_double_x ALIGN_AFTER; // double version of m_x for accelerated computation
 	uint32_t m_proposed_bit;
 	double m_energy;
 	double m_logz;
 	double m_proposed_energy[2];
-	DECLARE_ALIGNED uint32_t m_ndims;
+	DECLARE_ALIGNED  uint32_t m_ndims ALIGN_AFTER;
 	double * m_lambdaMatrix;  // lambdas in (symmetric) matrix format
 	double * m_lambdaVector;  // lambdas in vector format
 };

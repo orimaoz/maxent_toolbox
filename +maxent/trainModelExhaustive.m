@@ -116,7 +116,7 @@ if (use_exact_marginals)
     
     % get probabilities of the input patterns
     lp = mexLogProbability(unique_words,model_base);
-    lp = lp - logsumexp(lp(:));
+    lp = lp - log(sum(exp(lp(:)))); % normalize
     empirical_probs = exp(lp);
     
     % get the observables - our goal is to fit the model marginals to these.
@@ -335,4 +335,5 @@ end
 
 
 end
+
 

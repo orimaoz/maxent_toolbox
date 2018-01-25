@@ -1,4 +1,4 @@
-// Implementation of the EnergyFunction interface on the high correlation order model
+// Implementation of the EnergyFunction interface on the MERP model.
 // This version uses a sparse representation of the connection matrix W to facilitate faster operations
 // when the matrix is sparse
 // Ori Maoz 11/2014
@@ -102,26 +102,26 @@ private:
 
 
 
-	DECLARE_ALIGNED float * m_onevals;		// vector of ones (for addition/subtraction)
-	DECLARE_ALIGNED MKL_INT ** m_W_idx;		// sparse columns of W (indices)
-	DECLARE_ALIGNED uint32_t * m_W_nz;		// sparse columns of W (lengths)
+	DECLARE_ALIGNED float * m_onevals ALIGN_AFTER;		// vector of ones (for addition/subtraction)
+	DECLARE_ALIGNED MKL_INT ** m_W_idx ALIGN_AFTER;		// sparse columns of W (indices)
+	DECLARE_ALIGNED uint32_t * m_W_nz ALIGN_AFTER;		// sparse columns of W (lengths)
 
-	DECLARE_ALIGNED double * m_lambda;
-	DECLARE_ALIGNED double ** m_sparse_lambda;		// lambdas sectioned into sparsified parts of W
+	DECLARE_ALIGNED double * m_lambda ALIGN_AFTER;
+	DECLARE_ALIGNED double ** m_sparse_lambda ALIGN_AFTER;		// lambdas sectioned into sparsified parts of W
 
-	DECLARE_ALIGNED float * m_threshold;
-	DECLARE_ALIGNED float * m_y;
-	DECLARE_ALIGNED float * m_tmp;
+	DECLARE_ALIGNED float * m_threshold ALIGN_AFTER;
+	DECLARE_ALIGNED float * m_y ALIGN_AFTER;
+	DECLARE_ALIGNED float * m_tmp ALIGN_AFTER;
 	
 	std::vector<uint32_t> m_x;
 	uint32_t m_proposed_bit;
 	
-	DECLARE_ALIGNED double m_energy;
-	DECLARE_ALIGNED double m_energy_diff;
-	DECLARE_ALIGNED double m_logz;
-	DECLARE_ALIGNED double m_proposed_energy;
-	DECLARE_ALIGNED uint32_t m_ndims;
-	DECLARE_ALIGNED uint32_t m_nfactors;
-	DECLARE_ALIGNED bool m_bProposed;
+	DECLARE_ALIGNED double m_energy ALIGN_AFTER;
+	DECLARE_ALIGNED double m_energy_dif ALIGN_AFTER;
+	DECLARE_ALIGNED double m_logz ALIGN_AFTER;
+	DECLARE_ALIGNED double m_proposed_energy ALIGN_AFTER;
+	DECLARE_ALIGNED uint32_t m_ndims ALIGN_AFTER;
+	DECLARE_ALIGNED uint32_t m_nfactors ALIGN_AFTER;
+	DECLARE_ALIGNED bool m_bProposed ALIGN_AFTER;
 
 };

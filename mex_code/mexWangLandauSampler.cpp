@@ -14,7 +14,7 @@
 #include <string.h>
 #include <time.h>
 #include "mex.h"
-#include "mtrand.h"
+#include "common.h"
 
 #include "EnergyFunctionFactory.h"
 #include "maxent_functions.h"
@@ -31,7 +31,6 @@ static bool bAlreadySeededRand = false;
 //#define DEBUG_PRINTS
 
 void printVector(std::strstream & str, char* name, double vec[], size_t len);
-//void runWangLandauStep(uint32_t nsteps, uint32_t * x, EnergyFunction *  pModel, uint32_t nbins, double bin_limits[], double g[], double h[], double update_size, uint32_t nSeparation);
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
@@ -42,6 +41,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	    mexErrMsgIdAndTxt("mexWangLandauSampler:mexWangLandauSampler",
                       "Usage: mexWangLandauSampler(x0,nsteps,energy_params,model [,separation])");
 	}
+
+	mkl_disable_fast_mm(); // make MKL use simple and safe memory management
 
 
 	// get initial state x0
@@ -145,7 +146,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		// This flag is in the data area of the DLL and should bge persistent across function calls.
 		// If somehow it is not persistent then it should reset to false and then we will simply re-seed the RNG.
 		bAlreadySeededRand = true;
-		MTRand engine((uint32_t)time(NULL));
+		seedRNG();
 	}
 
 	runWangLandauStep(nSteps, ptr_initial_x,pModel,nBins,bin_limits,g,h,updateSize,nSeparation);

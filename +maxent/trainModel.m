@@ -7,9 +7,9 @@
 % Trains a maximum entropy model on empirical data. The function will automatically choose, based on the number of 
 % dimensions in the input distribution, which of two modes of operation to use:
 %
-% * For a small number (default < 30) of input dimensions it will compute an exact solution and return 
+% * For a small number (default <= 25) of input dimensions it will compute an exact solution and return 
 %   a normalized probability distribution.
-% * For a large number (default >=30) of input dimensions it will compute an approximate solution using 
+% * For a large number (default > 25) of input dimensions it will compute an approximate solution using 
 %   Monte-Carlo Markov Chain (MCMC) methods and return a non-normalized distribution. This distribution 
 %   can later be normalized using other functions in the toolbox such as wangLandau.
 % * If the input model is an independent model, the function will return a normalized probability distribution 
@@ -36,7 +36,7 @@
 %   use_acceleration - true/false to use accelerated gradient descent (enabled by default)
 %   force_exhaustive - set to true to force an exhaustive numerical solution. This entails storing in memory all
 %                      2^ncells states of the distribution which can grow really fast, so is not recommended for 
-%                      inputs of more than 30 cells.
+%                      inputs of more than 25 cells.
 %   force_mcmc       - set to true to force an MCMC solver even when a btter option is available.
 %   savefile         - will constantly save the state in this file, and try to resume from it if it already exists.
 %   save_delay       - delay between saves (in seconds).

@@ -18,11 +18,11 @@
 #include <time.h>
 #include <stdint.h>
 #include "mex.h"
-#include "mtrand.h"
 
 #include "maxent_functions.h"
 #include "matlab_utils.h"
 #include "EnergyFunctionFactory.h"
+#include "common.h"
 
 #include <algorithm>
 #include <iterator>
@@ -38,6 +38,8 @@ void printVector(std::strstream & str, char* name, double vec[], size_t len);
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
 	EnergyFunction* pModel;
+
+	mkl_disable_fast_mm(); // make MKL use simple and safe memory management
 
 	if(nrhs<2) {
 	    mexErrMsgIdAndTxt("mexLogProbability:init",
@@ -90,6 +92,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	// Delete the model that we had previously allocated
 	delete pModel;
+
+	mkl_free_buffers();
 
 	if (pInputArray != px)
 	{

@@ -10,7 +10,6 @@
 #include <time.h>
 #include <stdint.h>
 #include "mex.h"
-#include "mtrand.h"
 #include "matlab_utils.h"
 #include "maxent_functions.h"
 
@@ -35,6 +34,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	    mexErrMsgIdAndTxt("mexEmpiricalMarginals:init",
                       "Usage: mexEmpiricalMarginals(x,model,[probabilities])");
 	}
+
+	mkl_disable_fast_mm(); // make MKL use simple and safe memory management
 
 
 	// get the set of inputs

@@ -14,15 +14,16 @@
 %   nsamples - how many samples to generate
 %
 % Optional arguments (in the form of Name,Value pairs):
-%   x0      - starting state for MCMC walk. This can also be "0" signifying the all-zero (0000...) pattern.
+%   x0      - starting state for MCMC walk. Default: the all-zero (0000...) pattern.
 %   burnin  - how many samples to drop before returning results (default: 10000).
-%   separation - how many bit flips to perform before taking each sample (one for every dimension of the input).
+%   separation - how many bit flips to perform before taking each sample (default: one for every dimension of the input).
+%   fix_indices - indices to elements that should be fixed during sampling (i.e. remain unchanged)
 %
 % Output:
 %   samples - an (ncells x nsamples) matrix of samples from the model.
 %
 %
-% Last update: Ori Maoz 17/11/2016
+% Last update: Ori Maoz 09/11/2017
 function samples = generateSamples(model, nsamples,varargin)
 
 DEFAULT_BURNIN = 10000;
@@ -36,21 +37,33 @@ addOptional(p,'x0',0);          % starting state
 addOptional(p,'burnin',DEFAULT_BURNIN);  % number of burn-in samples
 addOptional(p,'separation',model.ncells);  % number of burn-in samples
 addOptional(p,'randseed',nan);  % random seed
+addOptional(p,'fix_indices',[]);  % indices to elements that should be fixed during sampling (i.e. remain unchanged)
 p.parse(varargin{:});
 x0 = p.Results.x0;
 burnin = p.Results.burnin;
 separation = p.Results.separation;
 randseed = p.Results.randseed;
+fix_indices = p.Results.fix_indices;
 
 
 if (numel(x0)>1)
     if (numel(x0) ~= model.ncells)
         error('starting state did not have the same number of dimensions as model');
-    end
-    
-    % TODO make a copy of it in memory? Currently it might change in-place in some scenarios
+    end    
 end
 
+if (((max(fix_indices)) > model.ncells) | (min(fix_indices) < 1))
+    error('fixed indices should be in the range of 1...#cells');
+end
+
+
+% change the "fixed" elements into a list of "to change" elements that the internal implementation expects.
+% the "-1" is because the C code expects indices to be zero-based
+params.variable_indices = uint32(setdiff(1:model.ncells,fix_indices) - 1);
+
+if (numel(params.variable_indices) == 0)
+    error('at least some of the indices should remain unfixed');
+end
 
 
 % delegate to the MEX implementation

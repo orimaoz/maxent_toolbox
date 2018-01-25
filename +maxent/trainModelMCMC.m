@@ -12,7 +12,7 @@
 %   model_out - trained ME model, un-normalized.
 %   bConverged - true if the training process converged, false if it reached the maximum #iterations
 %
-% Last update: Ori Maoz 25/01/2017
+% Last update: Ori Maoz 20/02/2017
 function [model, bConverged] = trainModelMCMC(input_model,raster,varargin)
 
 
@@ -47,6 +47,7 @@ NSTEPS_ADJUST_SAMPLE_SIZE = 5000;
 % MSE for which we decide that we have diverged and should reset the training
 DIVERGENCE_THRESHOLD = 100;
 
+MAX_NSAMPLES_EACH_TIME = 100000;
 
 % check dimensionality
 [ncells, data_nsamples] = size(raster);
@@ -109,6 +110,8 @@ if exist(reentry_filename, 'file') == 2
     
     % reset the time of the last save so we won't re-save immediately
     last_save = tic;
+    
+    mean_error = nan;
 
 else
     
@@ -138,9 +141,9 @@ else
         persistent_state.y = maxent.getFactors(persistent_state.model);
     end
 
-    % Starting point of the markov chain. This variable will be changed by the gibbs sampler so that each markov
+    % Starting point of the markov chain. This variable will be changed so that each markov
     % chain will continue from the end of the previous chain.
-    persistent_state.x0 = uint32(zeros(1,ncells));
+    persistent_state.x0 = uint32(zeros(ncells,1));
 
     
 end
@@ -205,12 +208,12 @@ while persistent_state.i < num_steps
 
         % apprently we are way off, reset back to initial guess and let it reconverge with stricter sampling
         if (mean_error^2 > DIVERGENCE_THRESHOLD)
-            internal_print('Solver diverged, resetting parameters and increasing max sample size (maximum MSE: %.03f)',max_error_threshold); 
+            internal_print('Solver diverged, resetting parameters and increasing max sample size (maximum MSE: %.03f)',max_error_threshold.^2); 
 
             
             % reset everything- factors, history etc
             
-            model = maxent.setFactors(model,zeros(1,maxent.getNumFactors(model)));
+            persistent_state.model = maxent.setFactors(persistent_state.model,zeros(1,maxent.getNumFactors(persistent_state.model)));
             
             % here we will keep the recent gradient norm history, we will use this to estimate the step size.
             % we are setting it such that it overestimates because we want to be on the careful side
@@ -222,11 +225,6 @@ while persistent_state.i < num_steps
             persistent_state.gradient_memory = nan(GRADIENT_MEMORY_SIZE,nfactors);
             persistent_state.gradient_memory_idx = 1;
             
-%             mean_error = nan;
-%             max_error = nan;
-%             stderr = nan;
-%             max_idx= nan;
-%             
             persistent_state.curr_iteration = 0;
             
             if (use_acceleration)
@@ -234,7 +232,7 @@ while persistent_state.i < num_steps
                 persistent_state.y = maxent.getFactors(persistent_state.model);
             end
         else            
-            internal_print('Unable to converge, increasing max sample size (maximum MSE: %.03f)',max_error_threshold);      
+            internal_print('Unable to converge, increasing max sample size (maximum MSE: %.03f)',max_error_threshold.^2);      
         end
         
     end
@@ -246,11 +244,29 @@ while persistent_state.i < num_steps
     nsamples = min(nsamples,persistent_state.max_nsamples);
     
  
-    % generate samples and compute marginals from them
-    params.separation = ncells;
-    params.burnin = 0;
-    x = maxent.generateSamples(persistent_state.model, nsamples, 'x0',persistent_state.x0,'burnin',0,'separation',ncells);
-    model_marginals = maxent.getEmpiricalMarginals(x,persistent_state.model);
+    % generate samples and compute marginals from them    
+    if nsamples < MAX_NSAMPLES_EACH_TIME        
+        
+        % sample everything at once and compute the marginals
+        x = maxent.generateSamples(persistent_state.model, nsamples, 'x0',persistent_state.x0,'burnin',0,'separation',ncells);
+        persistent_state.x0 = x(:,end);  % save the last state as the starting state for the next chain
+        
+        model_marginals = maxent.getEmpiricalMarginals(x,persistent_state.model);
+    else
+        
+        % we need to generate a lot of samples, do it in bunches to avoid using up too much memory
+        nsamples_left = nsamples;
+        summed_marginals = zeros(1,maxent.getNumFactors(persistent_state.model));
+        while nsamples_left > 0
+            curr_nsamples = min(nsamples_left,MAX_NSAMPLES_EACH_TIME);
+            x = maxent.generateSamples(persistent_state.model, curr_nsamples, 'x0',persistent_state.x0,'burnin',0,'separation',ncells);
+            persistent_state.x0 = x(:,end);  % save the last state as the starting state for the next chain
+            summed_marginals = summed_marginals + maxent.getEmpiricalMarginals(x,persistent_state.model) * curr_nsamples;
+            nsamples_left = nsamples_left - curr_nsamples;
+        end
+            
+        model_marginals = summed_marginals / nsamples;
+    end
     
     
     persistent_state.prev_nsamples = nsamples;
@@ -342,8 +358,6 @@ while persistent_state.i < num_steps
         time_from_last_save = toc(last_save);
         if (time_from_last_save > time_between_saves)
             internal_print('saving re-entry file...');
-            
-            %save(reentry_filename);
             
             % save the variables necessary to resume operation if we are killed and re-started with the same input.
             save(reentry_filename,'persistent_state');

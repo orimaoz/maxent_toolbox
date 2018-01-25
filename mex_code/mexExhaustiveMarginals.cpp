@@ -33,6 +33,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	EnergyFunction* pModel;
 	double z;
 
+	mkl_disable_fast_mm(); // make MKL use simple and safe memory management
+
 	if(nrhs<1) {
 	    mexErrMsgIdAndTxt("mexExhaustiveMarginals:init",
                       "Usage: mexExhaustiveMarginals(model)");
@@ -75,6 +77,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	
 	// Delete the model that we had previously allocated
 	delete pModel;	
+
+	mkl_free_buffers();
+
 }
 
 

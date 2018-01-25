@@ -15,7 +15,7 @@ public:
 	EnergyFunction * createEnergyFunction(const mxArray * model_params);
 
 private:
-
+	EnergyFunction * createMerpEnergy(const mxArray * model_params, bool is_sparse);
 	EnergyFunction * createKSyncEnergy(const mxArray * model_params);
 	EnergyFunction * createKIsingEnergy(const mxArray * model_params);
 	EnergyFunction * createIsingEnergy(const mxArray * model_params);

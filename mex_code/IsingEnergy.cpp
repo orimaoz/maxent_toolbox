@@ -161,7 +161,8 @@ double IsingEnergy::propose(uint32_t nbit)
 	// go over only the relevant row that was changed
 	double * factor_row = m_lambdaMatrix + nbit * m_ndims;
 
-	ippsDotProd_64f(factor_row, m_double_x, m_ndims, &dEnergy);
+	//ippsDotProd_64f(factor_row, m_double_x, m_ndims, &dEnergy);
+	dEnergy = cblas_ddot(m_ndims, factor_row, 1, m_double_x, 1);
 
 
 	// The single factors (diagonal element) will always be changed, so add it if it wasn't added during the previous loop

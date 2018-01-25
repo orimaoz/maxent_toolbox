@@ -16,10 +16,11 @@
 #include <string.h>
 #include <time.h>
 #include <mex.h>
-#include "mtrand.h"
+#include "common.h"
 
 #include "EnergyFunction.h"
 #include "EnergyFunctionFactory.h"
+#include "matlab_utils.h"
 
 #include "maxent_functions.h"
 
@@ -39,6 +40,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	EnergyFunction* pModel;
 	uint32_t nSeparation;
 	uint32_t nBurnin = DEFAULT_BURNIN;
+	uint32_t * indices_to_change = NULL;
+	uint32_t num_indices_to_change = 0;
+
 	bool b_supplied_x0;
 	std::vector<uint32_t> initial_x;
 	uint32_t randSeed = 0;
@@ -55,6 +59,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	}
 
 
+	mkl_disable_fast_mm(); // make MKL use simple and safe memory management
 
 	// Process structure containing information about the model
 	const mxArray * model_struct = prhs[0];
@@ -69,7 +74,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 
 	// get initial state x0
-	size_t nDims = mxGetN(prhs[2]);
+	size_t x0_cols = mxGetN(prhs[2]);
+	size_t x0_rows = mxGetM(prhs[2]);
+	size_t nDims = x0_cols * x0_rows;
 	mxClassID x0_id = mxGetClassID(prhs[2]);
 	if (nDims>1)
 	{
@@ -145,14 +152,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 				nBurnin = (uint32_t) * npBurnin;
 			}
 
-			// Get length of separation
-			mxArray * mxSeparation = mxGetField(params_struct,0,"separation");
-			if (mxSeparation)
-			{
-				double * npSeparation= mxGetPr(mxSeparation);
-				nSeparation = (uint32_t) * npSeparation;
-			}
-
 
 			// Get optional RNG seed
 			mxArray * mxRandSeed = mxGetField(params_struct, 0, "randseed");
@@ -174,6 +173,35 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 					bSequentialBits = false;
 				}
 				
+			}
+
+			// Get optional array of fixed indices
+			mxArray * mxVariableIndices = mxGetField(params_struct, 0, "variable_indices");
+			if (mxVariableIndices)
+			{
+
+				indices_to_change = (uint32_t*)mxGetData(mxVariableIndices);
+				size_t  variable_rows = mxGetM(mxVariableIndices);
+				size_t  variable_cols = mxGetN(mxVariableIndices);
+				num_indices_to_change = variable_rows * variable_cols;
+				mxClassID sampleClassid = mxGetClassID(mxVariableIndices);
+
+				//  the value here will override the default separation value (because we need less bit flips to actually go anywhere)
+				nSeparation = num_indices_to_change;
+
+				if (sampleClassid != mxUINT32_CLASS)
+				{
+					mexErrMsgIdAndTxt("mexGibbsSampler:init",
+						"variable_indices must be of type unsigned int32");
+				}
+			} // fixed_indices
+
+			// Get length of separation
+			mxArray * mxSeparation = mxGetField(params_struct, 0, "separation");
+			if (mxSeparation)
+			{
+				double * npSeparation = mxGetPr(mxSeparation);
+				nSeparation = (uint32_t)* npSeparation;
 			}
 
 
@@ -210,16 +238,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		if (randSeed != 0)
 		{
 			// Use user-supplied seed (mostly used for debugging)
-			MTRand engine(randSeed);
+			seedRNG(randSeed);
 		}
 		else
 		{
 			// Use system time for seed
-			MTRand engine((uint32_t)time(NULL));
+			seedRNG();
 		}
 	}
 
 	bool bReturnResults = (nlhs>0);  // does the user want us to return anything
+
+
 
 	// Allocate an output array
     uint32_t * pOutputSamples = NULL;
@@ -230,37 +260,25 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		plhs[0] = samples;
 	} // bReturnResults 
 
+
+	// allocate an end-of-walk state
+	uint32_t * final_state = (uint32_t *)malloc_aligned(sizeof(uint32_t)* nDims);
+	uint32_t * initial_state = initial_x.data();
+
 	// If there is a burnin phase, start by cycling through some samples without returning them
 	if (nBurnin>0)
 	{
-		runGibbsSampler(pModel, nBurnin, initial_x.data(), NULL, nSeparation, bSequentialBits);
+		runGibbsSampler(pModel, nBurnin, initial_state, final_state,NULL, nSeparation, bSequentialBits,indices_to_change, num_indices_to_change);
+		initial_state = final_state;    // when we sample next, start from after the burn-in
 	}
 
 	// Now work on the samples we do want
-	runGibbsSampler(pModel, nSamples, initial_x.data(), pOutputSamples, nSeparation, bSequentialBits);
+	runGibbsSampler(pModel, nSamples, initial_state, final_state,pOutputSamples, nSeparation, bSequentialBits, indices_to_change, num_indices_to_change);
 
 
-	if (b_supplied_x0)
-	{
-		// return the last x in the chain back to matlab as the current state
-		if (x0_id == mxUINT32_CLASS)
-		{
-			uint32_t * ptr_initial_x  = (uint32_t*)mxGetData(prhs[2]);
-			std::copy(initial_x.begin(),initial_x.end(),ptr_initial_x);
-
-		}
-		else if (x0_id == mxDOUBLE_CLASS)
-		{
-			// Data was supplied as double, copy it to the internal uint32 class
-			double * ptr_initial_x  = (double*)mxGetData(prhs[2]);
-			for (unsigned int i=0; i < nDims; i++)
-			{
-				ptr_initial_x[i] = initial_x[i]>0;
-			}
-		}
-	} // b_supplied_x0
 
 	// Delete the model that we had previously allocated
+	free_aligned(final_state);
 	delete pModel;
 	
 }
