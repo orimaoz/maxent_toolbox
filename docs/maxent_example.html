@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>maxent_example</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2016-11-25"><meta name="DC.source" content="maxent_example.m"><style type="text/css">
+      --><title>maxent_example</title><meta name="generator" content="MATLAB 9.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2018-01-28"><meta name="DC.source" content="maxent_example.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,7 +66,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">part 1: working with small distributions of neurons (exhaustively)</a></li><li><a href="#3">part 2: working with larger distributions of neurons (MCMC)</a></li><li><a href="#4">part 3: specifying a custom list of correlations</a></li><li><a href="#5">part 4: constructing composite models</a></li></ul></div><pre class="codeinput"><span class="comment">% maxent_example.m</span>
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">part 1: working with small distributions of neurons (exhaustively)</a></li><li><a href="#3">part 2: working with larger distributions of neurons (MCMC)</a></li><li><a href="#4">part 3: specifying a custom list of correlations</a></li><li><a href="#5">part 4: constructing composite models</a></li><li><a href="#6">part 5: constructing and sampling from high order Markov chains</a></li></ul></div><pre class="codeinput"><span class="comment">% maxent_example.m</span>
 <span class="comment">%</span>
 <span class="comment">% Example code for the maximum entropy toolkit</span>
 <span class="comment">% Ori Maoz, July 2016:  orimaoz@gmail.com,</span>
@@ -75,7 +75,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 <span class="comment">%</span>
 <span class="comment">% Note: all the "maxent." prefixes before the function calls can be omitted by commenting out the following line:</span>
 <span class="comment">%import maxent.*</span>
-</pre><h2>part 1: working with small distributions of neurons (exhaustively)<a name="2"></a></h2><pre class="codeinput"><span class="comment">% load spiking data of 15 neurons</span>
+</pre><h2 id="2">part 1: working with small distributions of neurons (exhaustively)</h2><pre class="codeinput"><span class="comment">% load spiking data of 15 neurons</span>
 load <span class="string">example15</span>
 
 <span class="comment">% randomly divide it into a training set and a test set (so we can verify how well we trained)</span>
@@ -117,12 +117,11 @@ ylabel(<span class="string">'predicted marginal'</span>);
 title(sprintf(<span class="string">'marginals in %d cells'</span>,ncells));
 </pre><pre class="codeoutput">Training to threshold: 1.000 standard deviations
 Maximum MSE: 1.000
-149/Inf  MSE=0.014 (mean), 1.937 (max) [10]  DKL: 0.090
 converged (marginals match)
-Standard deviations from marginals: 0.061 (mean), 0.996 (max) [9]  DKL: 0.089
-Kullback-Leibler divergence from test set: 0.109675
-Model entropy: 6.467   empirical dataset entropy: 6.369
-</pre><img vspace="5" hspace="5" src="maxent_example_01.png" style="width:560px;height:420px;" alt=""> <h2>part 2: working with larger distributions of neurons (MCMC)<a name="3"></a></h2><pre class="codeinput">load <span class="string">example50</span>
+Standard deviations from marginals: 0.086 (mean), 0.983 (max) [9]  DKL: 0.094
+Kullback-Leibler divergence from test set: 0.107972
+Model entropy: 6.462   empirical dataset entropy: 6.374
+</pre><img vspace="5" hspace="5" src="maxent_example_01.png" alt=""> <h2 id="3">part 2: working with larger distributions of neurons (MCMC)</h2><pre class="codeinput">load <span class="string">example50</span>
 
 <span class="comment">% randomly divide into train/test sets</span>
 [ncells,nsamples] = size(spikes50);
@@ -199,43 +198,35 @@ simulated_empirical_distribution = maxent.getEmpiricalModel(samples_simulated);
 fprintf(<span class="string">'Entropy of simulated data: %.03f bits\n'</span>,simulated_empirical_distribution.entropy);
 </pre><pre class="codeoutput">Training to threshold: 1.500 standard deviations
 Maximum samples: 17778   maximum MSE: 3.375
-332/Inf samples=4084  MSE=7.932 (mean), 73.904 (max) [43]
-406/Inf samples=8582  MSE=4.128 (mean), 56.293 (max) [31]
-447/Inf samples=12925  MSE=3.528 (mean), 54.880 (max) [2]
-477/Inf samples=17437  MSE=2.524 (mean), 33.872 (max) [40]
-503/Inf samples=17778  MSE=1.832 (mean), 23.930 (max) [40]
-527/Inf samples=17778  MSE=1.723 (mean), 29.147 (max) [12]
-552/Inf samples=17778  MSE=1.638 (mean), 24.035 (max) [12]
-577/Inf samples=17778  MSE=1.622 (mean), 13.748 (max) [45]
-603/Inf samples=17778  MSE=1.642 (mean), 8.946 (max) [31]
-627/Inf samples=17778  MSE=1.761 (mean), 10.442 (max) [1140]
-653/Inf samples=17778  MSE=1.784 (mean), 12.400 (max) [1140]
-679/Inf samples=17778  MSE=1.803 (mean), 11.871 (max) [1140]
-703/Inf samples=17778  MSE=1.963 (mean), 10.665 (max) [1069]
-728/Inf samples=17778  MSE=1.672 (mean), 7.134 (max) [1147]
-754/Inf samples=17778  MSE=1.511 (mean), 7.057 (max) [1176]
-779/Inf samples=17778  MSE=1.834 (mean), 8.628 (max) [1176]
-805/Inf samples=17778  MSE=1.818 (mean), 10.413 (max) [12]
-831/Inf samples=17778  MSE=1.476 (mean), 8.057 (max) [12]
-857/Inf samples=17778  MSE=1.441 (mean), 4.119 (max) [1264]
-883/Inf samples=17778  MSE=1.433 (mean), 4.763 (max) [1150]
-909/Inf samples=17778  MSE=1.375 (mean), 4.571 (max) [1150]
-935/Inf samples=17778  MSE=1.459 (mean), 4.811 (max) [1150]
-961/Inf samples=17778  MSE=1.519 (mean), 5.088 (max) [1151]
-987/Inf samples=17778  MSE=1.525 (mean), 5.412 (max) [1151]
-1013/Inf samples=17778  MSE=1.556 (mean), 5.915 (max) [1151]
-1039/Inf samples=17778  MSE=1.462 (mean), 3.737 (max) [1151]
-1065/Inf samples=17778  MSE=1.420 (mean), 3.957 (max) [324]
-1091/Inf samples=17778  MSE=1.333 (mean), 4.364 (max) [1166]
-1117/Inf samples=17778  MSE=1.319 (mean), 3.980 (max) [1166]
-1143/Inf samples=17778  MSE=1.343 (mean), 3.695 (max) [1069]
-1169/Inf samples=17778  MSE=1.343 (mean), 3.694 (max) [1069]
+358/Inf samples=5303  MSE=6.303 (mean), 51.959 (max) [30]
+433/Inf samples=11239  MSE=3.682 (mean), 61.996 (max) [2]
+476/Inf samples=17264  MSE=2.476 (mean), 30.393 (max) [2]
+510/Inf samples=17778  MSE=1.781 (mean), 17.924 (max) [40]
+544/Inf samples=17778  MSE=1.551 (mean), 20.760 (max) [12]
+578/Inf samples=17778  MSE=1.647 (mean), 25.216 (max) [12]
+613/Inf samples=17778  MSE=1.741 (mean), 14.063 (max) [12]
+648/Inf samples=17778  MSE=2.006 (mean), 16.156 (max) [398]
+682/Inf samples=17778  MSE=1.911 (mean), 12.694 (max) [1140]
+716/Inf samples=17778  MSE=1.610 (mean), 9.755 (max) [1147]
+751/Inf samples=17778  MSE=1.576 (mean), 6.116 (max) [529]
+785/Inf samples=17778  MSE=1.592 (mean), 5.616 (max) [529]
+819/Inf samples=17778  MSE=1.436 (mean), 8.364 (max) [12]
+853/Inf samples=17778  MSE=1.364 (mean), 8.069 (max) [12]
+887/Inf samples=17778  MSE=1.431 (mean), 5.663 (max) [731]
+922/Inf samples=17778  MSE=1.437 (mean), 5.957 (max) [608]
+957/Inf samples=17778  MSE=1.389 (mean), 5.231 (max) [142]
+991/Inf samples=17778  MSE=1.384 (mean), 5.411 (max) [1151]
+1025/Inf samples=17778  MSE=1.549 (mean), 4.749 (max) [1103]
+1059/Inf samples=17778  MSE=1.481 (mean), 4.032 (max) [410]
+1093/Inf samples=17778  MSE=1.511 (mean), 4.300 (max) [599]
+1127/Inf samples=17778  MSE=1.430 (mean), 5.577 (max) [599]
+1161/Inf samples=17778  MSE=1.310 (mean), 4.451 (max) [599]
 converged (marginals match)
 Normalizing model...
 [...............]
-Model entropy: 17.560 bits, empirical entropy (test set): 11.967 bits
-Entropy of simulated data: 12.495 bits
-</pre><img vspace="5" hspace="5" src="maxent_example_02.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="maxent_example_03.png" style="width:560px;height:420px;" alt=""> <h2>part 3: specifying a custom list of correlations<a name="4"></a></h2><pre class="codeinput"><span class="comment">% load spiking data of 15 neurons</span>
+Model entropy: 17.509 bits, empirical entropy (test set): 11.993 bits
+Entropy of simulated data: 12.472 bits
+</pre><img vspace="5" hspace="5" src="maxent_example_02.png" alt=""> <img vspace="5" hspace="5" src="maxent_example_03.png" alt=""> <h2 id="4">part 3: specifying a custom list of correlations</h2><pre class="codeinput"><span class="comment">% load spiking data of 15 neurons</span>
 load <span class="string">example15</span>
 
 <span class="comment">% randomly divide it into a training set and a test set (so we can verify how well we trained)</span>
@@ -276,14 +267,21 @@ ylabel(<span class="string">'predicted pattern log frequency'</span>);
 title(sprintf(<span class="string">'Third order model: activity patterns in %d cells'</span>,ncells));
 </pre><pre class="codeoutput">Training to threshold: 1.000 standard deviations
 Maximum MSE: 1.000
-47/Inf  MSE=1.664 (mean), 29.168 (max) [108]  DKL: 0.161
-99/Inf  MSE=0.311 (mean), 16.928 (max) [2]  DKL: 0.100
-150/Inf  MSE=0.101 (mean), 10.970 (max) [12]  DKL: 0.088
-202/Inf  MSE=0.049 (mean), 3.490 (max) [12]  DKL: 0.085
-254/Inf  MSE=0.030 (mean), 2.331 (max) [351]  DKL: 0.082
+23/Inf  MSE=5.297 (mean), 1150.729 (max) [12]  DKL: 0.324
+49/Inf  MSE=1.303 (mean), 21.290 (max) [108]  DKL: 0.152
+75/Inf  MSE=0.677 (mean), 15.530 (max) [32]  DKL: 0.116
+101/Inf  MSE=0.337 (mean), 9.809 (max) [2]  DKL: 0.099
+127/Inf  MSE=0.145 (mean), 9.456 (max) [239]  DKL: 0.092
+153/Inf  MSE=0.108 (mean), 9.260 (max) [12]  DKL: 0.088
+179/Inf  MSE=0.071 (mean), 4.781 (max) [239]  DKL: 0.085
+205/Inf  MSE=0.050 (mean), 2.981 (max) [239]  DKL: 0.084
+231/Inf  MSE=0.033 (mean), 3.708 (max) [351]  DKL: 0.082
+257/Inf  MSE=0.029 (mean), 4.986 (max) [351]  DKL: 0.081
+283/Inf  MSE=0.021 (mean), 2.523 (max) [351]  DKL: 0.081
+309/Inf  MSE=0.014 (mean), 1.148 (max) [351]  DKL: 0.080
 converged (marginals match)
-Standard deviations from marginals: 0.125 (mean), 0.992 (max) [351]  DKL: 0.081
-</pre><img vspace="5" hspace="5" src="maxent_example_04.png" style="width:560px;height:420px;" alt=""> <h2>part 4: constructing composite models<a name="5"></a></h2><pre class="codeinput"><span class="comment">% load spiking data of 15 neurons</span>
+Standard deviations from marginals: 0.114 (mean), 0.995 (max) [351]  DKL: 0.080
+</pre><img vspace="5" hspace="5" src="maxent_example_04.png" alt=""> <h2 id="5">part 4: constructing composite models</h2><pre class="codeinput"><span class="comment">% load spiking data of 15 neurons</span>
 load <span class="string">example15</span>
 
 <span class="comment">% randomly divide it into a training set and a test set (so we can verify how well we trained)</span>
@@ -324,12 +322,125 @@ ylabel(<span class="string">'predicted pattern log frequency'</span>);
 title(sprintf(<span class="string">'Composite model: activity patterns in %d cells'</span>,ncells));
 </pre><pre class="codeoutput">Training to threshold: 1.000 standard deviations
 Maximum MSE: 1.000
-48/Inf  MSE=0.280 (mean), 7.289 (max) [24]  DKL: 0.113
-96/Inf  MSE=0.061 (mean), 3.689 (max) [150]  DKL: 0.105
-145/Inf  MSE=0.029 (mean), 2.302 (max) [24]  DKL: 0.101
+28/Inf  MSE=0.567 (mean), 22.211 (max) [12]  DKL: 0.121
+58/Inf  MSE=0.193 (mean), 4.342 (max) [146]  DKL: 0.109
+88/Inf  MSE=0.073 (mean), 3.253 (max) [23]  DKL: 0.104
+118/Inf  MSE=0.038 (mean), 3.465 (max) [296]  DKL: 0.101
+148/Inf  MSE=0.027 (mean), 5.127 (max) [24]  DKL: 0.100
+178/Inf  MSE=0.018 (mean), 4.573 (max) [24]  DKL: 0.098
+208/Inf  MSE=0.012 (mean), 1.189 (max) [24]  DKL: 0.097
+238/Inf  MSE=0.007 (mean), 1.069 (max) [130]  DKL: 0.097
+268/Inf  MSE=0.006 (mean), 1.035 (max) [130]  DKL: 0.096
 converged (marginals match)
-Standard deviations from marginals: 0.134 (mean), 0.974 (max) [24]  DKL: 0.100
-</pre><img vspace="5" hspace="5" src="maxent_example_05.png" style="width:560px;height:420px;" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+Standard deviations from marginals: 0.071 (mean), 0.998 (max) [130]  DKL: 0.096
+</pre><img vspace="5" hspace="5" src="maxent_example_05.png" alt=""> <h2 id="6">part 5: constructing and sampling from high order Markov chains</h2><p>train a time-dependent model</p><pre class="codeinput"><span class="comment">% load spiking data of 15 neurons</span>
+load <span class="string">example15_spatiotemporal</span>
+
+ncells = size(spikes15_time_dependent,1);
+history_length = 2;
+
+
+<span class="comment">% Create joint words of (x_t-2,x_t-1,x_t).</span>
+xt = [];
+<span class="keyword">for</span> i = 1:(history_length+1)
+   xt = [xt;spikes15_time_dependent(:,i:(end-history_length-1+i))];
+<span class="keyword">end</span>
+
+
+<span class="comment">% create a spatiotemporal model that works on series of binary words: (x_t-2,x_t-1,x_t).</span>
+<span class="comment">% this essentially describes the probability distribution as a second-order Markov process.</span>
+<span class="comment">% We will model the distribution with a composite model that uses firing rates, total synchrony in the last 3 time bins</span>
+<span class="comment">% and pairwise correlations within the current time bin and pairwise correlations between the current activity of a cell</span>
+<span class="comment">% and the previous time bin.</span>
+time_dependent_ncells = ncells*(history_length+1);
+inner_model_indep = maxent.createModel(time_dependent_ncells,<span class="string">'indep'</span>);  <span class="comment">% firing rates</span>
+inner_model_ksync = maxent.createModel(time_dependent_ncells,<span class="string">'ksync'</span>);  <span class="comment">% total synchrony in the population</span>
+<span class="comment">% add pairwise correlations only within the current time bin</span>
+second_order_correlations = num2cell(nchoosek(1:ncells,2),2);
+temporal_matrix = reshape(1:time_dependent_ncells,[ncells,history_length+1]);
+temporal_interactions = [];
+<span class="comment">% add pairwise correlations from the current time bin to the previous time step</span>
+<span class="keyword">for</span> i = 1:(history_length)
+    temporal_interactions = [temporal_interactions;temporal_matrix(:,[i,i+1])];
+<span class="keyword">end</span>
+<span class="comment">% bunch of all this together into one probabilistic model</span>
+temporal_interactions = num2cell(temporal_interactions,2);
+inner_model_pairwise = maxent.createModel(time_dependent_ncells,<span class="string">'highorder'</span>,[second_order_correlations;temporal_interactions]);
+mspatiotemporal = maxent.createModel(time_dependent_ncells,<span class="string">'composite'</span>,{inner_model_indep,inner_model_ksync,inner_model_pairwise});
+
+<span class="comment">% train the model on the concatenated words</span>
+disp(<span class="string">'training spatio-temporal model...'</span>);
+mspatiotemporal = maxent.trainModel(mspatiotemporal,xt);
+
+
+<span class="comment">% sample from the model by generating each sample according to the history.</span>
+<span class="comment">% for this we need to generate the 3n-dimensional samples one by one, each time fixing two-thirds of the code word</span>
+<span class="comment">% corresponding to time t-2 and t-1 and sampling only from time t.</span>
+disp(<span class="string">'sampling from spatio-temporal model...'</span>);
+x0 = uint32(xt(:,1));
+xspatiotemporal = [];
+nsamples = 10000;
+<span class="keyword">for</span> i = 1:nsamples
+
+    <span class="comment">% get next sample. we will use burn-in of 100 each step to ensure that we don't introduce time-dependent stuff</span>
+    <span class="comment">% related to the sampling process itself.</span>
+    xnext = maxent.generateSamples(mspatiotemporal,1,<span class="string">'fix_indices'</span>,1:(ncells*history_length),<span class="string">'burnin'</span>,100,<span class="string">'x0'</span>,x0);
+    generated_sample = xnext(((ncells*history_length)+1):end,1);
+
+    <span class="comment">% shift the "current" state by one time step</span>
+    x0 = [x0((ncells+1):end,:);generated_sample];
+
+    <span class="comment">% add the current output</span>
+    xspatiotemporal = [xspatiotemporal,generated_sample];
+
+<span class="keyword">end</span>
+
+
+<span class="comment">% plot the result</span>
+display_begin = 2000;
+nsamples_to_display = 300;
+
+
+<span class="comment">% plot the actual raster</span>
+pos = [400,600,700,250];
+figure(<span class="string">'Position'</span>,pos);
+subplot(2,1,1);
+pos = get(gca, <span class="string">'Position'</span>);pos(1) = 0.055;pos(3) = 0.9;set(gca, <span class="string">'Position'</span>, pos);
+imshow(~spikes15_time_dependent(:,display_begin+(1:nsamples_to_display)));
+title(<span class="string">'Actual data'</span>);
+
+<span class="comment">% plot raster sampled from a spatiotemporal model</span>
+subplot(2,1,2);
+pos = get(gca, <span class="string">'Position'</span>);pos(1) = 0.055;pos(3) = 0.9;set(gca, <span class="string">'Position'</span>, pos);
+imshow(~xspatiotemporal(:,display_begin+(1:nsamples_to_display)));
+title(<span class="string">'Synthetic data (2nd-order Markov)'</span>);
+</pre><pre class="codeoutput">training spatio-temporal model...
+Training to threshold: 1.300 standard deviations
+Maximum samples: 47335   maximum MSE: 2.535
+288/Inf samples=2617  MSE=18.074 (mean), 83.959 (max) [66]
+360/Inf samples=5411  MSE=9.253 (mean), 27.411 (max) [220]
+402/Inf samples=8245  MSE=6.186 (mean), 18.759 (max) [26]
+432/Inf samples=11127  MSE=4.611 (mean), 14.916 (max) [222]
+455/Inf samples=14000  MSE=3.577 (mean), 10.179 (max) [222]
+474/Inf samples=16923  MSE=2.993 (mean), 10.225 (max) [60]
+490/Inf samples=19851  MSE=2.540 (mean), 7.836 (max) [101]
+504/Inf samples=22824  MSE=2.259 (mean), 6.930 (max) [60]
+516/Inf samples=25725  MSE=2.022 (mean), 5.725 (max) [60]
+527/Inf samples=28707  MSE=1.837 (mean), 5.335 (max) [212]
+537/Inf samples=31713  MSE=1.692 (mean), 6.279 (max) [212]
+546/Inf samples=34690  MSE=1.564 (mean), 7.661 (max) [212]
+554/Inf samples=37567  MSE=1.452 (mean), 7.561 (max) [212]
+562/Inf samples=40683  MSE=1.329 (mean), 7.513 (max) [212]
+569/Inf samples=43621  MSE=1.292 (mean), 7.194 (max) [212]
+576/Inf samples=46771  MSE=1.211 (mean), 6.902 (max) [212]
+583/Inf samples=47335  MSE=1.131 (mean), 6.242 (max) [212]
+590/Inf samples=47335  MSE=1.064 (mean), 5.374 (max) [212]
+597/Inf samples=47335  MSE=1.010 (mean), 4.054 (max) [212]
+604/Inf samples=47335  MSE=0.975 (mean), 3.296 (max) [212]
+611/Inf samples=47335  MSE=0.957 (mean), 2.466 (max) [212]
+converged (marginals match)
+sampling from spatio-temporal model...
+</pre><img vspace="5" hspace="5" src="maxent_example_06.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 % maxent_example.m
 %
@@ -550,6 +661,91 @@ plot([minval 0],[minval 0],'-r');  % identity line
 xlabel('empirical pattern log frequency');
 ylabel('predicted pattern log frequency');
 title(sprintf('Composite model: activity patterns in %d cells',ncells));
+
+%% part 5: constructing and sampling from high order Markov chains
+% train a time-dependent model
+
+% load spiking data of 15 neurons
+load example15_spatiotemporal
+
+ncells = size(spikes15_time_dependent,1);
+history_length = 2;
+
+
+% Create joint words of (x_t-2,x_t-1,x_t).
+xt = [];
+for i = 1:(history_length+1)   
+   xt = [xt;spikes15_time_dependent(:,i:(end-history_length-1+i))];
+end
+
+
+% create a spatiotemporal model that works on series of binary words: (x_t-2,x_t-1,x_t).
+% this essentially describes the probability distribution as a second-order Markov process.
+% We will model the distribution with a composite model that uses firing rates, total synchrony in the last 3 time bins
+% and pairwise correlations within the current time bin and pairwise correlations between the current activity of a cell
+% and the previous time bin.
+time_dependent_ncells = ncells*(history_length+1);
+inner_model_indep = maxent.createModel(time_dependent_ncells,'indep');  % firing rates 
+inner_model_ksync = maxent.createModel(time_dependent_ncells,'ksync');  % total synchrony in the population
+% add pairwise correlations only within the current time bin
+second_order_correlations = num2cell(nchoosek(1:ncells,2),2);
+temporal_matrix = reshape(1:time_dependent_ncells,[ncells,history_length+1]);
+temporal_interactions = [];
+% add pairwise correlations from the current time bin to the previous time step
+for i = 1:(history_length)
+    temporal_interactions = [temporal_interactions;temporal_matrix(:,[i,i+1])];
+end
+% bunch of all this together into one probabilistic model
+temporal_interactions = num2cell(temporal_interactions,2);
+inner_model_pairwise = maxent.createModel(time_dependent_ncells,'highorder',[second_order_correlations;temporal_interactions]);
+mspatiotemporal = maxent.createModel(time_dependent_ncells,'composite',{inner_model_indep,inner_model_ksync,inner_model_pairwise});
+
+% train the model on the concatenated words
+disp('training spatio-temporal model...');
+mspatiotemporal = maxent.trainModel(mspatiotemporal,xt);
+
+
+% sample from the model by generating each sample according to the history.
+% for this we need to generate the 3n-dimensional samples one by one, each time fixing two-thirds of the code word
+% corresponding to time t-2 and t-1 and sampling only from time t. 
+disp('sampling from spatio-temporal model...');
+x0 = uint32(xt(:,1));
+xspatiotemporal = [];
+nsamples = 10000;
+for i = 1:nsamples
+    
+    % get next sample. we will use burn-in of 100 each step to ensure that we don't introduce time-dependent stuff
+    % related to the sampling process itself.
+    xnext = maxent.generateSamples(mspatiotemporal,1,'fix_indices',1:(ncells*history_length),'burnin',100,'x0',x0);    
+    generated_sample = xnext(((ncells*history_length)+1):end,1);
+
+    % shift the "current" state by one time step
+    x0 = [x0((ncells+1):end,:);generated_sample];
+    
+    % add the current output 
+    xspatiotemporal = [xspatiotemporal,generated_sample];
+    
+end
+
+
+% plot the result
+display_begin = 2000;
+nsamples_to_display = 300;
+
+    
+% plot the actual raster
+pos = [400,600,700,250];
+figure('Position',pos);
+subplot(2,1,1);
+pos = get(gca, 'Position');pos(1) = 0.055;pos(3) = 0.9;set(gca, 'Position', pos);
+imshow(~spikes15_time_dependent(:,display_begin+(1:nsamples_to_display)));
+title('Actual data');
+
+% plot raster sampled from a spatiotemporal model
+subplot(2,1,2);
+pos = get(gca, 'Position');pos(1) = 0.055;pos(3) = 0.9;set(gca, 'Position', pos);
+imshow(~xspatiotemporal(:,display_begin+(1:nsamples_to_display)));
+title('Synthetic data (2nd-order Markov)');
 
 
 ##### SOURCE END #####
