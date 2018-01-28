@@ -12,13 +12,12 @@
             <tocitem target="getWeightedMarginals.html">getWeightedMarginals</tocitem>
             <tocitem target="generateSamples.html">generateSamples</tocitem>
             <tocitem target="wangLandau.html">wangLandau</tocitem>
-            <tocitem target="getEmpiricalModel.html">getEmpiricalModel</tocitem>
             <tocitem target="getEntropy.html">getEntropy</tocitem>
+            <tocitem target="getEmpiricalModel.html">getEmpiricalModel</tocitem>
             <tocitem target="dkl.html">dkl</tocitem>
             <tocitem target="djs.html">djs</tocitem>
-            <tocitem target="getNumFactors.html">getNumFactors</tocitem>
-            <tocitem target="getFactors.html">getFactors</tocitem>
-            <tocitem target="setFactors.html">setFactors</tocitem>
+            <tocitem target="normalizeModel.html">normalizeModel</tocitem>
+            <tocitem target="getExplicitDistribution.html">getExplicitDistribution</tocitem>
         </tocitem>
         <tocitem target="maxent_example.html">Code example</tocitem>
     </tocitem>

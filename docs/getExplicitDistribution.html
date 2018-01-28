@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>maxent_toolbox: getFactors()</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1><a href="index.html" style="color:black">maxent_toolbox</a></h1>
+        <p>Maximum Entropy toolbox for MATLAB</p>
+
+        <p class="view"><a href="https://github.com/orimaoz/maxent_toolbox">View the Project on GitHub <small>orimaoz/maxent_toolbox</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox/releases/latest">Download <strong>Latest version</strong></a></li>
+          <li><a href="https://github.com/orimaoz/maxent_toolbox">View On <strong>GitHub</strong></a></li>
+        </ul>
+        <ul>
+            <li><a href="function_reference.html">Function <strong>Reference</strong></a></li>
+            <li><a href="quickstart.html">Guide for <strong>Quick Start</strong></a></li>
+      </ul>
+      </header>
+      <section>
+        
+<h2>maxent.getExplicitDistribution</h2>
+
+
+<article>
+<h2>Description</h2>
+<p>Returns an explicit representation of a probability distribution as a vector of probabilities.
+This function will return an error for large (default &ge; 30) distributions since they typically cannot fit in memory.
+</p>
+</article>
+
+<article>
+<h2>Usage</h2>
+<pre>probabilities = maxent.getExplicitDistribution(model)</pre>
+</article>
+
+<article>
+<h2>Arguments</h2>
+<article>
+<h3>Mandatory arguments</h3>
+<ul>
+<li><b>model</b> - Probabilistic model as returned by the <a href="trainModel.html">trainModel</a> function. </li>   
+</ul>
+</article>
+
+
+
+<article>
+<h2>Output</h2>
+<li><b>probabilities</b> - vector of probabilities for all system states starting from 00000, 00001.... up to 11111. </li>   
+</article>
+
+
+
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/orimaoz">orimaoz</a></p>
+        <p><small>Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
