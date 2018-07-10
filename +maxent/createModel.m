@@ -15,12 +15,16 @@
 %                  kising   - pairwise ME with k-synchrony
 %                  highorder- set of custom user-supplied interaction, supplied as third argument in the form of a cell
 %                             array of arrays, for example: {[1 3],[3 5 7],[2 3]}
+%                  rp       - RP (Random Projection) model
 %                  composite- composite model combining the energy function of several other maximum entropy models.
 %                             these should be provided in the 3rd argument as pre-created models in a cell array.
 %
 % Optional arguments (in the form of Name,Value pairs):
-%   interactions - cell array of interacting groups for high-order maxent model (for "highorder" model)
-%
+%   nprojections - number of random projections (for RP model)
+%   distribution - distribution the random projection values are drawn from (for RP model)
+%   indegree     - average number of nonzero projection elements for RP model
+%   threshold    - relative threshold for random projection (for RP model)
+%   interactions - cell array of interacting groups for high-order maxent model (for "custom" model)
 function model = createModel(ncells, model_string, varargin)
 
 if nargin<2
@@ -31,6 +35,7 @@ end
 % constants used for gradient descent in the models
 STEP_SCALING_ISING = 1/10;
 STEP_SCALING_KSYNC = 1;
+STEP_SCALING_RP = 1/50; 
 STEP_SCALING_INDEP= 1; 
 
 
@@ -64,6 +69,7 @@ switch(lower(model_string))
         interactions = p.Results.interactions;
         num_constraints = numel(interactions);
                 
+        % use a trick - implement custom interactions as a specific projection matrix of RP
         model.ncells = ncells;
         model.type = 'highorder';
         model.factors = zeros(1,num_constraints);
@@ -75,7 +81,51 @@ switch(lower(model_string))
             model.factorMatrix(i,interactions{i}) = 1;
             model.threshold(i) = numel(interactions{i}) - 0.5;
         end
+        
+    case {'rp','RP','merp'}    % RP - Random Projection model
+        
+        % parse our optional arguments
+        p = inputParser;
+        addOptional(p,'nprojections',(ncells*(ncells+1)/2));  % default number of projections
+        addOptional(p,'sparsity',nan);                   % default sparsity 
+        addOptional(p,'threshold',0.1);                       % default threshold 
+        addOptional(p,'indegree',5);
+        p.parse(varargin{:});
+            
+        nprojections = p.Results.nprojections;
+        threshold = p.Results.threshold;
+        indegree = p.Results.indegree;
+        
+        % sparsity of the model (average number of nonzero elements per input dimension) can be specified either
+        % explicitly or implicitly (by choosing an average indegree)
+        sparsity = indegree / ncells;
+        if ~isnan(p.Results.sparsity)
+            sparsity = p.Results.sparsity;
+        end
 
+        % draw synaptic values from a normal distribution
+        pd = makedist('normal',single(1),single(1));
+        model.A = (pd.random(nprojections,ncells));              
+                
+        % keep only some of the synapses to be nonzero according to the chosen sparsity
+        if (sparsity<1)
+            remove_mask = rand(size(model.A));
+            model.A(remove_mask > sparsity) = 0;
+        end % sparsity
+
+        model.sparse = (sparsity < 0.4);
+        
+        model.type = 'rp';
+        model.factors = zeros(1,nprojections);
+        model.ncells = ncells;    
+        
+        % threshold is relative to how many cells participate 
+        model.threshold = single(ones(1,nprojections) * threshold * ncells * sparsity);    
+        %model.threshold = single(ones(1,nfactors) * threshold * ncells * sparsity * mean(net.connections(:)));                   
+        model.z = 0;
+                       
+        model.step_scaling = ones(size(model.factors)) * STEP_SCALING_RP;
+    
     case {'composite'}
         % it's a composite model made up of several smaller models
         p = inputParser;

@@ -194,6 +194,8 @@
     <ClCompile Include="..\..\KIsingEnergy.cpp" />
     <ClCompile Include="..\..\KSyncEnergy.cpp" />
     <ClCompile Include="..\..\maxent_functions.cpp" />
+    <ClCompile Include="..\..\MerpFastEnergy.cpp" />
+    <ClCompile Include="..\..\MerpSparseEnergy.cpp" />
     <ClCompile Include="..\..\mexWangLandauSampler.cpp" />
     <ClCompile Include="..\..\mtrand.cpp" />
   </ItemGroup>

@@ -26,7 +26,7 @@
 % Last update: Ori Maoz 09/11/2017
 function samples = generateSamples(model, nsamples,varargin)
 
-DEFAULT_BURNIN = 10000;
+DEFAULT_BURNIN = 100;
 
 if nargin<2
     error('Usage: generateSamples(model, nsamples, ...)');

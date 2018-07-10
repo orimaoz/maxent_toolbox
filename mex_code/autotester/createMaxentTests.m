@@ -1,15 +1,11 @@
 % code that uses the old package for reference tests
 function all_testdata = createMaxentTests()
 
-% save path and temporarily add old package
-p = path;
-addpath ~/testfield/trainme
-
 load example15.mat
 x = spikes15;
 
 ncells = 15;
-model_strings = {'indep','ising','kising','ksync'};
+model_strings = {'indep','ising','kising','merp','ksync'};
 
 input_models = {};
 test_models = {};
@@ -53,12 +49,24 @@ test_models{end+1} = model_test;
 testnames{end+1} = 'composite';
 
 
+% test sparse merp vs. regular merp
+model_input = maxent.createModel(ncells,'merp');
+model_input = maxent.trainModel(model_input,x,'threshold',2);
+model_test = model_input;
+model_input.type = 'merp';
+model_test.type = 'merpsparse';
+input_models{end+1} = model_input;
+test_models{end+1} = model_test; 
+testnames{end+1} = 'dense vs. sparse merp';
+
 
 % tests for different models
 for i = 1:numel(input_models)
     model_in = input_models{i};
     model_test = test_models{i};
 
+    fprintf('*** Model_in: %s\n',model_in.type');
+    
     % test marginals
     testdata.model = model_test;
     testdata.payload = ref_mexExhaustiveMarginals(model_in);
@@ -73,7 +81,7 @@ for i = 1:numel(input_models)
     testdata.model = model_test;
     testdata.randseed = params.randseed;
     testdata.nsamples = nsamples;
-    testdata.payload = ref_gibbsSampler(model_in,nsamples,0,params);
+    testdata.payload = ref_mexGibbsSampler(model_in,nsamples,0,params);
     testdata.command = 'xsynth = maxent.generateSamples(testdata.model,testdata.nsamples,''randseed'',testdata.randseed);';
     testdata.test = 'mean(xsynth(:) == testdata.payload(:))==1;';
     testdata.description = sprintf('sampler for %s',testnames{i});
@@ -82,7 +90,7 @@ for i = 1:numel(input_models)
     % test empirical marginals
     testdata.model = model_test;
     testdata.x = x;
-    testdata.payload = ref_mexGetMarginals(testdata.x,model_in);
+    testdata.payload = ref_mexEmpiricalMarginals(testdata.x,model_in);
     testdata.command = 'data = maxent.getEmpiricalMarginals(testdata.x,testdata.model);';
     testdata.test = 'max(abs(testdata.payload-data))< epsilon';
     testdata.description = sprintf('empirical marginals for %s',testnames{i});
@@ -101,7 +109,7 @@ for i = 1:numel(input_models)
     testdata.model = model_test;
     testdata.x = x;
     testdata.p = exp(ref_mexLogProbability(testdata.x,model_in));
-    testdata.payload = ref_mexGetMarginals(testdata.x,model_in,testdata.p);
+    testdata.payload = ref_mexEmpiricalMarginals(testdata.x,model_in,testdata.p);
     testdata.command = 'data = maxent.getWeightedMarginals(testdata.x,testdata.model,testdata.p);';
     testdata.test = 'max(abs(testdata.payload-data))< epsilon';
     testdata.description = sprintf('getWeightedMarginals for %s',testnames{i});
@@ -139,7 +147,5 @@ for i = 1:numel(input_models)
 
 end
 
-% restore path
-path(p)
 
 end

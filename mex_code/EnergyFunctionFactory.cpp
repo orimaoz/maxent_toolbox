@@ -1,6 +1,8 @@
 #include "EnergyFunctionFactory.h"
 #include "KSyncEnergy.h"
 #include "KIsingEnergy.h"
+#include "MerpFastEnergy.h"
+#include "MerpSparseEnergy.h"
 #include "IsingEnergy.h"
 #include "IndependentEnergy.h"
 #include "HighOrderEnergy.h"
@@ -36,6 +38,16 @@ EnergyFunction * EnergyFunctionFactory::createEnergyFunction(const mxArray * mod
 			// collect parameters and initialize for Ising model
 			outEnergy = createIsingEnergy(model_params);
 
+		}
+		else if ((strcmp(strModelType, "rp") == 0) || (strcmp(strModelType, "merp") == 0))
+		{
+			// collect parameters and initialize for MERP model
+			outEnergy = createMerpEnergy(model_params,false);
+		}
+		else if (strcmp(strModelType, "merpsparse") == 0)
+		{	// This form is for backwards compatibility with older code
+			// collect parameters and initialize for MERP model (sparse version)
+			outEnergy = createMerpEnergy(model_params,true);
 		}
 		else if (strcmp(strModelType, "ksync") == 0)
 		{
@@ -220,6 +232,113 @@ EnergyFunction * EnergyFunctionFactory::createIndependentEnergy(const mxArray * 
 	return pModel;
 }
 
+EnergyFunction * EnergyFunctionFactory::createMerpEnergy(const mxArray * model_params, bool is_sparse)
+{
+
+	EnergyFunction * pModel;
+	mxClassID id;
+
+	// get number of cells
+	uint32_t ncells = getNcells(model_params);
+
+	// get model factors
+	double * pLambda = getFactors(model_params);
+	size_t nfactors = getNFactors(model_params);
+
+	// get the MERP projections and check that sizes match
+	mxArray * mxProjections = mxGetField(model_params, 0, "A");
+	if (!mxProjections)
+	{
+		// if we can't find the projection matrix, try to fall back to an older naming convention (for backwards compatibility)
+		mxProjections = mxGetField(model_params, 0, "connections");
+	}
+	if (!mxProjections) mexErrMsgIdAndTxt("maxent:EnergyFunctionFactory", "cannot find model.A");
+	if (mxGetN(mxProjections) != ncells)
+	{
+		mexErrMsgIdAndTxt("maxent:EnergyFunctionFactory",
+			"Size of projection matrix size does not match number of cells");
+	}
+	if (mxGetM(mxProjections) != nfactors)
+	{
+		mexErrMsgIdAndTxt("maxent:EnergyFunctionFactory",
+			"Size of projection matrix size does not match number of factors");
+	}
+
+
+	// get the connection matrix
+	void * pW = mxGetPr(mxProjections);
+
+	// Get the threshold
+	mxArray * mxThreshold = mxGetField(model_params, 0, "threshold");
+	if (!mxThreshold) mexErrMsgIdAndTxt("maxent:EnergyFunctionFactory", "cannot find model.threshold");
+
+	void * pThreshold;
+
+	size_t nThresh = mxGetNumberOfElements(mxThreshold);
+	if (nThresh == nfactors)
+	{
+		// Initialize the MERP model with multiple thresholds
+		pThreshold = mxGetPr(mxThreshold);
+
+	}
+	else
+	{
+		// mexErrMsgIdAndTxt("maxent:EnergyFunctionFactory", "model.threshold must be a scalar or a vector of the same length as factors");
+		mexErrMsgIdAndTxt("maxent:EnergyFunctionFactory", "model.threshold must be a vector of the same length as factors");
+	}
+
+
+	mxClassID thresholdClass = mxGetClassID(mxThreshold);
+	mxClassID WClass = mxGetClassID(mxProjections);
+
+
+	// Check if the MERP model is sparse
+	bool bSparseMerp;
+	mxArray * mxSparse = mxGetField(model_params, 0, "sparse");
+	if (mxSparse && mxIsLogicalScalar(mxSparse)) 
+	{
+		// If the createModel stored this information
+		bSparseMerp = mxIsLogicalScalarTrue(mxSparse);
+	}
+	else
+	{
+		// backwards-compatible for models that don't have this info - 
+		// we assume it is given by name ("merp" vs "merpsparse")
+		bSparseMerp = is_sparse;
+	}
+
+
+
+	if ((WClass == mxSINGLE_CLASS) && (thresholdClass == mxSINGLE_CLASS))
+	{
+		// regular single class version
+		if (bSparseMerp)
+		{
+			pModel = new MerpSparseEnergy((float*)pW, pLambda, ncells, nfactors, (float*)pThreshold, 0);
+		}
+		else
+		{
+			pModel = new MerpFastEnergy((float*)pW, pLambda, ncells, nfactors, (float*)pThreshold, 0);
+
+		}
+	}
+	else
+	{
+		mexErrMsgIdAndTxt("maxent:EnergyFunctionFactory", "model.threshold and model.connections must be both be single precision floating point");
+	}
+
+
+
+
+	// Get the partition function (if it exists)
+	pModel->setLogZ(getZ(model_params));
+
+
+
+	return pModel;
+}
+
+
 
 
 
@@ -266,6 +385,7 @@ EnergyFunction * EnergyFunctionFactory::createHighOrderEnergy(const mxArray * mo
 
 	if (nThresh == nfactors)
 	{
+		// Initialize the MERP model with multiple thresholds
 		float * pThreshold = (float*)mxGetPr(mxThreshold);
 
 		pModel = new HighOrderEnergy(pW, pLambda, ncells, nfactors, pThreshold);

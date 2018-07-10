@@ -132,7 +132,46 @@ fprintf('Entropy of simulated data: %.03f bits\n',simulated_empirical_distributi
 
 
 
-%% part 3: specifying a custom list of correlations
+%% part 3: working with RP (random projection) models
+
+% load spiking data of 15 neurons
+load example15
+
+% randomly divide it into a training set and a test set (so we can verify how well we trained)
+[ncells,nsamples] = size(spikes15);
+idx_train = randperm(nsamples,ceil(nsamples/2));
+idx_test = setdiff(1:nsamples,idx_train);
+samples_train = spikes15(:,idx_train);
+samples_test = spikes15(:,idx_test);
+
+% create a random projection model with default settings
+model = maxent.createModel(ncells,'rp');
+
+% train the model to a threshold of one standard deviation from the error of computing the marginals.
+% because the distribution is relatively small (15 dimensions) we can explicitly represent all 2^15 states 
+% in memory and train the model in an exhaustive fashion.
+model = maxent.trainModel(model,samples_train,'threshold',1);
+
+% now check the kullback-leibler divergence between the model predictions and the pattern counts in the test-set 
+empirical_distribution = maxent.getEmpiricalModel(samples_test);
+model_logprobs = maxent.getLogProbability(model,empirical_distribution.words);
+test_dkl = maxent.dkl(empirical_distribution.logprobs,model_logprobs);
+fprintf('Kullback-Leibler divergence from test set: %f\n',test_dkl);
+
+% create a random projection model with a specified number of projections and specified sparsity
+model = maxent.createModel(ncells,'rp','nprojections',500,'sparsity',0.1);
+
+% train the model
+model = maxent.trainModel(model,samples_train,'threshold',1);
+
+% now check the kullback-leibler divergence between the model predictions and the pattern counts in the test-set 
+empirical_distribution = maxent.getEmpiricalModel(samples_test);
+model_logprobs = maxent.getLogProbability(model,empirical_distribution.words);
+test_dkl = maxent.dkl(empirical_distribution.logprobs,model_logprobs);
+fprintf('Kullback-Leibler divergence from test set: %f\n',test_dkl);
+
+
+%% part 4: specifying a custom list of correlations
 
 % load spiking data of 15 neurons
 load example15
@@ -175,7 +214,7 @@ ylabel('predicted pattern log frequency');
 title(sprintf('Third order model: activity patterns in %d cells',ncells));
 
 
-%% part 4: constructing composite models
+%% part 5: constructing composite models
 
 
 % load spiking data of 15 neurons
@@ -218,7 +257,8 @@ xlabel('empirical pattern log frequency');
 ylabel('predicted pattern log frequency');
 title(sprintf('Composite model: activity patterns in %d cells',ncells));
 
-%% part 5: constructing and sampling from high order Markov chains
+
+%% part 6: constructing and sampling from high order Markov chains
 % train a time-dependent model
 
 % load spiking data of 15 neurons

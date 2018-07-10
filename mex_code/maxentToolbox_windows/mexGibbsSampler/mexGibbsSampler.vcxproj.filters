@@ -35,6 +35,12 @@
     <ClCompile Include="..\..\KSyncEnergy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\MerpFastEnergy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\MerpSparseEnergy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\mtrand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

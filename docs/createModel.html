@@ -55,12 +55,20 @@
 	              <li><b>indep</b>  - independent model</li>
                   <li><b>pairwise</b> (or "ising") - pairwise maximum entropy model</li>
                   <li><b>ksync</b>  - k-synchrony</li>
-                  <li><b>kpairwise</b> (or "kising") - pairwise maximum entropy mdoel with k-synchrony</li>
+                  <li><b>kpairwise</b> (or "kising") - pairwise maximum entropy model with k-synchrony</li>
                   <li><b>highorder</b> - custom high-order interaction model, supplied as a third argument in the form of a cell array of arrays, for example: {[1 3],[3 5 7 8],[2 3]} denotes interactions x1x3, x3x5x7x8, x2x3 </li>
+                  <li><b>rp</b>   - RP (Random Projection) model</li>
                   <li><b>composite</b>- composite model combining the energy function of several other maximum entropy models. these should be provided in the 3rd argument as pre-created models in a cell array.</li>
 	</ul>
 </ul>
 
+<h4>Optional arguments (in the form of name,value pairs)</h4>
+<ul>
+<li><b>nprojections</b> - number of random projections (for RP model)</li>
+<li><b>distribution</b> - distribution the random projection values are drawn from (for RP model)</li>
+<li><b>sparsity</b>     - sparsity between 0 (completely sparse) and 1 (not sparse at all) - (for RP model)</li>
+<li><b>threshold</b>    - relative threshold for random projection (for RP model)</li>
+</ul>
 
 <h3>Output</h3>
 <ul>
@@ -72,6 +80,8 @@ Create a pairwise maximum entropy model:
 <pre>model = maxent.createModel(100,'pairwise')</pre>
 Create a maximum entropy models with moments x<sub>1</sub>x<sub>2</sub>, x<sub>3</sub>x<sub>5</sub>x<sub>7</sub>x<sub>8</sub>, x<sub>2</sub>x<sub>3</sub>:
 <pre>model = maxent.createModel(30,'highorder',{[1 3],[3 5 7 8],[2 3]})</pre>
+Create an RP model with 500 projections and an average indegree of 5 
+<pre>model = maxent.createModel(30,'rp','nprojections',500,'indegree',5)</pre>
 Create a composite model consisting of an indepedent model, population synchrony and third-order correlations:
 <pre>
 m1 = maxent.createModel(20,'indep');
