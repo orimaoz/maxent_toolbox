@@ -158,8 +158,8 @@ model_logprobs = maxent.getLogProbability(model,empirical_distribution.words);
 test_dkl = maxent.dkl(empirical_distribution.logprobs,model_logprobs);
 fprintf('Kullback-Leibler divergence from test set: %f\n',test_dkl);
 
-% create a random projection model with a specified number of projections and specified sparsity
-model = maxent.createModel(ncells,'rp','nprojections',500,'sparsity',0.1);
+% create a random projection model with a specified number of projections and specified average in-degree
+model = maxent.createModel(ncells,'rp','nprojections',500,'indegree',4);
 
 % train the model
 model = maxent.trainModel(model,samples_train,'threshold',1);
