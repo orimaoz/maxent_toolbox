@@ -31,7 +31,7 @@ Mathematically, in its discrete form, if x<sub>i</sub>
 <li><a href="http://wp.ist.ac.at/group_tkacik/wp-content/uploads/2011/02/JStatMech_Simplest_Maxent.pdf">K-synchrony model</a>: &#60;&Sigma;<sub>i</sub>x<sub>i</sub>&#62;<sub>data</sub></li>
 <li><a href="http://wp.ist.ac.at/group_tkacik/wp-content/uploads/2011/02/PLOSCompBio_KPairwise.pdf">K-Pairwise model</a></li>
 <li>Arbitrary set of high-order correlations</li>
-<li>RP (Random Projection) model</li>
+<li><a href="https://www.biorxiv.org/node/143383.abstract">RP (Random Projection) model</a></li>
 <li>Any combination of the above models</li>
 </ul>
 </p>
